@@ -11,7 +11,10 @@ import java.util.*
 interface IntervalDataDOA {
 
     @Insert(onConflict = REPLACE)
-    fun insert(interval: IntervalData)
+    fun insert(interval: IntervalData) : Long
+
+    @Insert(onConflict = REPLACE)
+    fun insert(intervals: Array<IntervalData?>) : List<Long>
 
     @Update
     fun updateThese(vararg intervals: IntervalData)
@@ -24,5 +27,7 @@ interface IntervalDataDOA {
 
     @Query("select * from Interval where id = :arg0")
     fun get(id: Long): IntervalData
+
+
 
 }

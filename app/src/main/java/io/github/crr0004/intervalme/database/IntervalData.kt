@@ -10,12 +10,25 @@ import java.util.*
  * Created by crr00 on 24-Apr-18.
  */
 @Entity(tableName = "Interval")
-data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long?,
+data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
                         @ColumnInfo(name = "label") var label: String?,
-                        @ColumnInfo(name = "group") var group: UUID,
-                        var ownerOfGroup: UUID?,
-                        var lastModified: Date,
-                        var duration: Long
+                        @ColumnInfo(name = "group") var group: UUID = UUID.randomUUID(),
+                        var ownerOfGroup: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000"),
+                        var lastModified: Date = Date(),
+                        var duration: Long = -1
 ) {
-    constructor():this(id=null,label=null,group=UUID.randomUUID(),ownerOfGroup = null,lastModified = Date(), duration=0)
+    constructor():this(label="")
+
+    companion object {
+        fun generate(amount: Int): Array<IntervalData?>{
+            val returnValue = arrayOfNulls<IntervalData>(amount)
+            for(i in 0 until returnValue.size){
+                returnValue[i] = IntervalData()
+                returnValue[i]!!.duration= (Math.random()*Long.MAX_VALUE).toLong()
+            }
+
+            return returnValue
+        }
+    }
+
 }

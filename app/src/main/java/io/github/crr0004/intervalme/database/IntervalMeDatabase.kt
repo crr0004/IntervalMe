@@ -20,7 +20,7 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(IntervalMeDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
-                            IntervalMeDatabase::class.java, "intervalme.db")
+                            IntervalMeDatabase::class.java, "intervalme.db").allowMainThreadQueries()
                             .build()
                 }
             }
