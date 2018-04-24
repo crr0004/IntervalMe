@@ -10,6 +10,6 @@ class IntervalListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_list)
         val intervalListView = findViewById<ExpandableListView>(R.id.intervalsExpList)
-
+        intervalListView.setAdapter(IntervalListAdapter(this.applicationContext))
     }
 }
