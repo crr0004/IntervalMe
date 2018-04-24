@@ -1,0 +1,28 @@
+package io.github.crr0004.intervalme.database
+
+import android.arch.persistence.room.*
+import android.arch.persistence.room.OnConflictStrategy.REPLACE
+import java.util.*
+
+/**
+ * Created by crr00 on 24-Apr-18.
+ */
+@Dao
+interface IntervalDataDOA {
+
+    @Insert(onConflict = REPLACE)
+    fun insert(interval: IntervalData)
+
+    @Update
+    fun updateThese(vararg intervals: IntervalData)
+
+    @Delete
+    fun delete(vararg interval: IntervalData): Int
+
+    @Query("select * from Interval")
+    fun getAll(): Array<IntervalData>
+
+    @Query("select * from Interval where id = :arg0")
+    fun get(id: Long): IntervalData
+
+}
