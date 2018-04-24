@@ -7,6 +7,8 @@ import android.widget.BaseExpandableListAdapter
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.view.LayoutInflater
 import android.widget.TextView
+import io.github.crr0004.intervalme.database.IntervalDataDOA
+import io.github.crr0004.intervalme.database.IntervalMeDatabase
 
 
 /**
@@ -14,6 +16,13 @@ import android.widget.TextView
  */
 class IntervalListAdapter constructor(private val mContext: Context): BaseExpandableListAdapter() {
 
+    private var mdb: IntervalMeDatabase? = null
+    private var mIntervalDao: IntervalDataDOA? = null
+
+    init {
+        mdb = IntervalMeDatabase.getInstance(mContext)
+        mIntervalDao = mdb!!.intervalDataDao()
+    }
 
     override fun getGroup(groupPosition: Int): Any {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -26,7 +35,7 @@ class IntervalListAdapter constructor(private val mContext: Context): BaseExpand
 
     override fun hasStableIds(): Boolean {
         //The ids of the data will be not be consistent across changes
-        return false
+        return true
     }
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
@@ -39,7 +48,7 @@ class IntervalListAdapter constructor(private val mContext: Context): BaseExpand
             toReturn = convertView
         }
 
-        toReturn.findViewById<TextView>(R.id.textView).text = "Hello"
+        toReturn.findViewById<TextView>(R.id.textView).text = mIntervalDao!!.get(groupPosition.toLong()).label
 
         return toReturn
     }
@@ -69,6 +78,6 @@ class IntervalListAdapter constructor(private val mContext: Context): BaseExpand
 
     override fun getGroupCount(): Int {
         //TODO placeholder
-        return 1
+        return mIntervalDao!!.getAll().size
     }
 }
