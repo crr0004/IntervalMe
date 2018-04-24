@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".IntervalAddActivity">
+
+        </activity>
+        <activity android:name=".IntervalListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
