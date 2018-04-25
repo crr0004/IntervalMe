@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.content.Context.LAYOUT_INFLATER_SERVICE
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.TextView
 import io.github.crr0004.intervalme.database.IntervalDataDOA
@@ -48,7 +49,8 @@ class IntervalListAdapter constructor(private val mContext: Context): BaseExpand
             toReturn = convertView
         }
 
-        toReturn.findViewById<TextView>(R.id.textView).text = mIntervalDao!!.get(groupPosition.toLong()).label
+        val intervalData = mIntervalDao?.get(groupPosition.toLong()+1)
+        toReturn.findViewById<TextView>(R.id.textView).text = intervalData?.label ?: "Interval not found"
 
         return toReturn
     }
