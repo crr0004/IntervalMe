@@ -31,9 +31,17 @@ interface IntervalDataDOA {
     @Query("select * from Interval where Interval.`group` = :arg0")
     fun getAllOfGroup(group: UUID): Array<IntervalData>
 
-    @Query("select * from Interval where ownerOfGroup = :arg0")
-    fun getOwnerOfGrop(group: UUID): IntervalData
+    @Query("select * from Interval where `group` = :arg0 AND NOT ownerOfGroup")
+    fun getAllOfGroupWithoutOwner(group: UUID): Array<IntervalData>
 
+    @Query("select * from Interval where `group` = :arg0 AND ownerOfGroup")
+    fun getOwnerOfGroup(group: UUID): IntervalData
+
+    @Query("select * from Interval where ownerOfGroup")
+    fun getGroupOwners(): Array<IntervalData>
+
+    @Query("select * from Interval where id = :arg0 AND ownerOfGroup")
+    fun getGroupOwnerWithID(id: Long): IntervalData
 
 
 }
