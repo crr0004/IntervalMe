@@ -13,7 +13,7 @@ import java.util.*
 data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
                         @ColumnInfo(name = "label") var label: String?,
                         @ColumnInfo(name = "group") var group: UUID = UUID.randomUUID(),
-                        var ownerOfGroup: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000"),
+                        var ownerOfGroup: Boolean = true,
                         var lastModified: Date = Date(),
                         var duration: Long = -1
 ) {
@@ -25,7 +25,6 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
      */
     fun setAsParentOf(interval: IntervalData){
         interval.group = this.group
-        this.ownerOfGroup = this.group
     }
 
     companion object {
