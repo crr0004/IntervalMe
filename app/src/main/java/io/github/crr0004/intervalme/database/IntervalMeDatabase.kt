@@ -7,7 +7,7 @@ import android.content.Context
  * Created by crr00 on 24-Apr-18.
  */
 
-@Database(entities = arrayOf(IntervalData::class), version = 1)
+@Database(entities = arrayOf(IntervalData::class), version = 3)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
@@ -20,7 +20,7 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(IntervalMeDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
-                            IntervalMeDatabase::class.java, "intervalme.db").allowMainThreadQueries()
+                            IntervalMeDatabase::class.java, "intervalme.db").allowMainThreadQueries().fallbackToDestructiveMigration()
                             .build()
                 }
             }
