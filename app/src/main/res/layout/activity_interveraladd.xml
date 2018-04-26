@@ -5,51 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="io.github.crr0004.intervalme.IntervalAddActivity">
-    <!--
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/sets_layoutgroup"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="33dp"
-            android:layout_height="38dp"
-            android:text="-"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/textView2" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="33dp"
-            android:layout_height="38dp"
-            android:text="+"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@+id/textView2"/>
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="000"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView"  />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sets"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"  />
-    </android.support.constraint.ConstraintLayout>
--->
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/workout_layoutgroup"
@@ -60,7 +15,7 @@
         app:layout_constraintTop_toBottomOf="@+id/intervalNameTxt">
 
         <Button
-            android:id="@+id/button13"
+            android:id="@+id/increaseDurationBtn"
             android:layout_width="33dp"
             android:layout_height="38dp"
             android:text="@string/plus_text"
@@ -70,7 +25,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView1" />
 
         <Button
-            android:id="@+id/button12"
+            android:id="@+id/decreaseDurationBtn"
             android:layout_width="33dp"
             android:layout_height="38dp"
             android:text="@string/minus_text"
@@ -106,23 +61,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:text="@string/go_to_list"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/intervalAddBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:text="@string/add"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/workout_layoutgroup" />
+        app:layout_constraintTop_toTopOf="@+id/goToListBtn" />
 
     <EditText
         android:id="@+id/intervalNameTxt"
@@ -136,5 +87,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor" />
+
+    <EditText
+        android:id="@+id/intervalParentTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:ems="10"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="@+id/intervalChildDurationTxt"
+        app:layout_constraintTop_toBottomOf="@+id/intervalChildDurationTxt"
+        tools:text="000" />
+
+    <TextView
+        android:id="@+id/intervalChildDurationTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/parent_id"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/workout_layoutgroup"
+        android:labelFor="@+id/intervalParentTxt"/>
 
 </android.support.constraint.ConstraintLayout>
