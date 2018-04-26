@@ -28,6 +28,12 @@ interface IntervalDataDOA {
     @Query("select * from Interval where id = :arg0")
     fun get(id: Long): IntervalData
 
+    @Query("select * from Interval where Interval.`group` = :arg0")
+    fun getAllOfGroup(group: UUID): Array<IntervalData>
+
+    @Query("select * from Interval where ownerOfGroup = :arg0")
+    fun getOwnerOfGrop(group: UUID): IntervalData
+
 
 
 }
