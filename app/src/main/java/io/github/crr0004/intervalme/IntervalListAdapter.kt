@@ -1,21 +1,23 @@
 package io.github.crr0004.intervalme
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseExpandableListAdapter
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.TextView
+import android.widget.*
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
+import java.util.*
 
 
 /**
  * Created by crr00 on 24-Apr-18.
  */
-class IntervalListAdapter constructor(private val mContext: Context): BaseExpandableListAdapter() {
+class IntervalListAdapter constructor(private val mContext: Context, private val mHost: ExpandableListView): BaseExpandableListAdapter() {
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
@@ -26,11 +28,13 @@ class IntervalListAdapter constructor(private val mContext: Context): BaseExpand
     }
 
     override fun getGroup(groupPosition: Int): Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val intervalDataParent = mIntervalDao?.get(groupPosition.toLong()+1)
+        return mIntervalDao!!.getAllOfGroup(intervalDataParent!!.group)
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("implement this properly") //To change body of created functions use File | Settings | File Templates.
+        return true
     }
 
 
@@ -40,46 +44,77 @@ class IntervalListAdapter constructor(private val mContext: Context): BaseExpand
     }
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
-        var toReturn: View
+        val toReturn: View
 
         if(convertView == null){
             val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            toReturn = infalInflater.inflate(R.layout.interval_group, null);
+            toReturn = infalInflater.inflate(R.layout.interval_group, null)
         }else{
             toReturn = convertView
         }
 
-        val intervalData = mIntervalDao?.get(groupPosition.toLong()+1)
+        val intervalData = mIntervalDao?.getGroupOwners()?.get(groupPosition)
         toReturn.findViewById<TextView>(R.id.textView).text = intervalData?.label ?: "Interval not found"
+
+
+        //toReturn.setOnLongClickListener(intervalLongClickListener)
+        this.mHost.setOnItemLongClickListener { parent, view, position, id ->
+            val groupUUID = intervalData?.group.toString()
+            val clipboard = mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText("group uuid", groupUUID)
+            Toast.makeText(mContext, "Copied UUID", Toast.LENGTH_SHORT).show()
+
+            clipboard.primaryClip = clipData
+
+            true
+        }
+        //toReturn.setOnClickListener { this.mHost.expandGroup(groupPosition)}
 
         return toReturn
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return 0
+        val intervalDataParent = mIntervalDao?.getGroupOwners()?.get(groupPosition)
+        return mIntervalDao!!.getAllOfGroupWithoutOwner(intervalDataParent!!.group).size
     }
 
     override fun getChild(groupPosition: Int, childPosition: Int): Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val intervalDataParent = mIntervalDao?.getGroupOwners()?.get(groupPosition)
+        return mIntervalDao!!.getAllOfGroupWithoutOwner(intervalDataParent!!.group)[groupPosition]
     }
 
     override fun getGroupId(groupPosition: Int): Long {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return 0
+        return (groupPosition+1).toLong()
     }
 
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("placeholder code") //To change body of created functions use File | Settings | File Templates.
+        val toReturn: View
+        val intervalDataParent = mIntervalDao?.getGroupOwners()?.get(groupPosition)
+        val childrenOfGroup = mIntervalDao?.getAllOfGroupWithoutOwner(intervalDataParent?.group ?: UUID.fromString("00000000-0000-0000-0000-000000000000"))
 
+        if(convertView == null){
+            val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            //Passing null as root until I figure it out. Passing parent causes a crash
+            toReturn = infalInflater.inflate(R.layout.interval_single,  null)
+        }else{
+            toReturn = convertView
+        }
+
+
+        toReturn.findViewById<TextView>(R.id.intervalChildNameTxt).text = childrenOfGroup?.get(childPosition)?.label ?: "Interval not found"
+        toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt).text = childrenOfGroup?.get(childPosition)?.duration.toString()
+
+        return toReturn
     }
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return (groupPosition+1+childPosition).toLong()
     }
 
     override fun getGroupCount(): Int {
         //TODO placeholder
-        return mIntervalDao!!.getAll().size
+        return mIntervalDao!!.getGroupOwners().size
     }
 }
