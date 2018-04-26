@@ -19,6 +19,15 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
 ) {
     constructor():this(label="")
 
+    /**
+     * Sets the passed interval as a child of this interval.
+     * Sets this interval as the owner of group
+     */
+    fun setAsParentOf(interval: IntervalData){
+        interval.group = this.group
+        this.ownerOfGroup = this.group
+    }
+
     companion object {
         fun generate(amount: Int): Array<IntervalData?>{
             val returnValue = arrayOfNulls<IntervalData>(amount)
