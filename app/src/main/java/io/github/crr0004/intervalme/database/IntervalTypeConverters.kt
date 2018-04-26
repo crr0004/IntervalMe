@@ -18,12 +18,12 @@ class IntervalTypeConverters {
     }
 
     @TypeConverter
-    fun toUUID(value: String): UUID {
-        return UUID.fromString(value)
+    fun toUUID(value: String?): UUID {
+        return UUID.fromString(value?: "00000000-0000-0000-0000-000000000000")
     }
 
     @TypeConverter
-    fun fromUUID(uuid: UUID): String{
-        return uuid.toString()
+    fun fromUUID(uuid: UUID?): String{
+        return uuid?.toString() ?: "00000000-0000-0000-0000-000000000000"
     }
 }
