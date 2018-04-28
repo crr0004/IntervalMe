@@ -53,16 +53,18 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             toReturn = convertView
         }
 
-        val intervalData = mIntervalDao?.getGroupOwners()?.get(groupPosition)
+        val intervalData = mIntervalDao?.getGroupByOffset(groupPosition.toLong()+1)
         toReturn.findViewById<TextView>(R.id.textView).text = intervalData?.label ?: "Interval not found"
 
 
         //toReturn.setOnLongClickListener(intervalLongClickListener)
-        this.mHost.setOnItemLongClickListener { parent, view, position, id ->
+        this.mHost.setOnItemLongClickListener { parentView, view, position, id ->
+            val intervalData = mIntervalDao?.getGroupByOffset(position.toLong()+1)
             val groupUUID = intervalData?.group.toString()
             val clipboard = mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = ClipData.newPlainText("group uuid", groupUUID)
             Toast.makeText(mContext, "Copied UUID", Toast.LENGTH_SHORT).show()
+
 
             clipboard.primaryClip = clipData
 
@@ -79,8 +81,10 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     }
 
     override fun getChild(groupPosition: Int, childPosition: Int): Any {
-        val intervalDataParent = mIntervalDao?.getGroupOwners()?.get(groupPosition)
-        return mIntervalDao!!.getAllOfGroupWithoutOwner(intervalDataParent!!.group)[groupPosition]
+        val intervalDataParent = mIntervalDao!!.getGroupOwners()[groupPosition]
+        return mIntervalDao!!.getChildOfGroupByOffset(
+                (childPosition+ 1).toLong(),
+                intervalDataParent.group)
     }
 
     override fun getGroupId(groupPosition: Int): Long {
@@ -88,10 +92,11 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     }
 
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
-        //TODO("placeholder code") //To change body of created functions use File | Settings | File Templates.
         val toReturn: View
         val intervalDataParent = mIntervalDao?.getGroupOwners()?.get(groupPosition)
-        val childrenOfGroup = mIntervalDao?.getAllOfGroupWithoutOwner(intervalDataParent?.group ?: UUID.fromString("00000000-0000-0000-0000-000000000000"))
+        val childOfInterval = mIntervalDao?.getChildOfGroupByOffset(
+                (childPosition+ 1).toLong(),
+                intervalDataParent?.group ?: UUID.fromString("00000000-0000-0000-0000-000000000000"))
 
         if(convertView == null){
             val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -102,8 +107,8 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
         }
 
 
-        toReturn.findViewById<TextView>(R.id.intervalChildNameTxt).text = childrenOfGroup?.get(childPosition)?.label ?: "Interval not found"
-        toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt).text = childrenOfGroup?.get(childPosition)?.duration.toString()
+        toReturn.findViewById<TextView>(R.id.intervalChildNameTxt).text = childOfInterval?.label ?: "Interval not found"
+        toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt).text = childOfInterval?.duration.toString()
 
         return toReturn
     }
