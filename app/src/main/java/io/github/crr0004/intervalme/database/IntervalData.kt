@@ -11,7 +11,7 @@ import java.util.*
  */
 @Entity(tableName = "Interval")
 data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
-                        @ColumnInfo(name = "label") var label: String?,
+                        @ColumnInfo(name = "label") var label: String? = "",
                         @ColumnInfo(name = "group") var group: UUID = UUID.randomUUID(),
                         var ownerOfGroup: Boolean = true,
                         var lastModified: Date = Date(),
@@ -32,6 +32,15 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
             val returnValue = arrayOfNulls<IntervalData>(amount)
             for(i in 0 until returnValue.size){
                 returnValue[i] = IntervalData()
+                returnValue[i]!!.duration= (Math.random()*Long.MAX_VALUE).toLong()
+            }
+
+            return returnValue
+        }
+        fun generate(amount: Int, intervalParent: IntervalData?): Array<IntervalData?>{
+            val returnValue = arrayOfNulls<IntervalData>(amount)
+            for(i in 0 until returnValue.size){
+                returnValue[i] = IntervalData(group = intervalParent!!.group, ownerOfGroup = false)
                 returnValue[i]!!.duration= (Math.random()*Long.MAX_VALUE).toLong()
             }
 
