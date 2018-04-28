@@ -7,6 +7,7 @@ import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,21 +37,23 @@ class IntervalDataDatabaseTest {
 
     @Test
     fun writeIntervalTest(){
-        val interval = IntervalData()
-        interval.label = "test"
-        interval.duration = 10 // milliseconds
-        mIntervalDao?.insert(interval)
-        val retrivedInterval = mIntervalDao?.get(interval.id)
-        assert(interval.duration == retrivedInterval?.duration)
+        val interval = IntervalData(label = "test")
+        val id: Long
+        id = mIntervalDao!!.insert(interval)
+        val retrievedInterval: IntervalData? = mIntervalDao!!.get(id)
+        Assert.assertEquals(interval.group, retrievedInterval?.group)
     }
 
     @Test
     fun writeManyTest(){
         val intervals = IntervalData.generate(10)
-        mIntervalDao?.insert(intervals)
+        val ids = mIntervalDao?.insert(intervals)
         val retrievedIntervals = mIntervalDao?.getAll()
-        for(unit in intervals){
-            assert(retrievedIntervals!!.contains(unit))
+        //This only works by comparing groups because they are all top level.
+        //Child intervals have the same group as parent so wouldn't work
+        for(i in 0 until intervals.size){
+            Assert.assertEquals("Write many failed on i: $i",
+                    retrievedIntervals!![i].group, intervals[i]!!.group)
         }
     }
 
@@ -64,7 +67,73 @@ class IntervalDataDatabaseTest {
         retrievedInterval.label = "hello"
         mIntervalDao!!.updateThese(retrievedInterval)
         val retrievedIntervalAgain = mIntervalDao!!.get(interval.id)
-        assert(retrievedInterval.label == retrievedIntervalAgain.label)
+        Assert.assertTrue(retrievedInterval.label == retrievedIntervalAgain.label)
+    }
+
+    /**
+     * Testing that you can get children of a groups by the index in the group
+     * I.E the 2nd child in a group
+     */
+    @Test
+    fun getGroupChildByIndex(){
+
+        /*
+        groupPosition: Int, childPosition: Int
+
+        val intervalDataParent = mIntervalDao?.getGroupOwners()?.get(groupPosition)
+        val childrenOfGroup = mIntervalDao?.getAllOfGroupWithoutOwner(intervalDataParent?.group ?: UUID.fromString("00000000-0000-0000-0000-000000000000"))
+        */
+
+        //Generate a bunch of input
+        val intervalInput = IntervalData.generate(10)
+        mIntervalDao!!.insert(intervalInput)
+        mIntervalDao!!.insert(IntervalData.generate(3, intervalInput[0]))
+
+        val intervalTestInput = IntervalData.generate(3)
+        mIntervalDao!!.insert(intervalTestInput)
+
+        //What we're testing against
+        val intervalTestChildInput = IntervalData.generate(3, intervalInput[3])
+        for((index, id) in mIntervalDao!!.insert(intervalTestChildInput).withIndex()){
+            intervalTestChildInput[index]!!.id = id
+        }
+        mIntervalDao!!.insert(IntervalData.generate(3, intervalInput[5]))
+
+        var intervalTestChildOut = mIntervalDao!!.getChildOfGroupByOffset(
+                1, intervalInput[3]!!.group)
+        Assert.assertEquals(intervalTestChildOut.id, intervalTestChildInput[0]!!.id)
+
+        intervalTestChildOut = mIntervalDao!!.getChildOfGroupByOffset(
+                2, intervalInput[3]!!.group)
+        Assert.assertEquals(intervalTestChildOut.id, intervalTestChildInput[1]!!.id)
+
+        intervalTestChildOut = mIntervalDao!!.getChildOfGroupByOffset(
+                3, intervalInput[3]!!.group)
+        Assert.assertEquals(intervalTestChildOut.id, intervalTestChildInput[2]!!.id)
+    }
+
+    /**
+     * Testing that you can a group by the index
+     * This needs to account for that IDs don't represent the index
+     */
+    @Test
+    fun getGroupByIndex(){
+        val intervalInput = IntervalData.generate(10)
+        mIntervalDao!!.insert(intervalInput)
+        mIntervalDao!!.insert(IntervalData.generate(3, intervalInput[0]))
+        //Retrieve the 14,15,16 interval by index
+        val intervalTestInput = IntervalData.generate(3)
+        mIntervalDao!!.insert(intervalTestInput)
+        mIntervalDao!!.insert(IntervalData.generate(3, intervalInput[3]))
+        mIntervalDao!!.insert(IntervalData.generate(3, intervalInput[5]))
+
+        var intervalTestOut = mIntervalDao!!.getGroupByOffset(11)
+        Assert.assertEquals(intervalTestOut.group, intervalTestInput[0]!!.group)
+        intervalTestOut = mIntervalDao!!.getGroupByOffset(12)
+        Assert.assertEquals(intervalTestOut.group, intervalTestInput[1]!!.group)
+        intervalTestOut = mIntervalDao!!.getGroupByOffset(13)
+        Assert.assertEquals(intervalTestOut.group, intervalTestInput[2]!!.group)
+
     }
 
 }
