@@ -108,7 +108,10 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
 
         toReturn.findViewById<TextView>(R.id.intervalChildNameTxt).text = childOfInterval?.label ?: "Interval not found"
-        toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt).text = childOfInterval?.duration.toString()
+        val durationTextView = toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt)
+        durationTextView.text = childOfInterval?.duration.toString()
+
+        toReturn.findViewById<ImageButton>(R.id.intervalChildStartBtn).setOnClickListener { v -> v.postDelayed(RunIntervalAsync(childOfInterval!!,durationTextView),1000) }
 
         return toReturn
     }
