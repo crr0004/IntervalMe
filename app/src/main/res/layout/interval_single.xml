@@ -26,7 +26,7 @@
         android:layout_height="32dp"
         android:layout_weight="1"
         android:text="@string/start"
-        app:srcCompat="@android:drawable/ic_media_play"
+        app:srcCompat="@drawable/ic_play_arrow_white_24dp"
         tools:text="Start/Pause" />
 
     <ImageButton
@@ -35,7 +35,7 @@
         android:layout_height="32dp"
         android:layout_weight="1"
         android:text="@string/stop"
-        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+        app:srcCompat="@drawable/ic_stop_white_24dp"
         tools:text="Stop" />
 
 </LinearLayout>
