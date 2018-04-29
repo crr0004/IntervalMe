@@ -26,32 +26,32 @@ interface IntervalDataDOA {
     @Query("select * from Interval")
     fun getAll(): Array<IntervalData>
 
-    @Query("select * from Interval where id = :arg0")
+    @Query("select * from Interval where id = :id")
     fun get(id: Long): IntervalData
 
-    @Query("select * from Interval where Interval.`group` = :arg0")
+    @Query("select * from Interval where Interval.`group` = :group")
     fun getAllOfGroup(group: UUID): Array<IntervalData>
 
-    @Query("select * from Interval where `group` = :arg0 AND NOT ownerOfGroup")
+    @Query("select * from Interval where `group` = :group AND NOT ownerOfGroup")
     fun getAllOfGroupWithoutOwner(group: UUID): Array<IntervalData>
 
-    @Query("select * from Interval where `group` = :arg0 AND ownerOfGroup")
+    @Query("select * from Interval where `group` = :group AND ownerOfGroup")
     fun getOwnerOfGroup(group: UUID): IntervalData
 
     @Query("select * from Interval where ownerOfGroup")
     fun getGroupOwners(): Array<IntervalData>
 
-    @Query("select * from Interval where id = :arg0 AND ownerOfGroup")
+    @Query("select * from Interval where id = :id AND ownerOfGroup")
     fun getGroupOwnerWithID(id: Long): IntervalData
 
     //We minus 1 because offset is zero index
-    @Query("select * from Interval where ownerOfGroup order by id limit 1 offset :arg0-1")
+    @Query("select * from Interval where ownerOfGroup order by id limit 1 offset :offset-1")
             /**
              * @param offset The non-zero index of the group
              */
     fun getGroupByOffset(offset: Long): IntervalData
 
-    @Query("select * from Interval where (NOT ownerOfGroup) AND `group` = :arg1 order by id limit 1 offset :arg0-1")
+    @Query("select * from Interval where (NOT ownerOfGroup) AND `group` = :group order by id limit 1 offset :offset-1")
     fun getChildOfGroupByOffset(offset: Long, group: UUID): IntervalData
 
     @Query("delete from Interval")
