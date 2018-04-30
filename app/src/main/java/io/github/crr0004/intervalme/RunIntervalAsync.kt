@@ -6,8 +6,10 @@ import io.github.crr0004.intervalme.database.IntervalData
 class RunIntervalAsync(private val interval: IntervalData, private val durationText: TextView) : Runnable{
 
     override fun run() {
-        interval.duration--
-        durationText.text = interval.duration.toString()
-        durationText.postDelayed(this, 1000)
+        if(durationText.getTag(R.id.id_interval_timer_running_tag) as Boolean) {
+            interval.duration--
+            durationText.text = interval.duration.toString()
+            durationText.postDelayed(this, 1000)
+        }
     }
 }
