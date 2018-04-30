@@ -26,6 +26,12 @@ class IntervalAddActivity : AppCompatActivity() {
         findViewById<Button>(R.id.intervalAddBtn).setOnClickListener(addIntervalListener)
         findViewById<Button>(R.id.increaseDurationBtn).setOnClickListener(increaseDurationClickListner)
         findViewById<Button>(R.id.decreaseDurationBtn).setOnClickListener(decreaseDurationClickListner)
+        findViewById<Button>(R.id.goToClockSampleBtn).setOnClickListener(clockSampleBtnListener)
+    }
+
+    private val clockSampleBtnListener = fun(v: View){
+        val intent = Intent(this, IntervalClockSampleActivity::class.java)
+        startActivity(intent)
     }
 
     private val increaseDurationClickListner = fun(v: View){

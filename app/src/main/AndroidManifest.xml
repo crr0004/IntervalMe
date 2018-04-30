@@ -16,9 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".IntervalListActivity">
-
-        </activity>
+        <activity android:name=".IntervalListActivity"></activity>
+        <activity android:name=".IntervalClockSampleActivity"></activity>
     </application>
 
 </manifest>
