@@ -7,12 +7,20 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import android.content.res.TypedArray
+import android.os.Build
+import io.github.crr0004.intervalme.R
+import java.util.*
+import java.util.concurrent.TimeUnit
+
 
 class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(context, attrs) {
 
 
     private var mCirclePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var mOverlayPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var mTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
     private val mDisplayMetrics = DisplayMetrics()
     //The base radius of our circle for the clock
     private var mCircleSize = 50.0f
@@ -27,7 +35,15 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
             this.invalidate()
         }
 
+    var mClockText: StringBuilder = StringBuilder(8)
+        get() = field
+        set(value) {
+            field = value
+        }
+
     init {
+        (context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(mDisplayMetrics)
+
         mCirclePaint.color = Color.BLACK
         mCirclePaint.strokeWidth = 8.0f
         mCirclePaint.style = Paint.Style.STROKE
@@ -36,8 +52,41 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
         mOverlayPaint.strokeWidth = 16.0f
         mOverlayPaint.style = Paint.Style.FILL
 
+        val a = context.theme.obtainStyledAttributes(
+                attrs,
+                R.styleable.IntervalClock,
+                0, 0)
+
+        try {
+            mCirclePaint.color = a.getColor(R.styleable.IntervalClock_background_clock_colour, Color.BLACK)
+            mCirclePaint.strokeWidth = a.getFloat(R.styleable.IntervalClock_background_clock_stroke_width, 8.0f)
+            mOverlayPaint.color = a.getColor(R.styleable.IntervalClock_overlay_clock_colour, Color.BLUE)
+            mOverlayPaint.strokeWidth = a.getFloat(R.styleable.IntervalClock_overlay_clock_stroke_width, 16.0f)
+
+            mTextPaint.color = a.getColor(R.styleable.IntervalClock_clock_text_colour, Color.BLACK)
+            mTextPaint.textSize = a.getDimension(R.styleable.IntervalClock_clock_text_size, 8.0f)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mTextPaint.typeface = a.getFont(R.styleable.IntervalClock_clock_text_typeface)
+            }
+            mClockText.append(a.getText(R.styleable.IntervalClock_clock_text))
+            mTextPaint.textAlign = Paint.Align.CENTER
+        } finally {
+            a.recycle()
+        }
+
     }
 
+    /**
+     * @param time Time in milliseconds
+     */
+    fun setClockTime(time: Long){
+        mClockText.replace(0,mClockText.length,String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(time),
+                TimeUnit.MILLISECONDS.toSeconds(time) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)),
+                time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
+        ))
+    }
 
 
     /**
@@ -70,6 +119,8 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
         canvas!!.drawArc(mBounds,0.0f, 360f, false, mCirclePaint)
         //270 so it starts at the top
         canvas.drawArc(mBounds,270f, 360f * mPercentageComplete, true, mOverlayPaint)
+
+        canvas.drawText(mClockText.toString(),mCenter.x,mCenter.y,mTextPaint)
 
     }
 

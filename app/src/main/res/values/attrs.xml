@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="IntervalClock">
+        <attr name="showText" format="boolean" />
+        <attr name="background_clock_colour" format="color"/>
+        <attr name="overlay_clock_colour" format="color"/>
+        <attr name="background_clock_stroke_width" format="float"/>
+        <attr name="overlay_clock_stroke_width" format="float"/>
+        <attr name="clock_text_colour" format="color"/>
+        <attr name="clock_text_size" format="dimension"/>
+        <attr name="clock_text_typeface" format="integer"/>
+        <attr name="clock_text" format="string"/>
+    </declare-styleable>
+</resources>
