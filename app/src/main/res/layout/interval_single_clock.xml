@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".IntervalClockSampleActivity"
+    android:maxWidth="128dp">
+
+    <io.github.crr0004.intervalme.views.IntervalClockView
+        android:id="@+id/intervalClockView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        custom:background_clock_colour="?attr/colorPrimary"
+        custom:clock_text="00:00:00"
+        custom:clock_text_size="14sp"
+        />
+
+</android.support.constraint.ConstraintLayout>
