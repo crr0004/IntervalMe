@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.content.res.TypedArray
 import android.os.Build
 import io.github.crr0004.intervalme.R
+import java.lang.UnsupportedOperationException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -52,6 +53,9 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
         mOverlayPaint.strokeWidth = 16.0f
         mOverlayPaint.style = Paint.Style.FILL
 
+        mTextPaint.textAlign = Paint.Align.CENTER
+        mTextPaint.textSize = mDisplayMetrics.scaledDensity * 14f
+
         val a = context.theme.obtainStyledAttributes(
                 attrs,
                 R.styleable.IntervalClock,
@@ -69,8 +73,10 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
                 mTextPaint.typeface = a.getFont(R.styleable.IntervalClock_clock_text_typeface)
             }
             mClockText.append(a.getText(R.styleable.IntervalClock_clock_text))
-            mTextPaint.textAlign = Paint.Align.CENTER
-        } finally {
+
+        }catch (e: UnsupportedOperationException){
+
+        }finally {
             a.recycle()
         }
 
