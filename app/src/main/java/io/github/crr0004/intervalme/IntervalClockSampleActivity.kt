@@ -28,18 +28,20 @@ class IntervalClockSampleActivity : AppCompatActivity() {
         }
     }
 
-}
+    private class TickClockRunnable(val mClockView: IntervalClockView) : Runnable{
 
-private class TickClockRunnable(val mClockView: IntervalClockView) : Runnable{
-
-    private var mTime = 0L
-    private var mStartingTime = TimeUnit.SECONDS.toMillis(30)
-    override fun run() {
-        if(mStartingTime - mTime >= 0f) {
-            mClockView.mPercentageComplete = mTime.toFloat()/mStartingTime
-            mTime += 100
-            mClockView.setClockTime(mStartingTime - mTime)
-            mClockView.postDelayed(this, 100)
+        private var mTime = 0L
+        private var mStartingTime = TimeUnit.SECONDS.toMillis(30)
+        override fun run() {
+            if(mStartingTime - mTime >= 0f) {
+                mClockView.mPercentageComplete = mTime.toFloat()/mStartingTime
+                mTime += 100
+                mClockView.setClockTime(mStartingTime - mTime)
+                mClockView.postDelayed(this, 100)
+            }
         }
     }
+
 }
+
+
