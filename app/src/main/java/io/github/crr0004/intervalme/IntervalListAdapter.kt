@@ -10,7 +10,9 @@ import android.widget.*
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
+import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
 
@@ -111,6 +113,55 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             if (toReturn == null) {
                 val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 //Passing null as root until I figure it out. Passing parent causes a crash
+                toReturn = infalInflater.inflate(R.layout.interval_single_clock, null)
+
+            }
+            val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
+            clockView.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))
+
+            /*
+            toReturn!!.findViewById<TextView>(R.id.intervalChildNameTxt).text = childOfInterval.label ?: "Interval not found"
+            val durationTextView = toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt)
+            durationTextView.text = childOfInterval.duration.toString()
+
+
+            toReturn.findViewById<ImageButton>(R.id.intervalChildStartBtn).setOnClickListener { v ->
+
+                if (v.getTag(R.id.id_interval_timer_tag) == null) {
+                    val timerTicker = RunIntervalAsync(childOfInterval, durationTextView)
+                    v.postDelayed(timerTicker, 300)
+                    v.setTag(R.id.id_interval_timer_tag, RunIntervalAsync(childOfInterval, durationTextView))
+                    durationTextView.setTag(R.id.id_interval_timer_running_tag, true)
+                } else {
+                    val timerTicker = v.getTag(R.id.id_interval_timer_tag) as RunIntervalAsync
+                    val running = durationTextView.getTag(R.id.id_interval_timer_running_tag) as Boolean
+                    durationTextView.setTag(R.id.id_interval_timer_running_tag, !running)
+                    v.postDelayed(timerTicker, 300)
+                }
+            }
+            */
+            mCachedViews[childOfInterval.id] = toReturn!!
+        }
+
+        return toReturn
+    }
+
+    /*
+    override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
+        var toReturn: View?
+        val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
+
+        toReturn = mCachedViews[childOfInterval.id]
+
+        //Top null check for cached view
+        if(toReturn == null) {
+            toReturn = convertView
+
+
+            // second null check for using a converted view
+            if (toReturn == null) {
+                val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                //Passing null as root until I figure it out. Passing parent causes a crash
                 toReturn = infalInflater.inflate(R.layout.interval_single, null)
             }
 
@@ -138,15 +189,14 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
         return toReturn
     }
+    */
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         val childOfInterval = getChild(groupPosition,childPosition) as IntervalData
         return childOfInterval.id
     }
 
     override fun getGroupCount(): Int {
-        //TODO placeholder
         return mIntervalDao!!.getGroupOwners().size
     }
 }
