@@ -9,6 +9,8 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.content.res.TypedArray
 import android.os.Build
+import android.view.MotionEvent
+import io.github.crr0004.intervalme.IntervalController
 import io.github.crr0004.intervalme.R
 import java.lang.UnsupportedOperationException
 import java.util.*
@@ -28,6 +30,9 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
     private var mCenter = PointF(0.0f,0.0f)
     private var mBounds = RectF()
     private val mIntervalPaddingDP = 8.0
+
+    // Convenience property so that the reference to IntervalController isn't lost
+    private var controller: IntervalController? = null
 
     var mPercentageComplete = 0.0f
         get() = field
@@ -82,15 +87,29 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
 
     }
 
+
+
+    /**
+     * Call this view's OnClickListener, if it is defined.  Performs all normal
+     * actions associated with clicking: reporting accessibility event, playing
+     * a sound, etc.
+     *
+     * @return True there was an assigned OnClickListener that was called, false
+     * otherwise is returned.
+     */
+    override fun performClick(): Boolean {
+        return super.performClick()
+    }
+
     /**
      * @param time Time in milliseconds
      */
     fun setClockTime(time: Long){
-        mClockText.replace(0,mClockText.length,String.format("%02d:%02d:%02d",
+        mClockText.replace(0,mClockText.length,String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(time),
                 TimeUnit.MILLISECONDS.toSeconds(time) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)),
-                time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))//,
+                //time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
         ))
     }
 
@@ -144,5 +163,9 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
 
         setMeasuredDimension(w, h)
 
+    }
+
+    fun setController(intervalController: IntervalController) {
+        this.controller = intervalController
     }
 }

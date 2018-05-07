@@ -11,7 +11,6 @@ import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalClockView
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
@@ -111,13 +110,13 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
             // second null check for using a converted view
             if (toReturn == null) {
-                val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val inflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 //Passing null as root until I figure it out. Passing parent causes a crash
-                toReturn = infalInflater.inflate(R.layout.interval_single_clock, null)
+                toReturn = inflater.inflate(R.layout.interval_single_clock, null)
 
             }
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
-            clockView.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))
+            clockView.setController(IntervalController(clockView, childOfInterval))
 
             /*
             toReturn!!.findViewById<TextView>(R.id.intervalChildNameTxt).text = childOfInterval.label ?: "Interval not found"
