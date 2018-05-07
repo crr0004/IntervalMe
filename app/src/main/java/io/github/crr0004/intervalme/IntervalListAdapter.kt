@@ -22,7 +22,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
-    private val mCachedViews: HashMap<Long, View> = HashMap()
+    val mCachedViews: HashMap<Long, View> = HashMap()
 
     init {
         mdb = IntervalMeDatabase.getInstance(mContext)
@@ -60,7 +60,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
             val intervalData = mIntervalDao?.getGroupByOffset(groupPosition.toLong() + 1)
             toReturn!!.findViewById<TextView>(R.id.textView).text = intervalData?.label ?: "Interval not found"
-
+            toReturn.setTag(R.id.id_interval_view_interval, intervalData)
 
             //toReturn.setOnLongClickListener(intervalLongClickListener)
             this.mHost.setOnItemLongClickListener { parentView, view, position, id ->
@@ -117,78 +117,12 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             }
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
             clockView.setController(IntervalController(clockView, childOfInterval))
-
-            /*
-            toReturn!!.findViewById<TextView>(R.id.intervalChildNameTxt).text = childOfInterval.label ?: "Interval not found"
-            val durationTextView = toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt)
-            durationTextView.text = childOfInterval.duration.toString()
-
-
-            toReturn.findViewById<ImageButton>(R.id.intervalChildStartBtn).setOnClickListener { v ->
-
-                if (v.getTag(R.id.id_interval_timer_tag) == null) {
-                    val timerTicker = RunIntervalAsync(childOfInterval, durationTextView)
-                    v.postDelayed(timerTicker, 300)
-                    v.setTag(R.id.id_interval_timer_tag, RunIntervalAsync(childOfInterval, durationTextView))
-                    durationTextView.setTag(R.id.id_interval_timer_running_tag, true)
-                } else {
-                    val timerTicker = v.getTag(R.id.id_interval_timer_tag) as RunIntervalAsync
-                    val running = durationTextView.getTag(R.id.id_interval_timer_running_tag) as Boolean
-                    durationTextView.setTag(R.id.id_interval_timer_running_tag, !running)
-                    v.postDelayed(timerTicker, 300)
-                }
-            }
-            */
+            toReturn.setTag(R.id.id_interval_view_interval, childOfInterval)
             mCachedViews[childOfInterval.id] = toReturn!!
         }
 
         return toReturn
     }
-
-    /*
-    override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
-        var toReturn: View?
-        val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
-
-        toReturn = mCachedViews[childOfInterval.id]
-
-        //Top null check for cached view
-        if(toReturn == null) {
-            toReturn = convertView
-
-
-            // second null check for using a converted view
-            if (toReturn == null) {
-                val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                //Passing null as root until I figure it out. Passing parent causes a crash
-                toReturn = infalInflater.inflate(R.layout.interval_single, null)
-            }
-
-
-            toReturn!!.findViewById<TextView>(R.id.intervalChildNameTxt).text = childOfInterval.label ?: "Interval not found"
-            val durationTextView = toReturn.findViewById<TextView>(R.id.intervalChildDurationTxt)
-            durationTextView.text = childOfInterval.duration.toString()
-
-            toReturn.findViewById<ImageButton>(R.id.intervalChildStartBtn).setOnClickListener { v ->
-
-                if (v.getTag(R.id.id_interval_timer_tag) == null) {
-                    val timerTicker = RunIntervalAsync(childOfInterval, durationTextView)
-                    v.postDelayed(timerTicker, 300)
-                    v.setTag(R.id.id_interval_timer_tag, RunIntervalAsync(childOfInterval, durationTextView))
-                    durationTextView.setTag(R.id.id_interval_timer_running_tag, true)
-                } else {
-                    val timerTicker = v.getTag(R.id.id_interval_timer_tag) as RunIntervalAsync
-                    val running = durationTextView.getTag(R.id.id_interval_timer_running_tag) as Boolean
-                    durationTextView.setTag(R.id.id_interval_timer_running_tag, !running)
-                    v.postDelayed(timerTicker, 300)
-                }
-            }
-            mCachedViews[childOfInterval.id] = toReturn
-        }
-
-        return toReturn
-    }
-    */
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {
         val childOfInterval = getChild(groupPosition,childPosition) as IntervalData
