@@ -20,6 +20,9 @@ interface IntervalDataDOA {
     @Update
     fun updateThese(vararg intervals: IntervalData)
 
+    @Update
+    fun update(interval: IntervalData)
+
     @Delete
     fun delete(vararg interval: IntervalData): Int
 
