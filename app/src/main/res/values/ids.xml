@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="id_interval_view_interval" type="id" />
+    <item
+        type="id"
+        name="id_interval_timer_tag" />
+    <item
+        type="id"
+        name="id_interval_timer_running_tag" />
+</resources>
