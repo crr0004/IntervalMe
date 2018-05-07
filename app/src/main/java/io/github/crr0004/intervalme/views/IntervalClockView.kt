@@ -111,6 +111,7 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))//,
                 //time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
         ))
+        this.invalidate()
     }
 
 
