@@ -12,7 +12,7 @@ import android.support.v4.view.GestureDetectorCompat
 
 
 
-class IntervalController(val mClockView: IntervalClockView, childOfInterval: IntervalData): GestureDetector.SimpleOnGestureListener() {
+class IntervalController(private val mClockView: IntervalClockView, childOfInterval: IntervalData): GestureDetector.SimpleOnGestureListener() {
 
     private var mClockRunning = false
     private val DEBUG_TAG = "ICGestures"
@@ -74,6 +74,9 @@ class IntervalController(val mClockView: IntervalClockView, childOfInterval: Int
 
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
         Log.d(DEBUG_TAG, "onScroll called")
+        mClockTickRunnable.timeToRun -= distanceX.toLong() * 100
+        mClockView.setClockTime(mClockTickRunnable.timeToRun)
+        mClockTickRunnable.updatePercentComplete()
         return super.onScroll(e1, e2, distanceX, distanceY)
     }
 
@@ -81,7 +84,7 @@ class IntervalController(val mClockView: IntervalClockView, childOfInterval: Int
         return true
     }
 
-    private class TickClockRunnable(val mClockView: IntervalClockView, val timeToRun: Long) : Runnable{
+    private class TickClockRunnable(val mClockView: IntervalClockView, var timeToRun: Long) : Runnable{
 
         var mStartingTime = SystemClock.elapsedRealtime()
         var mElapsedTime = 0L
@@ -91,7 +94,7 @@ class IntervalController(val mClockView: IntervalClockView, childOfInterval: Int
         override fun run() {
             mElapsedTime = SystemClock.elapsedRealtime() - mStartingTime
             if(timeToRun - mElapsedTime >= 100f && mRunning) {
-                mClockView.mPercentageComplete = mElapsedTime.toFloat()/timeToRun
+                updatePercentComplete()
                 mClockView.setClockTime(timeToRun - mElapsedTime)
                 mClockView.postDelayed(this, 100)
             }else if(mRunning){
@@ -101,6 +104,9 @@ class IntervalController(val mClockView: IntervalClockView, childOfInterval: Int
         }
         fun reset(){
             mStartingTime = SystemClock.elapsedRealtime()
+        }
+        fun updatePercentComplete(){
+            mClockView.mPercentageComplete = mElapsedTime.toFloat()/timeToRun
         }
 
     }
