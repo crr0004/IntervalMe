@@ -23,6 +23,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
     val mCachedViews: HashMap<Long, View> = HashMap()
+    val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
 
     init {
         mdb = IntervalMeDatabase.getInstance(mContext)
@@ -116,9 +117,10 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
             }
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
-            clockView.setController(IntervalController(clockView, childOfInterval))
-            toReturn.setTag(R.id.id_interval_view_interval, childOfInterval)
+            val controller = IntervalController(clockView, childOfInterval)
+            clockView.setController(controller)
             mCachedViews[childOfInterval.id] = toReturn!!
+            mCachedControllers[childOfInterval.id] = controller
         }
 
         return toReturn
