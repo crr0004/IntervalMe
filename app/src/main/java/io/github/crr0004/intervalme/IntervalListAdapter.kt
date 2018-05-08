@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -11,7 +12,6 @@ import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalClockView
-import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
 
@@ -47,6 +47,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
         return true
     }
 
+    @SuppressLint("InflateParams")
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View?
 
@@ -65,9 +66,9 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             toReturn.setTag(R.id.id_interval_view_interval, intervalData)
 
             //toReturn.setOnLongClickListener(intervalLongClickListener)
-            this.mHost.setOnItemLongClickListener { parentView, view, position, id ->
-                val intervalData = mIntervalDao?.getGroupByOffset(position.toLong() + 1)
-                val groupUUID = intervalData?.group.toString()
+            this.mHost.setOnItemLongClickListener { _, _, position, _ ->
+                val intervalDataParent = mIntervalDao?.getGroupByOffset(position.toLong() + 1)
+                val groupUUID = intervalDataParent?.group.toString()
                 val clipboard = mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData = ClipData.newPlainText("group uuid", groupUUID)
                 Toast.makeText(mContext, "Copied UUID", Toast.LENGTH_SHORT).show()
@@ -101,6 +102,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
 
 
+    @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View?
         val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
@@ -122,7 +124,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
             val controller = IntervalController(clockView, childOfInterval, mLastChild)
             clockView.setController(controller)
-            mCachedViews[childOfInterval.id] = toReturn!!
+            mCachedViews[childOfInterval.id] = toReturn
             mCachedControllers[childOfInterval.id] = controller
             mLastChild = controller
             if(isLastChild)
