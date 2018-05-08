@@ -16,28 +16,40 @@ import android.support.v4.view.GestureDetectorCompat
  * @param mClockView the view that this controller uses
  * @param childOfInterval the interval data from the db
  */
-class IntervalController(
-        private val mClockView: IntervalClockView,
-        val childOfInterval: IntervalData,
-        private val mNextInterval: IntervalController? = null):
-        GestureDetector.SimpleOnGestureListener() {
+class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     private var mClockRunning = false
     private val DEBUG_TAG = "ICGestures"
-    private var mDetector: GestureDetectorCompat
-    private var mClockTickRunnable: TickClockRunnable
+    private lateinit var mDetector: GestureDetectorCompat
+    private lateinit var mClockTickRunnable: TickClockRunnable
+    private lateinit var mClockView: IntervalClockView
+    lateinit var mChildOfInterval: IntervalData
+    private var mNextInterval: IntervalController? = null
 
 
-    init {
+    constructor(mClockView: IntervalClockView,
+                mChildOfInterval: IntervalData,
+                mNextInterval: IntervalController? = null) {
+        init(mClockView, mChildOfInterval, mNextInterval)
+    }
+
+    fun init(clockView: IntervalClockView, childOfInterval: IntervalData, nextInterval: IntervalController? = null) {
+        mClockView = clockView
+        mChildOfInterval = childOfInterval
+        mNextInterval = nextInterval
         mDetector = GestureDetectorCompat(mClockView.context, this)
-        mClockView.setOnTouchListener{ _, event ->
-            mDetector.onTouchEvent(event) }
+        mClockView.setOnTouchListener { _, event ->
+            mDetector.onTouchEvent(event)
+        }
         mClockView.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))
         mClockTickRunnable = TickClockRunnable(mClockView, TimeUnit.SECONDS.toMillis(childOfInterval.duration), this)
-        if(childOfInterval.runningDuration > 0) {
+        if (childOfInterval.runningDuration > 0) {
             mClockTickRunnable.timeToRun = childOfInterval.runningDuration
             mClockView.setClockTime(mClockTickRunnable.timeToRun)
         }
+    }
+
+    constructor(){
 
     }
 
@@ -74,7 +86,7 @@ class IntervalController(
         mClockRunning = false
         mClockTickRunnable.mRunning = false
         mClockView.mPercentageComplete = 0f
-        mClockTickRunnable.timeToRun = TimeUnit.SECONDS.toMillis(childOfInterval.duration)
+        mClockTickRunnable.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)
         mClockView.setClockTime(mClockTickRunnable.timeToRun)
 
         return true
@@ -108,7 +120,7 @@ class IntervalController(
     private fun finishedTimer() {
         mClockRunning = false
         if(mNextInterval != null) {
-            mNextInterval.previousTimerFinished(this)
+            mNextInterval!!.previousTimerFinished(this)
         }
     }
 
@@ -117,7 +129,7 @@ class IntervalController(
     }
 
     fun onPause() {
-        childOfInterval.runningDuration = mClockTickRunnable.timeToRun
+        mChildOfInterval.runningDuration = mClockTickRunnable.timeToRun
     }
 
     private class TickClockRunnable(

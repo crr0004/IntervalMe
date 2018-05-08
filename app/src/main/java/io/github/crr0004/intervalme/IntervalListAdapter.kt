@@ -24,7 +24,6 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     private var mIntervalDao: IntervalDataDOA? = null
     val mCachedViews: HashMap<Long, View> = HashMap()
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
-    private var mLastChild: IntervalController? = null
 
     init {
         mdb = IntervalMeDatabase.getInstance(mContext)
@@ -106,12 +105,18 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View?
         val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
+        var nextChildOfInterval: IntervalData? = null
+        if(!isLastChild) {
+            nextChildOfInterval = getChild(groupPosition, childPosition + 1) as IntervalData
+        }
 
         toReturn = mCachedViews[childOfInterval.id]
 
         //Top null check for cached view
         if(toReturn == null) {
             toReturn = convertView
+            // Look for our controller that may have been forward init
+            var controller: IntervalController? = mCachedControllers[childOfInterval.id]
 
 
             // second null check for using a converted view
@@ -121,14 +126,28 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
                 toReturn = inflater.inflate(R.layout.interval_single_clock, null)
 
             }
+
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
-            val controller = IntervalController(clockView, childOfInterval, mLastChild)
+
+            //Create our next controller with wrong values only if we have a nextChildInterval
+            var nextController: IntervalController? = null
+            if(nextChildOfInterval != null && !isLastChild) {
+                nextController = IntervalController()
+            }
+
+            // Controller hasn't been forward cached so create it
+            if(controller == null) {
+                controller = IntervalController(clockView, childOfInterval, nextController)
+            }else{
+                // Controller got forward cached so values need to be updated to correct values
+                controller.init(clockView,childOfInterval,nextController)
+            }
             clockView.setController(controller)
             mCachedViews[childOfInterval.id] = toReturn
             mCachedControllers[childOfInterval.id] = controller
-            mLastChild = controller
-            if(isLastChild)
-                mLastChild = null
+
+            if(nextChildOfInterval != null && nextController != null)
+                mCachedControllers[nextChildOfInterval.id] = nextController
         }
 
         return toReturn
