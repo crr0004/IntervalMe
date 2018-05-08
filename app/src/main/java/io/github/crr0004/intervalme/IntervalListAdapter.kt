@@ -24,6 +24,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     private var mIntervalDao: IntervalDataDOA? = null
     val mCachedViews: HashMap<Long, View> = HashMap()
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
+    private var mLastChild: IntervalController? = null
 
     init {
         mdb = IntervalMeDatabase.getInstance(mContext)
@@ -98,6 +99,8 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
         return (getGroup(groupPosition) as IntervalData).id
     }
 
+
+
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View?
         val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
@@ -117,10 +120,13 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
             }
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
-            val controller = IntervalController(clockView, childOfInterval)
+            val controller = IntervalController(clockView, childOfInterval, mLastChild)
             clockView.setController(controller)
             mCachedViews[childOfInterval.id] = toReturn!!
             mCachedControllers[childOfInterval.id] = controller
+            mLastChild = controller
+            if(isLastChild)
+                mLastChild = null
         }
 
         return toReturn
