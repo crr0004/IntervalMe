@@ -16,9 +16,10 @@
 
         <Button
             android:id="@+id/increaseDurationBtn"
-            android:layout_width="33dp"
-            android:layout_height="38dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:text="@string/plus_text"
+            android:textSize="30sp"
             app:layout_constraintEnd_toStartOf="@+id/intervalDurationTxt"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,20 +27,24 @@
 
         <Button
             android:id="@+id/decreaseDurationBtn"
-            android:layout_width="33dp"
-            android:layout_height="38dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:text="@string/minus_text"
+            android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/intervalDurationTxt"
             app:layout_constraintTop_toBottomOf="@+id/textView1" />
 
-        <TextView
+        <EditText
             android:id="@+id/intervalDurationTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:imeOptions="actionDone"
+            android:inputType="number"
             android:text="@string/duration_placeholder"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView1" />
@@ -49,7 +54,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/seconds"
+            android:labelFor="@+id/intervalDurationTxt"
+            android:text="@string/duration"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +91,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="@string/name"
+        android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor" />
@@ -96,6 +104,7 @@
         android:layout_marginTop="4dp"
         android:ems="10"
         android:inputType="text"
+        android:textSize="30sp"
         app:layout_constraintStart_toStartOf="@+id/intervalChildDurationTxt"
         app:layout_constraintTop_toBottomOf="@+id/intervalChildDurationTxt"
         tools:text="000" />
@@ -106,10 +115,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:labelFor="@+id/intervalParentTxt"
         android:text="@string/parent_id"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/workout_layoutgroup"
-        android:labelFor="@+id/intervalParentTxt"/>
+        app:layout_constraintTop_toBottomOf="@+id/workout_layoutgroup" />
 
     <Button
         android:id="@+id/goToClockSampleBtn"
