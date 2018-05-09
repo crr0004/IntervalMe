@@ -1,10 +1,19 @@
 package io.github.crr0004.intervalme
 
+import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SystemClock
+import android.support.v4.view.GestureDetectorCompat
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import io.github.crr0004.intervalme.database.IntervalData
@@ -12,6 +21,12 @@ import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import java.util.*
 
 class IntervalAddActivity : AppCompatActivity() {
+
+    private var mDuration: Int = 0
+    private var mDurationTextView: EditText? = null
+    private val DEBUG_TAG = "IntervalAdd"
+    private var mGestureDetector: GestureDetectorCompat? = null
+    private val mDurationGestureDetector: DurationGestureDetector = DurationGestureDetector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,25 +38,48 @@ class IntervalAddActivity : AppCompatActivity() {
 
         }
 
+        mDurationTextView = findViewById(R.id.intervalDurationTxt)
+        mGestureDetector = GestureDetectorCompat(this.applicationContext, mDurationGestureDetector)
+
         findViewById<Button>(R.id.intervalAddBtn).setOnClickListener(addIntervalListener)
-        findViewById<Button>(R.id.increaseDurationBtn).setOnClickListener(increaseDurationClickListner)
-        findViewById<Button>(R.id.decreaseDurationBtn).setOnClickListener(decreaseDurationClickListner)
         findViewById<Button>(R.id.goToClockSampleBtn).setOnClickListener(clockSampleBtnListener)
+
+
+        mDurationGestureDetector.mDurationTextView = mDurationTextView
+        findViewById<View>(R.id.increaseDurationBtn).setOnTouchListener { v, event ->
+            mDurationGestureDetector.direction = 1
+
+            val results = mGestureDetector!!.onTouchEvent(event)
+            if(event?.action == MotionEvent.ACTION_UP){
+                mDurationGestureDetector.onUp(event)
+            }
+            results
+        }
+        findViewById<View>(R.id.decreaseDurationBtn).setOnTouchListener { v, event ->
+            mDurationGestureDetector.direction = -1
+            val results = mGestureDetector!!.onTouchEvent(event)
+            if(event?.action == MotionEvent.ACTION_UP){
+                mDurationGestureDetector.onUp(event)
+            }
+            results
+        }
+
+        mDurationTextView?.setOnEditorActionListener { v, actionId, event ->
+            if(actionId == EditorInfo.IME_ACTION_DONE){
+                val seconds = v.text.toString().toLong()
+                mDurationGestureDetector.mDuration = seconds
+                v.clearFocus()
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+            }
+            true
+        }
+
     }
 
     private val clockSampleBtnListener = fun(v: View){
         val intent = Intent(this, IntervalClockSampleActivity::class.java)
         startActivity(intent)
-    }
-
-    private val increaseDurationClickListner = fun(v: View){
-        val duration = (findViewById<TextView>(R.id.intervalDurationTxt)).text.toString().toLong()
-        (findViewById<TextView>(R.id.intervalDurationTxt)).text = (duration+1).toString()
-    }
-
-    private val decreaseDurationClickListner = fun(v: View){
-        val duration = (findViewById<TextView>(R.id.intervalDurationTxt)).text.toString().toLong()
-        (findViewById<TextView>(R.id.intervalDurationTxt)).text = (duration-1).toString()
     }
 
     private val addIntervalListener = fun(v: View){
@@ -60,6 +98,92 @@ class IntervalAddActivity : AppCompatActivity() {
 
         IntervalMeDatabase.getInstance(this)!!.intervalDataDao().insert(interval)
         Toast.makeText(this, "Added interval", Toast.LENGTH_SHORT).show()
+    }
+
+    private class DurationGestureDetector : GestureDetector.SimpleOnGestureListener() {
+        var direction: Int = 1
+        var mDurationTextView: TextView? = null
+        var mDuration = 0L
+        private val DEBUG_TAG = "IADTxtVGesture"
+        private val mAddDurationRunnable = AddContinuousDurationRunnable(this)
+
+        fun updateDurationText(addToDuration: Long = 0L){
+            val valToAdd = (addToDuration*direction)
+            Log.d(DEBUG_TAG, "Adding $valToAdd")
+            if(mDuration + valToAdd > 0) {
+                mDuration += valToAdd
+            }else{
+                mDuration = 0
+            }
+            mDurationTextView?.text = String.format("%03d", mDuration)
+        }
+
+        fun onUp(e: MotionEvent?){
+            mAddDurationRunnable.reset()
+        }
+
+        override fun onDown(e: MotionEvent?): Boolean {
+            Log.d(DEBUG_TAG, "Increase Duration onDown Click")
+
+            return true
+        }
+
+        override fun onSingleTapUp(e: MotionEvent?): Boolean {
+            updateDurationText(1)
+            return true
+        }
+
+        override fun onDoubleTap(e: MotionEvent?): Boolean {
+            updateDurationText(2)
+            return true
+        }
+
+        override fun onLongPress(e: MotionEvent?) {
+            Log.d(DEBUG_TAG, "Increase Duration Long Click")
+            mAddDurationRunnable.start()
+        }
+    }
+
+    private class AddContinuousDurationRunnable(val mDurationGestureDetector: DurationGestureDetector) : Runnable{
+
+        var mRunning = false
+        var mStartingTime: Long = 0
+        var mAddScale = 1L
+
+
+        private fun beforeStart(){
+            mStartingTime = SystemClock.elapsedRealtime()
+        }
+
+        fun reset(){
+            mRunning = false
+            mAddScale = 1
+        }
+
+        override fun run() {
+            if(mRunning) {
+
+                val runningTime = (SystemClock.elapsedRealtime() - mStartingTime)
+                if(runningTime % 500 in 0..10){
+                    mAddScale++
+                }
+                if(runningTime % 100 in 0..10){
+                    mDurationGestureDetector.updateDurationText(1*mAddScale)
+                }
+                mDurationGestureDetector.mDurationTextView?.post(this)
+            }else{
+                reset()
+            }
+        }
+
+        fun start() {
+            if(mRunning){
+                Log.d("IACRrun", "Runnable called to start while running")
+            }
+            mRunning = true
+            beforeStart()
+            run()
+        }
     }
 
 }
