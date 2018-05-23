@@ -1,13 +1,13 @@
 package io.github.crr0004.intervalme
 
 import android.os.SystemClock
+import android.support.v4.view.GestureDetectorCompat
+import android.util.Log
+import android.view.GestureDetector
 import android.view.MotionEvent
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.concurrent.TimeUnit
-import android.util.Log
-import android.view.GestureDetector
-import android.support.v4.view.GestureDetectorCompat
 
 
 /**
@@ -49,9 +49,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
         }
     }
 
-    constructor(){
-
-    }
+    constructor()
 
     override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
         Log.d(DEBUG_TAG, "onSingleTap called")
@@ -106,8 +104,10 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
         Log.d(DEBUG_TAG, "onScroll called")
         mClockTickRunnable.timeToRun -= distanceX.toLong() * 100
         mClockView.setClockTime(mClockTickRunnable.timeToRun)
-        mClockTickRunnable.updatePercentComplete()
-        return false
+        if(mClockRunning) {
+            mClockTickRunnable.updatePercentComplete()
+        }
+        return true
     }
 
     override fun onDown(e: MotionEvent?): Boolean {
