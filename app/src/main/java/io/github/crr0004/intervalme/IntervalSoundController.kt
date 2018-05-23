@@ -8,9 +8,8 @@ import android.media.MediaPlayer
 class IntervalSoundController {
     private val mMediaPlayer: MediaPlayer
 
-    constructor(context: Context){
-        mMediaPlayer = MediaPlayer.create(context, R.raw.digital_watch_alarm_1)
-
+    constructor(context: Context, id: Int){
+        mMediaPlayer = MediaPlayer.create(context, id)
     }
 
     fun playDone() {

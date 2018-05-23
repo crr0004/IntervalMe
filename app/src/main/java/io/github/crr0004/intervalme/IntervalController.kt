@@ -50,7 +50,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
         }
         //Only create new sound controller if it's been previously released
         if(mSoundController == null)
-            mSoundController = IntervalSoundController(clockView.context)
+            mSoundController = IntervalSoundController(clockView.context,R.raw.digital_watch_alarm_1)
     }
 
     constructor()
