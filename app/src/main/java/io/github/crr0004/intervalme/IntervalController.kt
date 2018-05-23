@@ -25,6 +25,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     private lateinit var mClockView: IntervalClockView
     lateinit var mChildOfInterval: IntervalData
     private var mNextInterval: IntervalController? = null
+    private var mSoundController: IntervalSoundController? = null
 
 
     constructor(mClockView: IntervalClockView,
@@ -47,6 +48,9 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
             mClockTickRunnable.timeToRun = childOfInterval.runningDuration
             mClockView.setClockTime(mClockTickRunnable.timeToRun)
         }
+        //Only create new sound controller if it's been previously released
+        if(mSoundController == null)
+            mSoundController = IntervalSoundController(clockView.context)
     }
 
     constructor()
@@ -122,6 +126,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
         if(mNextInterval != null) {
             mNextInterval!!.previousTimerFinished(this)
         }
+        mSoundController?.playDone()
     }
 
     private fun previousTimerFinished(previousIntervalController: IntervalController){
@@ -130,6 +135,11 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     fun onPause() {
         mChildOfInterval.runningDuration = mClockTickRunnable.timeToRun
+    }
+
+    fun onStop() {
+        mSoundController?.release()
+        mSoundController = null
     }
 
     private class TickClockRunnable(
@@ -148,7 +158,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
             if(timeToRun - mElapsedTime >= 100f && mRunning) {
                 updatePercentComplete()
                 mClockView.setClockTime(timeToRun - mElapsedTime)
-                mClockView.postDelayed(this, 100)
+                mClockView.postDelayed(this, 60)
             }else if(mRunning){
                 mClockView.mPercentageComplete = 1f
                 mClockView.setClockTime(0)
