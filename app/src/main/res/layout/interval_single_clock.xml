@@ -15,9 +15,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        custom:background_clock_colour="?attr/colorPrimary"
+        custom:background_clock_colour="@color/colorPrimary"
+        custom:overlay_clock_colour="@color/colorPrimaryLight"
         custom:clock_text="00:00:00"
-        custom:clock_text_size="14sp"
-        />
+        custom:clock_text_size="14sp" />
 
 </android.support.constraint.ConstraintLayout>
