@@ -1,7 +1,7 @@
 package io.github.crr0004.intervalme
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.ExpandableListView
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 
@@ -29,6 +29,14 @@ class IntervalListActivity : AppCompatActivity() {
             controller.onPause()
             val intervalData = controller.mChildOfInterval
             mIntervalDao.update(intervalData)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val cachedControllers = mAdapter!!.mCachedControllers
+        cachedControllers.forEach { key, controller ->
+            controller.onStop()
         }
     }
 }
