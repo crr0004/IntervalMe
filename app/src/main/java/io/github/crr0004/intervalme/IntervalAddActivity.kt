@@ -27,6 +27,15 @@ class IntervalAddActivity : AppCompatActivity() {
     private val DEBUG_TAG = "IntervalAdd"
     private var mGestureDetector: GestureDetectorCompat? = null
     private val mDurationGestureDetector: DurationGestureDetector = DurationGestureDetector()
+    private var mIntervalToEditID: Long = -1
+    private var mIntervalToEdit: IntervalData? = null
+
+    companion object {
+        const val EDIT_MODE_FLAG_ID = "edit_mode"
+        const val EDIT_MODE_FLAG_INTERVAL_ID = "edit_mode_interval_id"
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +46,8 @@ class IntervalAddActivity : AppCompatActivity() {
             startActivity(intent)
 
         }
+
+
 
         mDurationTextView = findViewById(R.id.intervalDurationTxt)
         mGestureDetector = GestureDetectorCompat(this.applicationContext, mDurationGestureDetector)
@@ -75,6 +86,42 @@ class IntervalAddActivity : AppCompatActivity() {
             true
         }
 
+        val isEditMode = intent.getBooleanExtra(EDIT_MODE_FLAG_ID, false)
+        if(isEditMode){
+            mIntervalToEditID = intent.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
+            mIntervalToEdit = IntervalMeDatabase.getInstance(this)!!.intervalDataDao().get(mIntervalToEditID)
+            if(mIntervalToEdit != null) {
+                mDurationTextView?.setText(mIntervalToEdit?.duration.toString())
+                findViewById<TextView>(R.id.intervalNameTxt).text = mIntervalToEdit?.label
+                if (!mIntervalToEdit!!.ownerOfGroup)
+                    findViewById<TextView>(R.id.intervalParentTxt).text = mIntervalToEdit?.group.toString()
+                findViewById<Button>(R.id.intervalAddBtn).setOnClickListener(addIntervalEditModeListener)
+            }
+
+        }
+
+    }
+
+    private val addIntervalEditModeListener = fun(v: View){
+        if(mIntervalToEdit != null) {
+            val text = (findViewById<TextView>(R.id.intervalNameTxt)).text
+            val durationText = (findViewById<TextView>(R.id.intervalDurationTxt)).text
+            val groupText = (findViewById<TextView>(R.id.intervalParentTxt)).text
+
+            mIntervalToEdit!!.duration = durationText.toString().toLong()
+            mIntervalToEdit!!.label = text.toString()
+            try {
+                val groupUUID = UUID.fromString(groupText.toString())
+                mIntervalToEdit!!.group = groupUUID
+                mIntervalToEdit!!.ownerOfGroup = false
+            }catch (e: IllegalArgumentException){
+
+            }
+
+            IntervalMeDatabase.getInstance(this)!!.intervalDataDao().update(mIntervalToEdit!!)
+
+            Toast.makeText(this, "Updated interval", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private val clockSampleBtnListener = fun(v: View){
