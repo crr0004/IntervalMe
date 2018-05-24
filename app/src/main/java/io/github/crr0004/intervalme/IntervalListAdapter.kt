@@ -6,10 +6,14 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
+import android.support.v7.widget.AppCompatImageButton
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseExpandableListAdapter
+import android.widget.ExpandableListView
+import android.widget.TextView
+import android.widget.Toast
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
@@ -129,7 +133,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             }
 
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
-            val editButton = toReturn.findViewById<ImageButton>(R.id.clockSingleEditButton)
+            val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
 
             //Create our next controller with wrong values only if we have a nextChildInterval
             var nextController: IntervalController? = null
