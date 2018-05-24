@@ -47,8 +47,6 @@ class IntervalAddActivity : AppCompatActivity() {
 
         }
 
-
-
         mDurationTextView = findViewById(R.id.intervalDurationTxt)
         mGestureDetector = GestureDetectorCompat(this.applicationContext, mDurationGestureDetector)
 
