@@ -4,15 +4,16 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.support.v4.content.ContextCompat.startActivity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.LayoutInflater
 import android.widget.*
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalClockView
-import kotlin.collections.HashMap
 
 
 /**
@@ -128,6 +129,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             }
 
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
+            val editButton = toReturn.findViewById<ImageButton>(R.id.clockSingleEditButton)
 
             //Create our next controller with wrong values only if we have a nextChildInterval
             var nextController: IntervalController? = null
@@ -145,6 +147,13 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             clockView.setController(controller)
             mCachedViews[childOfInterval.id] = toReturn
             mCachedControllers[childOfInterval.id] = controller
+
+            editButton.setOnClickListener {
+                val intent = Intent(mContext, IntervalAddActivity::class.java)
+                intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_ID, true) //We're going into edit mode
+                intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
+                startActivity(mContext,intent,null)
+            }
 
             if(nextChildOfInterval != null && nextController != null)
                 mCachedControllers[nextChildOfInterval.id] = nextController
