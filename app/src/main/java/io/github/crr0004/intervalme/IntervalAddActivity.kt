@@ -96,6 +96,9 @@ class IntervalAddActivity : AppCompatActivity() {
                 if (!mIntervalToEdit!!.ownerOfGroup)
                     findViewById<TextView>(R.id.intervalParentTxt).text = mIntervalToEdit?.group.toString()
                 findViewById<Button>(R.id.intervalAddBtn).setOnClickListener(addIntervalEditModeListener)
+                findViewById<Button>(R.id.intervalAddBtn).text = resources.getString(R.string.update)
+                mDurationGestureDetector.mDuration = mIntervalToEdit!!.duration
+                mDurationGestureDetector.updateDurationText(0) // Ensures text is formatted correctly
             }
 
         }
@@ -134,7 +137,7 @@ class IntervalAddActivity : AppCompatActivity() {
         val durationText = (findViewById<TextView>(R.id.intervalDurationTxt)).text
         val groupText = (findViewById<TextView>(R.id.intervalParentTxt)).text
 
-        var interval: IntervalData
+        val interval: IntervalData
         interval = try {
             val groupUUID = UUID.fromString(groupText.toString())
             IntervalData(label=text.toString(), duration = durationText.toString().toLong(),group = groupUUID,ownerOfGroup = false)
