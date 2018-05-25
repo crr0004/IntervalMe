@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -15,6 +16,8 @@ class IntervalListActivity : AppCompatActivity() {
     private var mExpandableListView: ExpandableListView? = null
     companion object {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
+        const val INTENT_EXTRA_RENEW_DATA_ID = "ilrd"
+        const val INTENT_EDIT_REQUEST_CODE = -1
     }
 
 
@@ -23,7 +26,7 @@ class IntervalListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_interval_list)
 
         mExpandableListView = findViewById(R.id.intervalsExpList)
-        mAdapter = IntervalListAdapter(this.applicationContext, mExpandableListView!!)
+        mAdapter = IntervalListAdapter(this, mExpandableListView!!)
         mExpandableListView!!.setAdapter(mAdapter)
         setSupportActionBar(findViewById(R.id.interval_list_actionbar))
         if(savedInstanceState != null){
@@ -32,6 +35,7 @@ class IntervalListActivity : AppCompatActivity() {
                 mExpandableListView!!.expandGroup(index+1)
             }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -66,11 +70,25 @@ class IntervalListActivity : AppCompatActivity() {
             val intervalData = controller.mChildOfInterval
             mIntervalDao.update(intervalData)
         }
-
-
     }
 
+    /**
+     * Dispatch incoming result to the correct fragment.
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
 
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(intent.action == INTENT_EXTRA_RENEW_DATA_ID){
+            mAdapter!!.notifyDataSetInvalidated()
+        }
+        mAdapter!!.notifyDataSetInvalidated()
+    }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
 

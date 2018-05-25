@@ -1,11 +1,11 @@
 package io.github.crr0004.intervalme
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.AppCompatImageButton
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +31,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
 
     init {
-        mdb = IntervalMeDatabase.getInstance(mContext)
+        mdb = IntervalMeDatabase.getInstance(mContext.applicationContext)
         mIntervalDao = mdb!!.intervalDataDao()
     }
 
@@ -156,7 +156,10 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
                 val intent = Intent(mContext, IntervalAddActivity::class.java)
                 intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_ID, true) //We're going into edit mode
                 intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
-                startActivity(mContext,intent,null)
+                //startActivity(mContext,intent,null)
+                // mContext should be the activity context, NOT the application context
+                (mContext as Activity).startActivityForResult(intent, IntervalListActivity.INTENT_EDIT_REQUEST_CODE)
+
             }
 
             if(nextChildOfInterval != null && nextController != null)

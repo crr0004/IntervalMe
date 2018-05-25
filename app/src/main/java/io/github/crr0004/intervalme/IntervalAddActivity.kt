@@ -43,8 +43,12 @@ class IntervalAddActivity : AppCompatActivity() {
         setContentView(R.layout.activity_interveraladd)
 
         (findViewById<View>(R.id.goToListBtn)).setOnClickListener {
-            val intent = Intent(this, IntervalListActivity::class.java)
-            startActivity(intent)
+            val intent = Intent()
+            if(mIntervalToEdit != null) {
+                intent.putExtra(EDIT_MODE_FLAG_INTERVAL_ID, mIntervalToEdit!!.id)
+            }
+            setResult(Activity.RESULT_OK, intent)
+            finish()
 
         }
 
