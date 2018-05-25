@@ -1,6 +1,5 @@
 package io.github.crr0004.intervalme
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -47,9 +46,8 @@ class IntervalAddActivity : AppCompatActivity() {
             if(mIntervalToEdit != null) {
                 intent.putExtra(EDIT_MODE_FLAG_INTERVAL_ID, mIntervalToEdit!!.id)
             }
-            setResult(Activity.RESULT_OK, intent)
+            setResult(RESULT_OK, intent)
             finish()
-
         }
 
         mDurationTextView = findViewById(R.id.intervalDurationTxt)
