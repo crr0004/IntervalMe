@@ -36,6 +36,7 @@ class IntervalAddActivity : AppCompatActivity() {
     }
 
 
+    private var mUpdatedInterval: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,10 +44,11 @@ class IntervalAddActivity : AppCompatActivity() {
 
         (findViewById<View>(R.id.goToListBtn)).setOnClickListener {
             val intent = Intent()
-            if(mIntervalToEdit != null) {
+            if(mIntervalToEdit != null && mUpdatedInterval) {
                 intent.putExtra(EDIT_MODE_FLAG_INTERVAL_ID, mIntervalToEdit!!.id)
             }
             setResult(RESULT_OK, intent)
+            mUpdatedInterval = false
             finish()
         }
 
@@ -126,6 +128,7 @@ class IntervalAddActivity : AppCompatActivity() {
 
 
             Toast.makeText(this, "Updated interval", Toast.LENGTH_SHORT).show()
+            mUpdatedInterval = true
         }
     }
 
