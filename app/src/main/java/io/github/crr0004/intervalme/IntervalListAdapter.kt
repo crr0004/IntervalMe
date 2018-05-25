@@ -87,19 +87,19 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        val intervalDataParent = getGroup(groupPosition) as IntervalData
+        val intervalDataParent = getGroup(groupPosition)
         return mIntervalDao!!.getAllOfGroupWithoutOwner(intervalDataParent.group).size
     }
 
     override fun getChild(groupPosition: Int, childPosition: Int): Any {
-        val intervalDataParent = getGroup(groupPosition) as IntervalData
+        val intervalDataParent = getGroup(groupPosition)
         return mIntervalDao!!.getChildOfGroupByOffset(
                 (childPosition+ 1).toLong(),
                 intervalDataParent.group)
     }
 
     override fun getGroupId(groupPosition: Int): Long {
-        return (getGroup(groupPosition) as IntervalData).id
+        return getGroup(groupPosition).id
     }
 
 
