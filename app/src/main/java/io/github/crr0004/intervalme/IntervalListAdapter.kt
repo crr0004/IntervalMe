@@ -156,6 +156,12 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
             if(nextChildOfInterval != null && nextController != null)
                 mCachedControllers[nextChildOfInterval.id] = nextController
+        }else{
+            if(isLastChild){
+                mCachedControllers[childOfInterval.id]?.setNextInterval(null)
+            }else{
+                mCachedControllers[childOfInterval.id]?.setNextInterval(mCachedControllers[nextChildOfInterval?.id])
+            }
         }
 
         return toReturn
@@ -176,5 +182,22 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
             mCachedControllers[id]?.mChildOfInterval = updatedInterval
             mCachedControllers[id]?.stopAndRefreshClock()
         }
+    }
+
+    /**
+     * Override this method if you foresee a clash in IDs based on this scheme:
+     *
+     *
+     * Base implementation returns a long:
+     *  *  bit 0: Whether this ID points to a child (unset) or group (set), so for this method
+     * this bit will be 0.
+     *  *  bit 1-31: Lower 31 bits of the groupId
+     *  *  bit 32-63: Lower 32 bits of the childId.
+     *
+     *
+     * {@inheritDoc}
+     */
+    override fun getCombinedGroupId(groupId: Long): Long {
+        return super.getCombinedGroupId(groupId)
     }
 }
