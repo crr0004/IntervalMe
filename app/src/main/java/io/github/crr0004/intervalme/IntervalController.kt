@@ -140,6 +140,10 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
         mSoundController = null
     }
 
+    fun setNextInterval(intervalController: IntervalController?) {
+        mNextInterval = intervalController
+    }
+
     private class TickClockRunnable(
             val mClockView: IntervalClockView,
             var timeToRun: Long,
