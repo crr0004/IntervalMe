@@ -33,7 +33,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         mIntervalDao = mdb!!.intervalDataDao()
     }
 
-    override fun getGroup(groupPosition: Int): Any {
+    override fun getGroup(groupPosition: Int): IntervalData {
         val intervalDataParent = mIntervalDao?.getGroupByOffset((groupPosition+1).toLong())
         return intervalDataParent!!
     }
@@ -63,8 +63,8 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
                 toReturn = infalInflater.inflate(R.layout.interval_group, null)
             }
 
-            val intervalData = mIntervalDao?.getGroupByOffset(groupPosition.toLong() + 1)
-            toReturn!!.findViewById<TextView>(R.id.textView).text = intervalData?.label ?: "Interval not found"
+            val intervalData = getGroup(groupPosition)
+            toReturn!!.findViewById<TextView>(R.id.textView).text = intervalData.label ?: "Interval not found"
             toReturn.setTag(R.id.id_interval_view_interval, intervalData)
 
             //toReturn.setOnLongClickListener(intervalLongClickListener)
