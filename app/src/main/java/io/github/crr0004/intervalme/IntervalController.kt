@@ -85,13 +85,17 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     override fun onDoubleTap(e: MotionEvent?): Boolean {
         Log.d(DEBUG_TAG, "onDoubleTap called")
         // We stop the clock
+        stopAndRefreshClock()
+
+        return true
+    }
+
+    fun stopAndRefreshClock() {
         mClockRunning = false
         mClockTickRunnable.mRunning = false
         mClockView.mPercentageComplete = 0f
         mClockTickRunnable.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)
         mClockView.setClockTime(mClockTickRunnable.timeToRun)
-
-        return true
     }
 
     override fun onContextClick(e: MotionEvent?): Boolean {

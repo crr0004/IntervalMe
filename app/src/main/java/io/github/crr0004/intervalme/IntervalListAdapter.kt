@@ -174,6 +174,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         val updatedInterval = mIntervalDao?.get(id)
         if(updatedInterval != null) {
             mCachedControllers[id]?.mChildOfInterval = updatedInterval
+            mCachedControllers[id]?.stopAndRefreshClock()
         }
     }
 }
