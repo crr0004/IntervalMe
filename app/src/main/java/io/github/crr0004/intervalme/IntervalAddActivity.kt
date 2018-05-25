@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -87,7 +88,7 @@ class IntervalAddActivity : AppCompatActivity() {
         val isEditMode = intent.getBooleanExtra(EDIT_MODE_FLAG_ID, false)
         if(isEditMode){
             mIntervalToEditID = intent.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
-            mIntervalToEdit = IntervalMeDatabase.getInstance(this)!!.intervalDataDao().get(mIntervalToEditID)
+            mIntervalToEdit = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao().get(mIntervalToEditID)
             if(mIntervalToEdit != null) {
                 mDurationTextView?.setText(mIntervalToEdit?.duration.toString())
                 findViewById<TextView>(R.id.intervalNameTxt).text = mIntervalToEdit?.label
@@ -119,7 +120,8 @@ class IntervalAddActivity : AppCompatActivity() {
 
             }
 
-            IntervalMeDatabase.getInstance(this)!!.intervalDataDao().update(mIntervalToEdit!!)
+            IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao().update(mIntervalToEdit!!)
+
 
             Toast.makeText(this, "Updated interval", Toast.LENGTH_SHORT).show()
         }
@@ -144,7 +146,7 @@ class IntervalAddActivity : AppCompatActivity() {
             IntervalData(label=text.toString(), duration = durationText.toString().toLong())
         }
 
-        IntervalMeDatabase.getInstance(this)!!.intervalDataDao().insert(interval)
+        IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao().insert(interval)
         Toast.makeText(this, "Added interval", Toast.LENGTH_SHORT).show()
     }
 
