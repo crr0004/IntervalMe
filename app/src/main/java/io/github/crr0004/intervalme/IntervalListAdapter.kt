@@ -68,8 +68,8 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
             toReturn.setTag(R.id.id_interval_view_interval, intervalData)
 
             //toReturn.setOnLongClickListener(intervalLongClickListener)
-            this.mHost.setOnItemLongClickListener { _, _, position, _ ->
-                val intervalDataParent = mIntervalDao?.getGroupByOffset(position.toLong() + 1)
+            this.mHost.setOnItemLongClickListener { parent, _, position, id ->
+                val intervalDataParent = parent.getItemAtPosition(position) as IntervalData
                 val groupUUID = intervalDataParent?.group.toString()
                 val clipboard = mHostActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData = ClipData.newPlainText("group uuid", groupUUID)
