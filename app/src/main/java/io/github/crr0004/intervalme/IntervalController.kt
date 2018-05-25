@@ -2,7 +2,6 @@ package io.github.crr0004.intervalme
 
 import android.os.SystemClock
 import android.support.v4.view.GestureDetectorCompat
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import io.github.crr0004.intervalme.database.IntervalData
@@ -56,9 +55,6 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     constructor()
 
     override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-        Log.d(DEBUG_TAG, "onSingleTap called")
-
-
         // We've started the clock for the first time
         if(!mClockRunning) {
             startClockAsNew()
@@ -83,7 +79,6 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     }
 
     override fun onDoubleTap(e: MotionEvent?): Boolean {
-        Log.d(DEBUG_TAG, "onDoubleTap called")
         // We stop the clock
         stopAndRefreshClock()
 
@@ -99,17 +94,14 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     }
 
     override fun onContextClick(e: MotionEvent?): Boolean {
-        Log.d(DEBUG_TAG, "onContextClick called")
         return super.onContextClick(e)
     }
 
     override fun onLongPress(e: MotionEvent?) {
-        Log.d(DEBUG_TAG, "onLongPress called")
         super.onLongPress(e)
     }
 
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-        Log.d(DEBUG_TAG, "onScroll called")
         mClockTickRunnable.timeToRun -= distanceX.toLong() * 100
         mClockView.setClockTime(mClockTickRunnable.timeToRun)
         if(mClockRunning) {
