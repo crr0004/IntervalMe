@@ -25,7 +25,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
-    val mCachedViews: HashMap<Long, View> = HashMap()
+    private val mCachedViews: HashMap<Long, View> = HashMap()
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
 
     init {
@@ -68,9 +68,9 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
             toReturn.setTag(R.id.id_interval_view_interval, intervalData)
 
             //toReturn.setOnLongClickListener(intervalLongClickListener)
-            this.mHost.setOnItemLongClickListener { parent, _, position, id ->
-                val intervalDataParent = parent.getItemAtPosition(position) as IntervalData
-                val groupUUID = intervalDataParent?.group.toString()
+            this.mHost.setOnItemLongClickListener { parentAdapter, _, position, _ ->
+                val intervalDataParent = parentAdapter.getItemAtPosition(position) as IntervalData
+                val groupUUID = intervalDataParent.group.toString()
                 val clipboard = mHostActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData = ClipData.newPlainText("group uuid", groupUUID)
                 Toast.makeText(mHostActivity, "Copied UUID", Toast.LENGTH_SHORT).show()
@@ -81,7 +81,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
                 true
             }
             //toReturn.setOnClickListener { this.mHost.expandGroup(groupPosition)}
-            mCachedViews[intervalData!!.id] = toReturn
+            mCachedViews[intervalData.id] = toReturn
         }
         return toReturn
     }
@@ -100,6 +100,14 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
     override fun getGroupId(groupPosition: Int): Long {
         return getGroup(groupPosition).id
+    }
+
+    /**
+     * @see DataSetObservable.notifyChanged
+     */
+    override fun notifyDataSetChanged() {
+        super.notifyDataSetChanged()
+
     }
 
 
@@ -132,6 +140,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
             val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
             val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
+            toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
 
             //Create our next controller with wrong values only if we have a nextChildInterval
             var nextController: IntervalController? = null
@@ -156,7 +165,8 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
             if(nextChildOfInterval != null && nextController != null)
                 mCachedControllers[nextChildOfInterval.id] = nextController
-        }else{
+        }else {
+            // Ensures when we move items around, the next intervals are getting updated
             if(isLastChild){
                 mCachedControllers[childOfInterval.id]?.setNextInterval(null)
             }else{
@@ -179,25 +189,9 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
     fun updateInterval(id: Long) {
         val updatedInterval = mIntervalDao?.get(id)
         if(updatedInterval != null) {
-            mCachedControllers[id]?.mChildOfInterval = updatedInterval
+            mCachedControllers[id]?.refreshInterval(updatedInterval)
             mCachedControllers[id]?.stopAndRefreshClock()
+            mCachedViews[id]?.findViewById<TextView>(R.id.clockLabelTxt)?.text = updatedInterval.label
         }
-    }
-
-    /**
-     * Override this method if you foresee a clash in IDs based on this scheme:
-     *
-     *
-     * Base implementation returns a long:
-     *  *  bit 0: Whether this ID points to a child (unset) or group (set), so for this method
-     * this bit will be 0.
-     *  *  bit 1-31: Lower 31 bits of the groupId
-     *  *  bit 32-63: Lower 32 bits of the childId.
-     *
-     *
-     * {@inheritDoc}
-     */
-    override fun getCombinedGroupId(groupId: Long): Long {
-        return super.getCombinedGroupId(groupId)
     }
 }

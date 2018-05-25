@@ -22,6 +22,7 @@ class IntervalListActivity : AppCompatActivity() {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
         const val INTENT_EXTRA_RENEW_DATA_ID = "ilrd"
         const val INTENT_EDIT_REQUEST_CODE = 1
+        const val INTENT_ADD_REQUEST_CODE = 2
     }
 
 
@@ -52,7 +53,7 @@ class IntervalListActivity : AppCompatActivity() {
             R.id.action_goto_add -> {
                 // User chose the "Settings" item, show the app settings UI...
                 val intent = Intent(this, IntervalAddActivity::class.java)
-                startActivity(intent)
+                ActivityCompat.startActivityForResult(this, intent, INTENT_ADD_REQUEST_CODE, null)
                 true
             }
             else ->
@@ -88,9 +89,9 @@ class IntervalListActivity : AppCompatActivity() {
             val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
             mAdapter?.updateInterval(id)
             mAdapter?.notifyDataSetChanged()
+        }else if(requestCode == INTENT_ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            mAdapter?.notifyDataSetChanged()
         }
-
-
     }
 
     override fun onResume() {
