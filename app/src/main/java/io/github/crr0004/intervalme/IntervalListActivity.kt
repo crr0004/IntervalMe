@@ -4,10 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ExpandableListView
+import io.github.crr0004.intervalme.IntervalAddActivity.Companion.EDIT_MODE_FLAG_INTERVAL_ID
+import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 
 class IntervalListActivity : AppCompatActivity() {
@@ -17,7 +21,7 @@ class IntervalListActivity : AppCompatActivity() {
     companion object {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
         const val INTENT_EXTRA_RENEW_DATA_ID = "ilrd"
-        const val INTENT_EDIT_REQUEST_CODE = -1
+        const val INTENT_EDIT_REQUEST_CODE = 1
     }
 
 
@@ -76,18 +80,20 @@ class IntervalListActivity : AppCompatActivity() {
      * Dispatch incoming result to the correct fragment.
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
 
-        }
         super.onActivityResult(requestCode, resultCode, data)
+
+        Log.d("ila", "IntervalListActivity onActivityResult")
+        if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
+            val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
+            mAdapter?.updateInterval(id)
+        }
+
+
     }
 
     override fun onResume() {
         super.onResume()
-        if(intent.action == INTENT_EXTRA_RENEW_DATA_ID){
-            mAdapter!!.notifyDataSetInvalidated()
-        }
-        mAdapter!!.notifyDataSetInvalidated()
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
@@ -111,5 +117,13 @@ class IntervalListActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    fun launchAddInEditMode(childOfInterval: IntervalData) {
+        val intent = Intent(this, IntervalAddActivity::class.java)
+        intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_ID, true) //We're going into edit mode
+        intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
+        //startActivity(mContext,intent,null)
+        ActivityCompat.startActivityForResult(this, intent, INTENT_EDIT_REQUEST_CODE, null)
     }
 }

@@ -1,11 +1,9 @@
 package io.github.crr0004.intervalme
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
 import android.support.v7.widget.AppCompatImageButton
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +21,7 @@ import io.github.crr0004.intervalme.views.IntervalClockView
 /**
  * Created by crr00 on 24-Apr-18.
  */
-class IntervalListAdapter constructor(private val mContext: Context, private val mHost: ExpandableListView): BaseExpandableListAdapter() {
+class IntervalListAdapter constructor(private val mHostActivity: IntervalListActivity, private val mHost: ExpandableListView): BaseExpandableListAdapter() {
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
@@ -31,7 +29,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
 
     init {
-        mdb = IntervalMeDatabase.getInstance(mContext.applicationContext)
+        mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
         mIntervalDao = mdb!!.intervalDataDao()
     }
 
@@ -61,7 +59,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             toReturn = convertView
 
             if (toReturn == null) {
-                val infalInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val infalInflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 toReturn = infalInflater.inflate(R.layout.interval_group, null)
             }
 
@@ -73,9 +71,9 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             this.mHost.setOnItemLongClickListener { _, _, position, _ ->
                 val intervalDataParent = mIntervalDao?.getGroupByOffset(position.toLong() + 1)
                 val groupUUID = intervalDataParent?.group.toString()
-                val clipboard = mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipboard = mHostActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData = ClipData.newPlainText("group uuid", groupUUID)
-                Toast.makeText(mContext, "Copied UUID", Toast.LENGTH_SHORT).show()
+                Toast.makeText(mHostActivity, "Copied UUID", Toast.LENGTH_SHORT).show()
 
 
                 clipboard.primaryClip = clipData
@@ -126,7 +124,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
             // second null check for using a converted view
             if (toReturn == null) {
-                val inflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val inflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 //Passing null as root until I figure it out. Passing parent causes a crash
                 toReturn = inflater.inflate(R.layout.interval_single_clock, null)
 
@@ -153,13 +151,7 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
             mCachedControllers[childOfInterval.id] = controller
 
             editButton.setOnClickListener {
-                val intent = Intent(mContext, IntervalAddActivity::class.java)
-                intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_ID, true) //We're going into edit mode
-                intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
-                //startActivity(mContext,intent,null)
-                // mContext should be the activity context, NOT the application context
-                (mContext as Activity).startActivityForResult(intent, IntervalListActivity.INTENT_EDIT_REQUEST_CODE)
-
+                mHostActivity.launchAddInEditMode(childOfInterval)
             }
 
             if(nextChildOfInterval != null && nextController != null)
@@ -176,5 +168,12 @@ class IntervalListAdapter constructor(private val mContext: Context, private val
 
     override fun getGroupCount(): Int {
         return mIntervalDao!!.getGroupOwners().size
+    }
+
+    fun updateInterval(id: Long) {
+        val updatedInterval = mIntervalDao?.get(id)
+        if(updatedInterval != null) {
+            mCachedControllers[id]?.mChildOfInterval = updatedInterval
+        }
     }
 }
