@@ -126,7 +126,6 @@ class IntervalAddActivity : AppCompatActivity() {
 
             IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao().update(mIntervalToEdit!!)
 
-
             Toast.makeText(this, "Updated interval", Toast.LENGTH_SHORT).show()
             mUpdatedInterval = true
         }
