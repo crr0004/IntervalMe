@@ -87,6 +87,7 @@ class IntervalListActivity : AppCompatActivity() {
         if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
             val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
             mAdapter?.updateInterval(id)
+            mAdapter?.notifyDataSetChanged()
         }
 
 
