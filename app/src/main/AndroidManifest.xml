@@ -13,19 +13,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".IntervalAddActivity"
-            android:launchMode="standard">
 
-        </activity>
         <activity android:name=".IntervalListActivity"
-            android:alwaysRetainTaskState="true"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTop"
+            android:noHistory="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".IntervalAddActivity"
+            android:noHistory="false"/>
         <activity android:name=".IntervalClockSampleActivity" />
 
     </application>
