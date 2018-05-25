@@ -11,9 +11,6 @@ import java.util.concurrent.TimeUnit
 
 /**
  * A controller for dealing with the logic between the IntervalClockView and a data source
- * @param mNextInterval the interval to start after this one is done
- * @param mClockView the view that this controller uses
- * @param childOfInterval the interval data from the db
  */
 class IntervalController:GestureDetector.SimpleOnGestureListener {
 
@@ -27,6 +24,11 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     private var mSoundController: IntervalSoundController? = null
 
 
+    /**
+     * @param mNextInterval the interval to start after this one is done
+     * @param mClockView the view that this controller uses
+     * @param mChildOfInterval the interval data from the db
+     */
     constructor(mClockView: IntervalClockView,
                 mChildOfInterval: IntervalData,
                 mNextInterval: IntervalController? = null) {
