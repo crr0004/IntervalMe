@@ -1,6 +1,9 @@
 package io.github.crr0004.intervalme.database
 
-import android.arch.persistence.room.*
+import android.arch.persistence.room.Database
+import android.arch.persistence.room.Room
+import android.arch.persistence.room.RoomDatabase
+import android.arch.persistence.room.TypeConverters
 import android.content.Context
 
 /**
@@ -29,6 +32,11 @@ abstract class IntervalMeDatabase : RoomDatabase() {
 
         fun destroyInstance() {
             INSTANCE = null
+        }
+
+        fun getTemporaryInstance(applicationContext: Context): IntervalMeDatabase? {
+            return Room.inMemoryDatabaseBuilder(applicationContext,
+                    IntervalMeDatabase::class.java).allowMainThreadQueries().build()
         }
 
 

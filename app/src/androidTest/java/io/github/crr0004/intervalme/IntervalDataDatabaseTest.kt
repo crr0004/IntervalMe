@@ -1,6 +1,5 @@
 package io.github.crr0004.intervalme
 
-import android.arch.persistence.room.Room
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import io.github.crr0004.intervalme.database.IntervalData
@@ -25,7 +24,7 @@ class IntervalDataDatabaseTest {
     @Before
     fun createDb() {
         val context = InstrumentationRegistry.getTargetContext()
-        mDb = Room.inMemoryDatabaseBuilder(context, IntervalMeDatabase::class.java).build()
+        mDb = IntervalMeDatabase.getTemporaryInstance(context)
         mIntervalDao = mDb!!.intervalDataDao()
     }
 
