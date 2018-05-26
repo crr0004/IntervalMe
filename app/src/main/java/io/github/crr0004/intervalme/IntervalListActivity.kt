@@ -73,7 +73,9 @@ class IntervalListActivity : AppCompatActivity() {
         cachedControllers.forEach { key, controller ->
             controller.onPause()
             val intervalData = controller.mChildOfInterval
-            mIntervalDao.update(intervalData)
+            if (intervalData != null) {
+                mIntervalDao.update(intervalData)
+            }
         }
     }
 
