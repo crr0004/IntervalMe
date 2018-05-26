@@ -31,7 +31,7 @@ class IntervalDataDatabaseTest {
     @After
     @Throws(IOException::class)
     fun closeDb() {
-        mDb!!.close()
+        IntervalMeDatabase.destroyInstance()
     }
 
     @Test
