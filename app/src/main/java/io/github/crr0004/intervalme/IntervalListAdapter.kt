@@ -28,9 +28,29 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
     private val mCachedViews: HashMap<Long, View> = HashMap()
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
 
+    companion object {
+        public var IN_MEMORY_DB = false
+    }
+
     init {
-        mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
+        if(!IN_MEMORY_DB) {
+            mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
+        }else{
+            mdb = IntervalMeDatabase.getTemporaryInstance(mHostActivity.applicationContext)
+        }
         mIntervalDao = mdb!!.intervalDataDao()
+    }
+
+    /**
+     * Changes the database source for the adapter.
+     * This is mainly used for dependency injection
+     * @param db The database to change to. All dao's will be created from this
+     */
+    public fun updateDataSource(db: IntervalMeDatabase){
+        mdb = db
+        mIntervalDao = mdb!!.intervalDataDao()
+        notifyDataSetInvalidated()
+
     }
 
     override fun getGroup(groupPosition: Int): IntervalData {
