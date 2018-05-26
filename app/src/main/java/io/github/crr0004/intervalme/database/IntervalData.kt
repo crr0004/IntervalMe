@@ -49,6 +49,31 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
     }
 
     /**
+     * Indicates whether some other object is "equal to" this one. Implementations must fulfil the following
+     * requirements:
+     *
+     * * Reflexive: for any non-null reference value x, x.equals(x) should return true.
+     * * Symmetric: for any non-null reference values x and y, x.equals(y) should return true if and only if y.equals(x) returns true.
+     * * Transitive:  for any non-null reference values x, y, and z, if x.equals(y) returns true and y.equals(z) returns true, then x.equals(z) should return true
+     * * Consistent:  for any non-null reference values x and y, multiple invocations of x.equals(y) consistently return true or consistently return false, provided no information used in equals comparisons on the objects is modified.
+     *
+     * Note that the `==` operator in Kotlin code is translated into a call to [equals] when objects on both sides of the
+     * operator are not null.
+     */
+    override fun equals(other: Any?): Boolean {
+        return if(other is IntervalData){
+            (this.duration == other.duration
+                    && this.ownerOfGroup == other.ownerOfGroup
+                    && this.group == other.group
+                    && this.label == other.label
+                    && this.lastModified == other.lastModified
+                    && this.runningDuration == other.runningDuration)
+        }else {
+            super.equals(other)
+        }
+    }
+
+    /**
      * Returns a string representation of the object.
      */
     override fun toString(): String {
