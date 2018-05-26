@@ -31,17 +31,17 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
         fun generate(amount: Int): Array<IntervalData?>{
             val returnValue = arrayOfNulls<IntervalData>(amount)
             for(i in 0 until returnValue.size){
-                returnValue[i] = IntervalData()
-                returnValue[i]!!.duration= (Math.random()*Long.MAX_VALUE).toLong()
+                returnValue[i] = IntervalData(label = UUID.randomUUID().toString())
+                returnValue[i]!!.duration= (Math.random()*100L).toLong()
             }
 
             return returnValue
         }
-        fun generate(amount: Int, intervalParent: IntervalData?): Array<IntervalData?>{
+        fun generate(amount: Int, intervalParent: IntervalData?): Array<IntervalData?> {
             val returnValue = arrayOfNulls<IntervalData>(amount)
             for(i in 0 until returnValue.size){
-                returnValue[i] = IntervalData(group = intervalParent!!.group, ownerOfGroup = false)
-                returnValue[i]!!.duration= (Math.random()*Long.MAX_VALUE).toLong()
+                returnValue[i] = IntervalData(label = UUID.randomUUID().toString(), group = intervalParent!!.group, ownerOfGroup = false)
+                returnValue[i]!!.duration= (Math.random()*100L).toLong()
             }
 
             return returnValue
