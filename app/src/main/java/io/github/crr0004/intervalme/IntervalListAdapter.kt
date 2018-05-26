@@ -71,38 +71,34 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
     @SuppressLint("InflateParams")
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
-        var toReturn: View?
-
-        toReturn = mCachedViews[getGroupId(groupPosition)]
-        if(toReturn == null) {
-
-            toReturn = convertView
-
-            if (toReturn == null) {
-                val infalInflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                toReturn = infalInflater.inflate(R.layout.interval_group, null)
-            }
-
-            val intervalData = getGroup(groupPosition)
-            toReturn!!.findViewById<TextView>(R.id.textView).text = intervalData.label ?: "Interval not found"
-            toReturn.setTag(R.id.id_interval_view_interval, intervalData)
-
-            //toReturn.setOnLongClickListener(intervalLongClickListener)
-            this.mHost.setOnItemLongClickListener { parentAdapter, _, position, _ ->
-                val intervalDataParent = parentAdapter.getItemAtPosition(position) as IntervalData
-                val groupUUID = intervalDataParent.group.toString()
-                val clipboard = mHostActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clipData = ClipData.newPlainText("group uuid", groupUUID)
-                Toast.makeText(mHostActivity, "Copied UUID", Toast.LENGTH_SHORT).show()
+        var toReturn: View? = null
 
 
-                clipboard.primaryClip = clipData
+       // toReturn = convertView
 
-                true
-            }
-            //toReturn.setOnClickListener { this.mHost.expandGroup(groupPosition)}
-            mCachedViews[intervalData.id] = toReturn
+        //if (toReturn == null) {
+            val infalInflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            toReturn = infalInflater.inflate(R.layout.interval_group, null)
+        //}
+
+        val intervalData = getGroup(groupPosition)
+        toReturn!!.findViewById<TextView>(R.id.textView).text = intervalData.label ?: "Interval not found"
+        toReturn.setTag(R.id.id_interval_view_interval, intervalData)
+
+        //toReturn.setOnLongClickListener(intervalLongClickListener)
+        this.mHost.setOnItemLongClickListener { parentAdapter, _, position, _ ->
+            val intervalDataParent = parentAdapter.getItemAtPosition(position) as IntervalData
+            val groupUUID = intervalDataParent.group.toString()
+            val clipboard = mHostActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText("group uuid", groupUUID)
+            Toast.makeText(mHostActivity, "Copied UUID", Toast.LENGTH_SHORT).show()
+
+
+            clipboard.primaryClip = clipData
+
+            true
         }
+
         return toReturn
     }
 
@@ -134,64 +130,57 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
     @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
-        var toReturn: View?
+        var toReturn: View? = null
         val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
-        var nextChildOfInterval: IntervalData? = null
+        var previousInterval: IntervalData? = null
+
         if(!isLastChild) {
-            nextChildOfInterval = getChild(groupPosition, childPosition + 1) as IntervalData
+            previousInterval = getChild(groupPosition, childPosition - 1) as IntervalData
         }
 
-        toReturn = mCachedViews[childOfInterval.id]
+        //toReturn = mCachedViews[childOfInterval.id]
 
         //Top null check for cached view
-        if(toReturn == null) {
-            toReturn = convertView
-            // Look for our controller that may have been forward init
-            var controller: IntervalController? = mCachedControllers[childOfInterval.id]
+        toReturn = convertView
+        // Look for our controller that may have been forward init
+        var controller: IntervalController? = mCachedControllers[childOfInterval.id]
+        // If we're using an existing controller we must make sure to release properly before re-init
 
 
-            // second null check for using a converted view
-            if (toReturn == null) {
-                val inflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                //Passing null as root until I figure it out. Passing parent causes a crash
-                toReturn = inflater.inflate(R.layout.interval_single_clock, null)
 
-            }
+        // second null check for using a converted view
+        if (toReturn == null) {
+            val inflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            //Passing null as root until I figure it out. Passing parent causes a crash
+            toReturn = inflater.inflate(R.layout.interval_single_clock, null)
+        }
 
-            val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
-            val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
-            toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
+        val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
+        val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
+        toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
 
-            //Create our next controller with wrong values only if we have a nextChildInterval
-            var nextController: IntervalController? = null
-            if(nextChildOfInterval != null && !isLastChild) {
-                nextController = IntervalController()
-            }
-
-            // Controller hasn't been forward cached so create it
-            if(controller == null) {
-                controller = IntervalController(clockView, childOfInterval, nextController)
-            }else{
-                // Controller got forward cached so values need to be updated to correct values
-                controller.init(clockView,childOfInterval,nextController)
-            }
-            clockView.setController(controller)
-            mCachedViews[childOfInterval.id] = toReturn
-            mCachedControllers[childOfInterval.id] = controller
-
-            editButton.setOnClickListener {
-                mHostActivity.launchAddInEditMode(childOfInterval)
-            }
-
-            if(nextChildOfInterval != null && nextController != null)
-                mCachedControllers[nextChildOfInterval.id] = nextController
+        // Controller hasn't been forward cached so create it
+        if(controller == null) {
+            controller = IntervalController(clockView, childOfInterval)
         }else {
-            // Ensures when we move items around, the next intervals are getting updated
-            if(isLastChild){
-                mCachedControllers[childOfInterval.id]?.setNextInterval(null)
-            }else{
-                mCachedControllers[childOfInterval.id]?.setNextInterval(mCachedControllers[nextChildOfInterval?.id])
-            }
+            // Controller got forward cached so values need to be updated to correct values
+            controller.disconnectFromViews()
+            controller.connectNewClockView(clockView)
+            clockView.setController(controller)
+        }
+
+        mCachedControllers[previousInterval?.id]?.setNextInterval(controller)
+
+        //mCachedViews[childOfInterval.id] = toReturn
+        mCachedControllers[childOfInterval.id] = controller
+
+
+        editButton.setOnClickListener {
+            mHostActivity.launchAddInEditMode(childOfInterval)
+        }
+        // Ensures when we move items around, the next intervals are getting updated
+        if(isLastChild){
+            mCachedControllers[childOfInterval.id]?.setNextInterval(null)
         }
 
         return toReturn
