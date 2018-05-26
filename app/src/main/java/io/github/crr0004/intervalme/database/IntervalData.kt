@@ -3,7 +3,6 @@ package io.github.crr0004.intervalme.database
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import java.time.Duration
 import java.util.*
 
 /**
@@ -49,4 +48,10 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
         }
     }
 
+    /**
+     * Returns a string representation of the object.
+     */
+    override fun toString(): String {
+        return "$id;$label;$duration;$ownerOfGroup;$group"
+    }
 }
