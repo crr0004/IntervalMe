@@ -18,6 +18,7 @@ abstract class IntervalMeDatabase : RoomDatabase() {
 
     companion object {
         private var INSTANCE: IntervalMeDatabase? = null
+        private var TEMP_INSTANCE: IntervalMeDatabase? = null
 
         fun getInstance(context: Context): IntervalMeDatabase? {
             if (INSTANCE == null) {
@@ -31,15 +32,19 @@ abstract class IntervalMeDatabase : RoomDatabase() {
         }
 
         fun destroyInstance() {
+            INSTANCE?.close()
+            TEMP_INSTANCE?.close()
             INSTANCE = null
+            TEMP_INSTANCE = null
         }
 
         fun getTemporaryInstance(applicationContext: Context): IntervalMeDatabase? {
-            return Room.inMemoryDatabaseBuilder(applicationContext,
-                    IntervalMeDatabase::class.java).allowMainThreadQueries().build()
+            if(TEMP_INSTANCE == null) {
+                TEMP_INSTANCE = Room.inMemoryDatabaseBuilder(applicationContext,
+                        IntervalMeDatabase::class.java).allowMainThreadQueries().build()
+            }
+            return TEMP_INSTANCE
         }
-
-
     }
 
 
