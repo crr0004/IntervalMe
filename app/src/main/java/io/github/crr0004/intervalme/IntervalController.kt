@@ -19,7 +19,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     private lateinit var mDetector: GestureDetectorCompat
     private lateinit var mClockTickRunnable: TickClockRunnable
     private lateinit var mClockView: IntervalClockView
-    lateinit var mChildOfInterval: IntervalData
+    var mChildOfInterval: IntervalData? = null
     private var mNextInterval: IntervalController? = null
     private var mSoundController: IntervalSoundController? = null
 
@@ -91,7 +91,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
         mClockRunning = false
         mClockTickRunnable.mRunning = false
         mClockView.mPercentageComplete = 0f
-        mClockTickRunnable.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)
+        mClockTickRunnable.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval?.duration ?: 0L)
         mClockView.setClockTime(mClockTickRunnable.timeToRun)
     }
 
@@ -132,7 +132,7 @@ class IntervalController:GestureDetector.SimpleOnGestureListener {
     }
 
     fun onPause() {
-        mChildOfInterval.runningDuration = mClockTickRunnable.timeToRun
+        mChildOfInterval?.runningDuration = mClockTickRunnable.timeToRun
     }
 
     fun onStop() {
