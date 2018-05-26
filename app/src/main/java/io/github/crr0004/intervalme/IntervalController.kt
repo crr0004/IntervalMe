@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 
 /**
- * A controller for dealing with the logic between the IntervalClockView and a data source
+ * A mController for dealing with the logic between the IntervalClockView and a data source
  */
 open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
@@ -26,7 +26,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     /**
      * @param mNextInterval the interval to start after this one is done
-     * @param mClockView the view that this controller uses
+     * @param mClockView the view that this mController uses
      * @param mChildOfInterval the interval data from the db
      */
     constructor(mClockView: IntervalClockView,
@@ -55,7 +55,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             mClockTickRunnable!!.timeToRun = childOfInterval.runningDuration
             mClockView!!.setClockTime(mClockTickRunnable!!.timeToRun)
         }
-        //Only create new sound controller if it's been previously released
+        //Only create new sound mController if it's been previously released
         if(mSoundController == null)
             mSoundController = IntervalSoundController(clockView.context,R.raw.digital_watch_alarm_1)
     }

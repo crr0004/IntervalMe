@@ -2,18 +2,15 @@ package io.github.crr0004.intervalme.views
 
 import android.content.Context
 import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import android.content.res.TypedArray
-import android.os.Build
-import android.view.MotionEvent
 import io.github.crr0004.intervalme.IntervalController
 import io.github.crr0004.intervalme.R
 import java.lang.UnsupportedOperationException
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -32,7 +29,7 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
     private val mIntervalPaddingDP = 8.0
 
     // Convenience property so that the reference to IntervalController isn't lost
-    private var controller: IntervalController? = null
+    var mController: IntervalController? = null
 
     var mPercentageComplete = 0.0f
         get() = field
@@ -164,9 +161,5 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
 
         setMeasuredDimension(w, h)
 
-    }
-
-    fun setController(intervalController: IntervalController) {
-        this.controller = intervalController
     }
 }

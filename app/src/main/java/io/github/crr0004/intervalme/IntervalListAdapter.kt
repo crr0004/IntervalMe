@@ -142,9 +142,9 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
         //Top null check for cached view
         toReturn = convertView
-        // Look for our controller that may have been forward init
+        // Look for our mController that may have been forward init
         var controller: IntervalController? = mCachedControllers[childOfInterval.id]
-        // If we're using an existing controller we must make sure to release properly before re-init
+        // If we're using an existing mController we must make sure to release properly before re-init
 
 
 
@@ -163,10 +163,12 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         if(controller == null) {
             controller = IntervalController(clockView, childOfInterval)
         }else {
-            // Controller got forward cached so values need to be updated to correct values
+
+            // We need to tell the other mController to disconnect from the clock
+            clockView.mController?.disconnectFromViews()
             controller.disconnectFromViews()
             controller.connectNewClockView(clockView)
-            clockView.setController(controller)
+            clockView.mController = controller
         }
 
         mCachedControllers[previousInterval?.id]?.setNextInterval(controller)
