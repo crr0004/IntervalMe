@@ -99,6 +99,21 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
             true
         }
 
+        val groupChildren = mIntervalDao!!.getAllOfGroupWithoutOwner(intervalData.group).reversed()
+        groupChildren.forEachIndexed{ index, childInterval ->
+            var childAboveController: IntervalController? = null
+            if(index > 0) {
+                val childAbove = groupChildren[index-1]
+                childAboveController =  mCachedControllers[childAbove.id]
+            }
+            val childController = if(mCachedControllers[childInterval.id] == null) {
+                IntervalController(null, childInterval, childAboveController)
+            }else{
+                mCachedControllers[childInterval.id]
+            }
+            mCachedControllers[childInterval.id] = childController!!
+        }
+
         return toReturn
     }
 
@@ -125,8 +140,6 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         super.notifyDataSetChanged()
 
     }
-
-
 
     @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
