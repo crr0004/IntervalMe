@@ -134,7 +134,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
         var previousInterval: IntervalData? = null
 
-        if(!isLastChild) {
+        if(childPosition > 0) {
             previousInterval = getChild(groupPosition, childPosition - 1) as IntervalData
         }
 
@@ -163,7 +163,6 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         if(controller == null) {
             controller = IntervalController(clockView, childOfInterval)
         }else {
-
             // We need to tell the other mController to disconnect from the clock
             clockView.mController?.disconnectFromViews()
             controller.disconnectFromViews()
@@ -171,7 +170,8 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
             clockView.mController = controller
         }
 
-        mCachedControllers[previousInterval?.id]?.setNextInterval(controller)
+        if(childPosition > 0)
+            mCachedControllers[previousInterval!!.id]!!.setNextInterval(controller)
 
         //mCachedViews[childOfInterval.id] = toReturn
         mCachedControllers[childOfInterval.id] = controller
@@ -182,7 +182,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         }
         // Ensures when we move items around, the next intervals are getting updated
         if(isLastChild){
-            mCachedControllers[childOfInterval.id]?.setNextInterval(null)
+            controller.setNextInterval(null)
         }
 
         return toReturn
