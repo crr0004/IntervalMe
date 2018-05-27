@@ -49,7 +49,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             mClockTickRunnable = TickClockRunnable(mClockView, TimeUnit.SECONDS.toMillis(childOfInterval.duration), this)
         if (childOfInterval.runningDuration > 0) {
             mClockTickRunnable.mTimeToRun = childOfInterval.runningDuration
-            mClockView!!.setClockTime(mClockTickRunnable.mTimeToRun)
+            mClockView?.setClockTime(mClockTickRunnable.mTimeToRun)
         }
         //Only create new sound mController if it's been previously released
         //if(mSoundController == null)
@@ -81,7 +81,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     private fun startClockAsNew() {
         mClockTickRunnable.reset()
         mClockTickRunnable.mRunning = true
-        Thread(mClockTickRunnable).start()
+        Thread(mClockTickRunnable, mChildOfInterval.label).start()
         mClockRunning = true
     }
 
