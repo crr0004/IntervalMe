@@ -16,10 +16,10 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     private var mClockRunning = false
     private val DEBUG_TAG = "ICGestures"
-    private var mDetector: GestureDetectorCompat? = null
-    private var mClockTickRunnable: TickClockRunnable? = null
+    private lateinit var mDetector: GestureDetectorCompat
+    private lateinit var mClockTickRunnable: TickClockRunnable
     private var mClockView: IntervalClockView? = null
-    var mChildOfInterval: IntervalData? = null
+    lateinit var mChildOfInterval: IntervalData
     private var mNextInterval: IntervalController? = null
     private var mSoundController: IntervalSoundController? = null
 
@@ -41,31 +41,25 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         mNextInterval = nextInterval
         mDetector = GestureDetectorCompat(mClockView?.context, this)
 
-        mClockView!!.setOnTouchListener { _, event ->
-            mDetector!!.onTouchEvent(event)
+        mClockView?.setOnTouchListener { _, event ->
+            mDetector.onTouchEvent(event)
         }
 
-        mClockView!!.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))
-        if(mClockTickRunnable == null) {
-            mClockTickRunnable = TickClockRunnable(mClockView!!, TimeUnit.SECONDS.toMillis(childOfInterval.duration), this)
-        }else{
-            mClockTickRunnable!!.mClockView = mClockView!!
-        }
+        mClockView?.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))
+            mClockTickRunnable = TickClockRunnable(mClockView, TimeUnit.SECONDS.toMillis(childOfInterval.duration), this)
         if (childOfInterval.runningDuration > 0) {
-            mClockTickRunnable!!.timeToRun = childOfInterval.runningDuration
-            mClockView!!.setClockTime(mClockTickRunnable!!.timeToRun)
+            mClockTickRunnable.timeToRun = childOfInterval.runningDuration
+            mClockView!!.setClockTime(mClockTickRunnable.timeToRun)
         }
         //Only create new sound mController if it's been previously released
-        if(mSoundController == null)
-            mSoundController = IntervalSoundController(clockView.context,R.raw.digital_watch_alarm_1)
+        //if(mSoundController == null)
+            //mSoundController = IntervalSoundController(clockView.context,R.raw.digital_watch_alarm_1)
     }
 
     open fun disconnectFromViews(){
         mClockView?.setOnTouchListener(null)
-        mClockTickRunnable?.releaseClockView()
+        mClockTickRunnable.releaseClockView()
     }
-
-    constructor()
 
     override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
         // We've started the clock for the first time
@@ -73,20 +67,20 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             startClockAsNew()
         }else{
             // The clock has already been started so now we just invert the runnable
-            mClockTickRunnable!!.mRunning = !mClockTickRunnable!!.mRunning
-            if(mClockTickRunnable!!.mRunning){
+            mClockTickRunnable.mRunning = !mClockTickRunnable.mRunning
+            if(mClockTickRunnable.mRunning){
                 // The clock was paused so we need to start it again
                 // We also move the clock ahead to the current time minus however much time has passed
-                mClockTickRunnable!!.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable!!.mElapsedTime
-                mClockView!!.post(mClockTickRunnable)
+                mClockTickRunnable.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable.mElapsedTime
+               // mClockView!!.post(mClockTickRunnable)
             }
         }
         return true
     }
 
     private fun startClockAsNew() {
-        mClockTickRunnable!!.reset()
-        mClockTickRunnable!!.mRunning = true
+        mClockTickRunnable.reset()
+        mClockTickRunnable.mRunning = true
         Thread(mClockTickRunnable).start()
         mClockRunning = true
     }
@@ -100,17 +94,17 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     open fun stopAndRefreshClock() {
         mClockRunning = false
-        mClockTickRunnable?.mRunning = false
+        mClockTickRunnable.mRunning = false
         mClockView!!.mPercentageComplete = 0f
-        mClockTickRunnable?.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval?.duration ?: 0L)
-        mClockView!!.setClockTime(mClockTickRunnable!!.timeToRun)
+        mClockTickRunnable.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)
+        mClockView!!.setClockTime(mClockTickRunnable.timeToRun)
     }
 
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-        mClockTickRunnable!!.timeToRun -= distanceX.toLong() * 100
-        mClockView!!.setClockTime(mClockTickRunnable!!.timeToRun)
+        mClockTickRunnable.timeToRun -= distanceX.toLong() * 100
+        mClockView!!.setClockTime(mClockTickRunnable.timeToRun)
         if(mClockRunning) {
-            mClockTickRunnable!!.updatePercentComplete()
+            mClockTickRunnable.updatePercentComplete()
         }
         return true
     }
@@ -135,7 +129,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     }
 
     open fun onPause() {
-        mChildOfInterval?.runningDuration = mClockTickRunnable!!.timeToRun
+        mChildOfInterval.runningDuration = mClockTickRunnable.timeToRun
     }
 
     open fun onStop() {
@@ -155,16 +149,12 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     open fun connectNewClockView(clockView: IntervalClockView) {
         mClockView = clockView
         mClockView!!.mPercentageComplete = 0f
-        mClockTickRunnable?.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval?.duration ?: 0L)
-        mClockView!!.setClockTime(mClockTickRunnable?.timeToRun ?: 0L)
-        mClockTickRunnable?.mClockView = clockView
+        mClockTickRunnable.timeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)
+        mClockView!!.setClockTime(mClockTickRunnable.timeToRun)
+        mClockTickRunnable.mClockView = clockView
         mClockView!!.setOnTouchListener { _, event ->
-            mDetector!!.onTouchEvent(event)
+            mDetector.onTouchEvent(event)
         }
-    }
-
-    open fun isEmpty(): Boolean{
-        return false
     }
 
     private class TickClockRunnable(
@@ -182,12 +172,19 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             while(mRunning) {
                 mElapsedTime = SystemClock.elapsedRealtime() - mStartingTime
                 if (timeToRun - mElapsedTime >= 100f && mRunning) {
-                    updatePercentComplete()
-                    mClockView?.setClockTime(timeToRun - mElapsedTime)
-                    //mClockView?.postDelayed(this, 60)
+
+
+                    mClockView?.post( {
+                        updatePercentComplete()
+                        mClockView?.setClockTime(timeToRun - mElapsedTime)
+                    })
+                    Thread.sleep(33)
                 } else if (mRunning) {
-                    mClockView?.mPercentageComplete = 1f
-                    mClockView?.setClockTime(0)
+
+                    mClockView?.post({
+                        mClockView?.mPercentageComplete = 1f
+                        mClockView?.setClockTime(0)
+                    })
                     mIntervalController.finishedTimer()
                     mRunning = false
                 }
