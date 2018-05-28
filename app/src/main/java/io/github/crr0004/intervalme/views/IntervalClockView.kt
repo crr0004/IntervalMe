@@ -3,6 +3,7 @@ package io.github.crr0004.intervalme.views
 import android.content.Context
 import android.graphics.*
 import android.os.Build
+import android.os.Handler
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.View
@@ -27,6 +28,7 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
     private var mCenter = PointF(0.0f,0.0f)
     private var mBounds = RectF()
     private val mIntervalPaddingDP = 8.0
+    private val mHandler: Handler = Handler()
 
     // Convenience property so that the reference to IntervalController isn't lost
     var mController: IntervalController? = null
@@ -83,8 +85,6 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
         }
 
     }
-
-
 
     /**
      * Call this view's OnClickListener, if it is defined.  Performs all normal
@@ -145,6 +145,16 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
 
         canvas.drawText(mClockText.toString(),mCenter.x,mCenter.y,mTextPaint)
 
+    }
+
+
+
+    /**
+     * @return A handler associated with the thread running the View. This
+     * handler can be used to pump events in the UI events queue.
+     */
+    override fun getHandler(): Handler {
+        return mHandler
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
