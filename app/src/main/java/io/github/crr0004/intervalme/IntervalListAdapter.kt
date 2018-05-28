@@ -171,6 +171,7 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
         val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
+        val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleDeleteButton)
         toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
 
         // Controller hasn't been forward cached so create it
@@ -193,6 +194,11 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
 
         editButton.setOnClickListener {
             mHostActivity.launchAddInEditMode(childOfInterval)
+        }
+        deleteButton.setOnClickListener {
+            mCachedControllers.remove(childOfInterval.id)
+            mIntervalDao!!.delete(childOfInterval)
+            notifyDataSetChanged()
         }
         // Ensures when we move items around, the next intervals are getting updated
         if(isLastChild){

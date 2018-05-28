@@ -16,4 +16,5 @@
     <string name="update">Update</string>
     <string name="add_interval">Add Interval</string>
     <string name="start_all_intervals">Start all intervals</string>
+    <string name="remove_interval_button">Remove interval button</string>
 </resources>

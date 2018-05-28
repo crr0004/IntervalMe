@@ -21,6 +21,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/clockSingleDeleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="68dp"
+        android:contentDescription="@string/remove_interval_button"
+        custom:layout_constraintEnd_toEndOf="parent"
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:srcCompat="@drawable/ic_remove_white_24dp" />
+
     <TextView
         android:id="@+id/clockLabelTxt"
         android:layout_width="166dp"
