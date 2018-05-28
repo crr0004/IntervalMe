@@ -154,7 +154,8 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         //toReturn = mCachedViews[childOfInterval.id]
 
         //Top null check for cached view
-        toReturn = convertView
+        if(convertView?.id == R.layout.interval_single_clock)
+            toReturn = convertView
         // Look for our mController that may have been forward init
         var controller: IntervalController? = mCachedControllers[childOfInterval.id]
         // If we're using an existing mController we must make sure to release properly before re-init
@@ -216,6 +217,12 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
             mCachedControllers[id]?.refreshInterval(updatedInterval)
             mCachedControllers[id]?.stopAndRefreshClock()
             mCachedViews[id]?.findViewById<TextView>(R.id.clockLabelTxt)?.text = updatedInterval.label
+        }
+    }
+
+    fun startAllIntervals() {
+        mCachedControllers.forEach { id, controller ->
+            controller.startClockAsNew()
         }
     }
 }

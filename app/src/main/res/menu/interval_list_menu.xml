@@ -8,5 +8,11 @@
         android:title="@string/add_interval"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/action_start_all_clocks"
+        android:title="@string/start_all_intervals"
+        app:showAsAction="withText"
+        />
+
 
 </menu>
