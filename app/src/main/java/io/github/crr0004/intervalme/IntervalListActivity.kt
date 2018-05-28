@@ -56,6 +56,10 @@ class IntervalListActivity : AppCompatActivity() {
                 ActivityCompat.startActivityForResult(this, intent, INTENT_ADD_REQUEST_CODE, null)
                 true
             }
+            R.id.action_start_all_clocks ->{
+                mAdapter?.startAllIntervals()
+                true
+            }
             else ->
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
