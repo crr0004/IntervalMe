@@ -8,10 +8,7 @@ import android.support.v7.widget.AppCompatImageButton
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseExpandableListAdapter
-import android.widget.ExpandableListView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
@@ -21,7 +18,9 @@ import io.github.crr0004.intervalme.views.IntervalClockView
 /**
  * Created by crr00 on 24-Apr-18.
  */
-class IntervalListAdapter constructor(private val mHostActivity: IntervalListActivity, private val mHost: ExpandableListView): BaseExpandableListAdapter() {
+class IntervalListAdapter
+        constructor(private val mHostActivity: IntervalListActivity, private val mHost: ExpandableListView):
+        BaseExpandableListAdapter(), DragDropAnimationController.DragDropViewSource<IntervalData> {
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
@@ -40,6 +39,15 @@ class IntervalListAdapter constructor(private val mHostActivity: IntervalListAct
         }
         mIntervalDao = mdb!!.intervalDataDao()
     }
+
+    override fun getAdapter(): ExpandableListAdapter {
+        return this
+    }
+
+    override fun swapItems(item1: IntervalData, item2: IntervalData) {
+    }
+
+
 
     /**
      * Changes the database source for the adapter.

@@ -18,6 +18,8 @@ class IntervalListActivity : AppCompatActivity() {
 
     private var mAdapter: IntervalListAdapter? = null
     private var mExpandableListView: ExpandableListView? = null
+    private lateinit var mDragDropSortController: DragDropAnimationController<Any?>
+
     companion object {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
         const val INTENT_EXTRA_RENEW_DATA_ID = "ilrd"
@@ -25,10 +27,14 @@ class IntervalListActivity : AppCompatActivity() {
         const val INTENT_ADD_REQUEST_CODE = 2
     }
 
+    init {
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_list)
+
 
         mExpandableListView = findViewById(R.id.intervalsExpList)
         mAdapter = IntervalListAdapter(this, mExpandableListView!!)
@@ -40,6 +46,8 @@ class IntervalListActivity : AppCompatActivity() {
                 mExpandableListView!!.expandGroup(index+1)
             }
         }
+
+        mDragDropSortController = DragDropAnimationController<Any?>(this, mAdapter as DragDropAnimationController.DragDropViewSource<Any?>)
 
     }
 
