@@ -15,17 +15,10 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
                         var ownerOfGroup: Boolean = true,
                         var lastModified: Date = Date(),
                         var duration: Long = -1,
-                        var runningDuration: Long = 0
+                        var runningDuration: Long = 0,
+                        var groupPosition: Long = 0
 ) {
     constructor():this(label="")
-
-    /**
-     * Sets the passed interval as a child of this interval.
-     * Sets this interval as the owner of group
-     */
-    fun setAsParentOf(interval: IntervalData){
-        interval.group = this.group
-    }
 
     companion object {
         fun generate(amount: Int): Array<IntervalData?>{
@@ -78,5 +71,16 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
      */
     override fun toString(): String {
         return "$id;$label;$duration;$ownerOfGroup;$group"
+    }
+
+    override fun hashCode(): Int {
+        var result = label?.hashCode() ?: 0
+        result = 31 * result + group.hashCode()
+        result = 31 * result + ownerOfGroup.hashCode()
+        result = 31 * result + lastModified.hashCode()
+        result = 31 * result + duration.hashCode()
+        result = 31 * result + runningDuration.hashCode()
+        result = 31 * result + groupPosition.hashCode()
+        return result
     }
 }

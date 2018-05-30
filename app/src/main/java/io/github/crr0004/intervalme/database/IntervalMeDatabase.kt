@@ -10,7 +10,7 @@ import android.content.Context
  * Created by crr00 on 24-Apr-18.
  */
 
-@Database(entities = arrayOf(IntervalData::class), version = 4)
+@Database(entities = arrayOf(IntervalData::class), version = 5)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
