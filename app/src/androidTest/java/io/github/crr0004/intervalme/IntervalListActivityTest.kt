@@ -1,39 +1,36 @@
 package io.github.crr0004.intervalme
 
 import android.support.test.InstrumentationRegistry
+import android.support.test.espresso.Espresso.onData
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
+import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intended
+import android.support.test.espresso.intent.Intents.intending
 import android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import android.support.test.espresso.matcher.ViewMatchers.withId
+import android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra
+import android.support.test.espresso.matcher.ViewMatchers.*
+import android.support.test.filters.SmallTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import org.junit.runner.RunWith
-import android.view.View
+import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.setTextInTextView
+import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withChildName
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
-import android.widget.AdapterView
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.TypeSafeMatcher
-import org.junit.*
-import android.support.test.espresso.matcher.BoundedMatcher
-import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
-import android.support.test.espresso.Espresso.onData
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import android.support.test.filters.SmallTest
 import org.hamcrest.Matchers.*
+import org.junit.*
+import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
 public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(IntervalListActivity::class.java) {
     private var mIntervalDao: IntervalDataDOA? = null
     private var mDb: IntervalMeDatabase? = null
-    private val mTestIntervalSize = 10
+    private val mTestIntervalSize = 11
     private val mIntervalParent = IntervalData.generate(1)[0]
+    private val mSecondIntervalParent = IntervalData.generate(1)[0]
     private val mTestIntervals = IntervalData.generate(mTestIntervalSize, mIntervalParent)
     private lateinit var mIds: List<Long>
 
@@ -52,6 +49,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
         mDb = IntervalMeDatabase.getTemporaryInstance(context)
         mIntervalDao = mDb!!.intervalDataDao()
         mIntervalDao?.insert(mIntervalParent!!)
+        mIntervalDao?.insert(mSecondIntervalParent!!)
         mIds = mIntervalDao?.insert(mTestIntervals)!!
     }
 
@@ -119,50 +117,41 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
 
     }
 
-    fun withChildName(intervalData: IntervalData): Matcher<Any> {
-        checkNotNull(intervalData)
-        return withChildName(equalTo(intervalData))
+    @Test
+    fun editItemsToNewGroup(){
+        // Check the two parent groups
+        onData(allOf(instanceOf(IntervalData::class.java), equalTo(mIntervalParent)))
+                .inAdapterView(withId(R.id.intervalsExpList))
+                .check(matches(isDisplayed()))
+                .perform(click())
+        onData(allOf(instanceOf(IntervalData::class.java), equalTo(mSecondIntervalParent)))
+                .inAdapterView(withId(R.id.intervalsExpList))
+                .check(matches(isDisplayed()))
+                .perform(click())
+
+        // Click edit on one the child intervals
+        val intervalToEdit = mTestIntervals[mTestIntervalSize/2]!!
+        onData(allOf((
+                instanceOf(IntervalData::class.java)), withChildName(intervalToEdit)))
+                .inAdapterView(withId(R.id.intervalsExpList))
+                .onChildView(withId(R.id.clockSingleEditButton))
+                .check(matches(isDisplayed()))
+                .perform(click())
+        onView(withId(R.id.intervalParentTxt)).check(matches(withText(intervalToEdit.group.toString())))
+        onView(withId(R.id.intervalNameTxt)).check(matches(withText(intervalToEdit.label.toString())))
+
+        // Update the group value and come back to ListActivity
+        onView(withId(R.id.intervalParentTxt)).perform(setTextInTextView(mSecondIntervalParent!!.group.toString()))
+        onView(withId(R.id.intervalAddBtn)).perform(click())
+        onView(withId(R.id.goToListBtn)).perform(click())
+
+        // Check intent has come back correctly
+        intending(allOf(
+                hasExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, intervalToEdit.id)
+        ))
+
+
     }
 
-    fun withChildName(intervalData: Matcher<IntervalData>): Matcher<Any> {
-        checkNotNull(intervalData)
-        // ChildStruct is the Class returned by BaseExpandableListAdapter.getChild()
-        return object : BoundedMatcher<Any, IntervalData>(IntervalData::class.java) {
 
-            public override fun matchesSafely(data: IntervalData): Boolean {
-                return intervalData.matches(data)
-            }
-
-            override fun describeTo(description: Description) {
-                intervalData.describeTo(description)
-            }
-        }
-    }
-
-    private fun withAdaptedData(dataMatcher: Matcher<Any>): Matcher<View> {
-        return object : TypeSafeMatcher<View>() {
-
-            @Override
-            override fun describeTo(description: Description) {
-                description.appendText("with class name: ")
-                dataMatcher.describeTo(description)
-            }
-
-            @Override
-            override fun matchesSafely(view: View): Boolean {
-                if (view !is AdapterView<*>) {
-                    return false
-                }
-
-                val adapter = (view as AdapterView<*>).adapter
-                for (i in 0 until adapter.count) {
-                    if (dataMatcher.matches(adapter.getItem(i))) {
-                        return true
-                    }
-                }
-
-                return false
-            }
-        }
-    }
 }
