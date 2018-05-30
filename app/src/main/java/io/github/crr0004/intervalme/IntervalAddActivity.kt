@@ -113,18 +113,25 @@ class IntervalAddActivity : AppCompatActivity() {
             val text = (findViewById<TextView>(R.id.intervalNameTxt)).text
             val durationText = (findViewById<TextView>(R.id.intervalDurationTxt)).text
             val groupText = (findViewById<TextView>(R.id.intervalParentTxt)).text
+            val intervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
 
             mIntervalToEdit!!.duration = durationText.toString().toLong()
             mIntervalToEdit!!.label = text.toString()
             try {
                 val groupUUID = UUID.fromString(groupText.toString())
-                mIntervalToEdit!!.group = groupUUID
+                if(mIntervalToEdit!!.group != groupUUID) {
+                    intervalDao.shuffleChildrenInGroupUpFrom(mIntervalToEdit!!.groupPosition, mIntervalToEdit!!.group)
+                    mIntervalToEdit!!.group = groupUUID
+                    mIntervalToEdit!!.groupPosition = intervalDao.getChildSizeOfGroup(groupUUID)+1
+
+                }
                 mIntervalToEdit!!.ownerOfGroup = false
             }catch (e: IllegalArgumentException){
 
             }
 
-            IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao().update(mIntervalToEdit!!)
+            mIntervalToEdit!!.lastModified = Date()
+            intervalDao.update(mIntervalToEdit!!)
 
             Toast.makeText(this, "Updated interval", Toast.LENGTH_SHORT).show()
             mUpdatedInterval = true
@@ -140,17 +147,24 @@ class IntervalAddActivity : AppCompatActivity() {
         val text = (findViewById<TextView>(R.id.intervalNameTxt)).text
         val durationText = (findViewById<TextView>(R.id.intervalDurationTxt)).text
         val groupText = (findViewById<TextView>(R.id.intervalParentTxt)).text
+        val intervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
 
         val interval: IntervalData
         interval = try {
             val groupUUID = UUID.fromString(groupText.toString())
-            IntervalData(label=text.toString(), duration = durationText.toString().toLong(),group = groupUUID,ownerOfGroup = false)
+            val childCount = intervalDao.getChildSizeOfGroup(groupUUID)
+            IntervalData(
+                    label=text.toString(),
+                    duration = durationText.toString().toLong(),
+                    group = groupUUID,
+                    ownerOfGroup = false,
+                    groupPosition = childCount+1)
         }catch (e: IllegalArgumentException){
             //Toast.makeText(this, "Invalid UUID. Setting to random", Toast.LENGTH_SHORT).show()
             IntervalData(label=text.toString(), duration = durationText.toString().toLong())
         }
 
-        IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao().insert(interval)
+        intervalDao.insert(interval)
         mUpdatedInterval = true
         Toast.makeText(this, "Added interval", Toast.LENGTH_SHORT).show()
     }

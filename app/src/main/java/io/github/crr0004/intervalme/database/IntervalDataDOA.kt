@@ -54,8 +54,14 @@ interface IntervalDataDOA {
              */
     fun getGroupByOffset(offset: Long): IntervalData
 
-    @Query("select * from Interval where (NOT ownerOfGroup) AND `group` = :group order by id limit 1 offset :offset-1")
+    @Query("select * from Interval where (NOT ownerOfGroup) AND `group` = :group order by groupPosition limit 1 offset :offset-1")
     fun getChildOfGroupByOffset(offset: Long, group: UUID): IntervalData
+
+    @Query("update Interval set groupPosition = groupPosition - 1 where `group` = :group AND groupPosition > :from")
+    fun shuffleChildrenInGroupUpFrom(from: Long, group: UUID)
+
+    @Query("select COUNT(id) from Interval WHERE (NOT ownerOfGroup) AND `group` = :group")
+    fun getChildSizeOfGroup(group: UUID): Long
 
     @Query("delete from Interval")
     fun deleteAll()
