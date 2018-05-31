@@ -14,11 +14,13 @@ import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.filters.SmallTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.itemFollows
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.setTextInTextView
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withIntervalData
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
+import junit.framework.Assert.assertEquals
 import org.hamcrest.Matchers.*
 import org.junit.*
 import org.junit.runner.RunWith
@@ -115,6 +117,29 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 hasExtra(IntervalAddActivity.EDIT_MODE_FLAG_ID, true)
         ))
 
+    }
+
+    @Test
+    fun swapItems(){
+        // Check first group and expand it
+        onData(allOf(instanceOf(IntervalData::class.java), equalTo(mIntervalParent)))
+                .inAdapterView(withId(R.id.intervalsExpList))
+                .check(matches(isDisplayed()))
+                .perform(click())
+
+        var interval1 = mIntervalDao!!.get(mIds[0])
+        var interval2 = mIntervalDao!!.get(mIds[1])
+
+        onView(withId(R.id.intervalsExpList)).perform(CustomViewActionsMatchers.swapIntervalListAdapterItems(interval1, interval2))
+
+        interval1 = mIntervalDao!!.get(mIds[0])
+        interval2 = mIntervalDao!!.get(mIds[1])
+
+        assertEquals(interval1.groupPosition, 1)
+        assertEquals(interval2.groupPosition, 0)
+
+        onView(withId(R.id.intervalsExpList))
+                .check(itemFollows(0, interval2, interval1))
     }
 
     @Test

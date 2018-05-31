@@ -36,21 +36,19 @@ class IntervalListAdapter
         return this
     }
 
-    override fun swapItems(item1: IntervalData, item2: IntervalData) {
-    }
+    override fun swapItems(a: IntervalData, b: IntervalData) {
+        val aPos = a.groupPosition
+        val bPos = b.groupPosition
 
+        b.groupPosition = aPos
+        a.groupPosition = bPos
 
+        mCachedControllers[b.id]!!.setNextInterval(mCachedControllers[a.id])
 
-    /**
-     * Changes the database source for the adapter.
-     * This is mainly used for dependency injection
-     * @param db The database to change to. All dao's will be created from this
-     */
-    public fun updateDataSource(db: IntervalMeDatabase){
-        mdb = db
-        mIntervalDao = mdb!!.intervalDataDao()
-        notifyDataSetInvalidated()
+        mIntervalDao!!.update(a)
+        mIntervalDao!!.update(b)
 
+        this.notifyDataSetChanged()
     }
 
     override fun getGroup(groupPosition: Int): IntervalData {
