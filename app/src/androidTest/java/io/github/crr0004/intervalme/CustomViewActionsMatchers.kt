@@ -1,7 +1,9 @@
 package io.github.crr0004.intervalme
 
+import android.support.test.espresso.NoMatchingViewException
 import android.support.test.espresso.UiController
 import android.support.test.espresso.ViewAction
+import android.support.test.espresso.ViewAssertion
 import android.support.test.espresso.matcher.BoundedMatcher
 import android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -10,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ExpandableListView
 import android.widget.TextView
 import io.github.crr0004.intervalme.database.IntervalData
+import junit.framework.AssertionFailedError
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
@@ -69,6 +72,24 @@ public class CustomViewActionsMatchers{
             }
         }
 
+        fun swapIntervalListAdapterItems(intervalData1: IntervalData, intervalData2: IntervalData): ViewAction {
+            return object : ViewAction {
+                override fun getConstraints(): Matcher<View> {
+                    return allOf(isDisplayed(), isAssignableFrom(ExpandableListView::class.java))
+                }
+
+                override fun perform(uiController: UiController, view: View) {
+                    if((view as ExpandableListView).expandableListAdapter is IntervalListAdapter){
+                        ((view.expandableListAdapter) as IntervalListAdapter).swapItems(intervalData1, intervalData2)
+                    }
+                }
+
+                override fun getDescription(): String {
+                    return "swap items in intervallistadapter"
+                }
+            }
+        }
+
         fun invalidateAdapter(): ViewAction {
             return object : ViewAction {
                 override fun getConstraints(): Matcher<View> {
@@ -81,6 +102,37 @@ public class CustomViewActionsMatchers{
 
                 override fun getDescription(): String {
                     return "invalidate expandablelistview"
+                }
+            }
+        }
+
+        /**
+         * Check if a follows b
+         */
+        fun itemFollows(groupPosition: Int, a: IntervalData, b: IntervalData): ViewAssertion {
+            return object : ViewAssertion {
+
+                override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
+                    if(view !is ExpandableListView){
+                        throw AssertionFailedError("Not a ExpandableListView")
+                    }
+                    if(view.expandableListAdapter !is IntervalListAdapter){
+                        throw AssertionFailedError("Adapter is not a IntervalListAdapter")
+                    }
+                    val adapter = view.expandableListAdapter as IntervalListAdapter
+                    if(b.groupPosition - a.groupPosition < 1){
+                        val indexDifference = b.groupPosition - a.groupPosition
+                        throw AssertionFailedError("$a does not follow $b by index check\nIndex difference: $indexDifference")
+                    }
+                    val aFromAdapter = adapter.getChild(groupPosition, a.groupPosition.toInt())
+                    val bFromAdapter = adapter.getChild(groupPosition, b.groupPosition.toInt())
+
+                    if(aFromAdapter != a){
+                        throw AssertionFailedError("$a doesn't equal $aFromAdapter")
+                    }
+                    if(bFromAdapter != b){
+                        throw AssertionFailedError("$b doesn't equal $bFromAdapter")
+                    }
                 }
             }
         }
