@@ -19,8 +19,17 @@ abstract class IntervalMeDatabase : RoomDatabase() {
     companion object {
         private var INSTANCE: IntervalMeDatabase? = null
         private var TEMP_INSTANCE: IntervalMeDatabase? = null
+        public var USING_TEMP_DATABSE = false
 
-        fun getInstance(context: Context): IntervalMeDatabase? {
+        fun getInstance(context: Context): IntervalMeDatabase?{
+            return if(USING_TEMP_DATABSE){
+                getTemporaryInstance(context)
+            }else{
+                getSavedInstance(context)
+            }
+        }
+
+        fun getSavedInstance(context: Context): IntervalMeDatabase? {
             if (INSTANCE == null) {
                 synchronized(IntervalMeDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,

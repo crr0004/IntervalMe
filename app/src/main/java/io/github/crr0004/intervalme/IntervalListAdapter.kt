@@ -27,16 +27,8 @@ class IntervalListAdapter
     private val mCachedViews: HashMap<Long, View> = HashMap()
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
 
-    companion object {
-        public var IN_MEMORY_DB = false
-    }
-
     init {
-        if(!IN_MEMORY_DB) {
-            mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
-        }else{
-            mdb = IntervalMeDatabase.getTemporaryInstance(mHostActivity.applicationContext)
-        }
+        mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
         mIntervalDao = mdb!!.intervalDataDao()
     }
 
