@@ -16,7 +16,7 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
                         var lastModified: Date = Date(),
                         var duration: Long = -1,
                         var runningDuration: Long = 0,
-                        var groupPosition: Long = 0
+                        var groupPosition: Long = -1
 ) {
     constructor():this(label="")
 
@@ -33,7 +33,7 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
         fun generate(amount: Int, intervalParent: IntervalData?): Array<IntervalData?> {
             val returnValue = arrayOfNulls<IntervalData>(amount)
             for(i in 0 until returnValue.size){
-                returnValue[i] = IntervalData(label = UUID.randomUUID().toString(), group = intervalParent!!.group, ownerOfGroup = false)
+                returnValue[i] = IntervalData(label = UUID.randomUUID().toString(), group = intervalParent!!.group, ownerOfGroup = false,groupPosition = i.toLong())
                 returnValue[i]!!.duration= (Math.random()*100L).toLong()
             }
 
