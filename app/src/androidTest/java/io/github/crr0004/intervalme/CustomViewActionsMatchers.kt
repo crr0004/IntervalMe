@@ -7,6 +7,7 @@ import android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ExpandableListView
 import android.widget.TextView
 import io.github.crr0004.intervalme.database.IntervalData
 import org.hamcrest.Description
@@ -33,12 +34,12 @@ public class CustomViewActionsMatchers{
                 }
             }
         }
-        fun withChildName(intervalData: IntervalData): Matcher<Any> {
+        fun withIntervalData(intervalData: IntervalData): Matcher<Any> {
             checkNotNull(intervalData)
-            return withChildName(Matchers.equalTo(intervalData))
+            return withIntervalData(Matchers.equalTo(intervalData))
         }
 
-        fun withChildName(intervalData: Matcher<IntervalData>): Matcher<Any> {
+        fun withIntervalData(intervalData: Matcher<IntervalData>): Matcher<Any> {
             checkNotNull(intervalData)
             // ChildStruct is the Class returned by BaseExpandableListAdapter.getChild()
             return object : BoundedMatcher<Any, IntervalData>(IntervalData::class.java) {
@@ -49,6 +50,37 @@ public class CustomViewActionsMatchers{
 
                 override fun describeTo(description: Description) {
                     intervalData.describeTo(description)
+                }
+            }
+        }
+
+        public fun groupIsIntervalData(intervalData: Matcher<IntervalData>, view: Matcher<View>): Matcher<View>{
+            return object : TypeSafeMatcher<View>(){
+                override fun describeTo(description: Description) {
+                    description.appendText("with interval name: ")
+                    intervalData.describeTo(description)
+                    description.appendText(" with view: ")
+                    view.describeTo(description)
+                }
+
+                override fun matchesSafely(item: View): Boolean {
+                    return false
+                }
+            }
+        }
+
+        fun invalidateAdapter(): ViewAction {
+            return object : ViewAction {
+                override fun getConstraints(): Matcher<View> {
+                    return allOf(isDisplayed(), isAssignableFrom(ExpandableListView::class.java))
+                }
+
+                override fun perform(uiController: UiController, view: View) {
+                    (view as ExpandableListView).invalidateViews()
+                }
+
+                override fun getDescription(): String {
+                    return "invalidate expandablelistview"
                 }
             }
         }
