@@ -15,7 +15,7 @@ import android.support.test.filters.SmallTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.setTextInTextView
-import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withChildName
+import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withIntervalData
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
@@ -38,7 +38,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
         @BeforeClass
         @JvmStatic
         fun setupDB(){
-            IntervalListAdapter.IN_MEMORY_DB = true
+            IntervalMeDatabase.USING_TEMP_DATABSE = true
             //IntervalMeDatabase.getTemporaryInstance()?.intervalDataDao()?.insert(IntervalData.generate(5))
         }
     }
@@ -46,7 +46,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
     override fun beforeActivityLaunched() {
         super.beforeActivityLaunched()
         val context = InstrumentationRegistry.getTargetContext()
-        mDb = IntervalMeDatabase.getTemporaryInstance(context)
+        mDb = IntervalMeDatabase.getInstance(context)
         mIntervalDao = mDb!!.intervalDataDao()
         mIntervalDao?.insert(mIntervalParent!!)
         mIntervalDao?.insert(mSecondIntervalParent!!)
@@ -86,12 +86,12 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 .perform(click()) // We have to click here to expand the list
                 .check(matches(isDisplayed()))
 
-        onData(allOf((instanceOf(IntervalData::class.java)), withChildName(mTestIntervals[mTestIntervalSize-1]!!)))
+        onData(allOf((instanceOf(IntervalData::class.java)), withIntervalData(mTestIntervals[mTestIntervalSize-1]!!)))
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .check(matches(isDisplayed()))
 
         onData(allOf((
-                instanceOf(IntervalData::class.java)), withChildName(mTestIntervals[0]!!)))
+                instanceOf(IntervalData::class.java)), withIntervalData(mTestIntervals[0]!!)))
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .check(matches(isDisplayed()))
                 //.check(matches(equalTo(mTestIntervals[0]!!)))
@@ -104,7 +104,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 .check(matches(isDisplayed()))
                 .perform(click())
         onData(allOf((
-                instanceOf(IntervalData::class.java)), withChildName(mTestIntervals[0]!!)))
+                instanceOf(IntervalData::class.java)), withIntervalData(mTestIntervals[0]!!)))
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .onChildView(withId(R.id.clockSingleEditButton))
                 .check(matches(isDisplayed()))
@@ -129,10 +129,12 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 .check(matches(isDisplayed()))
                 .perform(click())
 
+
+
         // Click edit on one the child intervals
-        val intervalToEdit = mTestIntervals[mTestIntervalSize/2]!!
+        var intervalToEdit = mIntervalDao!!.get(mIds[mTestIntervalSize/2])
         onData(allOf((
-                instanceOf(IntervalData::class.java)), withChildName(intervalToEdit)))
+                instanceOf(IntervalData::class.java)), withIntervalData(intervalToEdit)))
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .onChildView(withId(R.id.clockSingleEditButton))
                 .check(matches(isDisplayed()))
@@ -150,7 +152,21 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 hasExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, intervalToEdit.id)
         ))
 
+        // close the first group
+        onData(allOf(instanceOf(IntervalData::class.java), equalTo(mIntervalParent)))
+                .inAdapterView(withId(R.id.intervalsExpList))
+                .check(matches(isDisplayed()))
+                .perform(click())
 
+        intervalToEdit = mIntervalDao!!.get(intervalToEdit.id)
+        onView(withId(R.id.intervalsExpList)).perform(CustomViewActionsMatchers.invalidateAdapter())
+        Assert.assertEquals(intervalToEdit.group, mSecondIntervalParent.group)
+
+        // Check the edited interval is still on screen
+        onData(allOf((
+                instanceOf(IntervalData::class.java)), withIntervalData(intervalToEdit)))
+                .inAdapterView(withId(R.id.intervalsExpList))
+                .check(matches(isDisplayed()))
     }
 
 
