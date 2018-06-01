@@ -1,6 +1,9 @@
 package io.github.crr0004.intervalme
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -10,6 +13,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ExpandableListView
+import android.widget.Toast
 import io.github.crr0004.intervalme.IntervalAddActivity.Companion.EDIT_MODE_FLAG_INTERVAL_ID
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
@@ -18,7 +22,7 @@ class IntervalListActivity : AppCompatActivity() {
 
     private var mAdapter: IntervalListAdapter? = null
     private var mExpandableListView: ExpandableListView? = null
-    private lateinit var mDragDropSortController: DragDropAnimationController<Any?>
+    private lateinit var mDragDropSortController: DragDropAnimationController<IntervalData>
 
     companion object {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
@@ -46,9 +50,26 @@ class IntervalListActivity : AppCompatActivity() {
                 mExpandableListView!!.expandGroup(index+1)
             }
         }
+        if(mAdapter !is DragDropAnimationController.DragDropViewSource<IntervalData>){
+            throw ClassCastException("Cannot cast mAdapter to DragDropViewSource<IntervalData>")
+        }
+        mDragDropSortController = DragDropAnimationController(this, mAdapter as DragDropAnimationController.DragDropViewSource<IntervalData>)
 
-        mDragDropSortController = DragDropAnimationController<Any?>(this, mAdapter as DragDropAnimationController.DragDropViewSource<Any?>)
+        mExpandableListView!!.setOnItemLongClickListener { parentAdapter, _, position, _ ->
+            val intervalDataParent = parentAdapter.getItemAtPosition(position) as IntervalData
+            if(intervalDataParent.ownerOfGroup) {
+                val groupUUID = intervalDataParent.group.toString()
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipData = ClipData.newPlainText("group uuid", groupUUID)
+                Toast.makeText(this, "Copied UUID", Toast.LENGTH_SHORT).show()
 
+                clipboard.primaryClip = clipData
+
+                true
+            }else{
+                false
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

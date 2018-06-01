@@ -1,14 +1,15 @@
 package io.github.crr0004.intervalme
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.support.v7.widget.AppCompatImageButton
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseExpandableListAdapter
+import android.widget.ExpandableListAdapter
+import android.widget.ExpandableListView
+import android.widget.TextView
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
@@ -84,18 +85,6 @@ class IntervalListAdapter
         toReturn.setTag(R.id.id_interval_view_interval, intervalData)
 
         //toReturn.setOnLongClickListener(intervalLongClickListener)
-        this.mHost.setOnItemLongClickListener { parentAdapter, _, position, _ ->
-            val intervalDataParent = parentAdapter.getItemAtPosition(position) as IntervalData
-            val groupUUID = intervalDataParent.group.toString()
-            val clipboard = mHostActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clipData = ClipData.newPlainText("group uuid", groupUUID)
-            Toast.makeText(mHostActivity, "Copied UUID", Toast.LENGTH_SHORT).show()
-
-
-            clipboard.primaryClip = clipData
-
-            true
-        }
 
         val groupChildren = mIntervalDao!!.getAllOfGroupWithoutOwner(intervalData.group).reversed()
         groupChildren.forEachIndexed{ index, childInterval ->
@@ -139,6 +128,8 @@ class IntervalListAdapter
 
     }
 
+    private var mInEditMode: Boolean = false
+
     @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View? = null
@@ -171,6 +162,22 @@ class IntervalListAdapter
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
         val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleDeleteButton)
         toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
+
+        if(mInEditMode){
+            toReturn.findViewById<View>(R.id.clockEditCheckbox).visibility = View.VISIBLE
+            toReturn.findViewById<View>(R.id.clockSingleEditButton).visibility = View.VISIBLE
+            toReturn.findViewById<View>(R.id.clockSingleDeleteButton).visibility = View.VISIBLE
+        }else{
+            toReturn.findViewById<View>(R.id.clockEditCheckbox).visibility = View.GONE
+            toReturn.findViewById<View>(R.id.clockSingleEditButton).visibility = View.GONE
+            toReturn.findViewById<View>(R.id.clockSingleDeleteButton).visibility = View.GONE
+        }
+
+        toReturn.setOnLongClickListener {
+            mInEditMode = !mInEditMode
+            this.notifyDataSetChanged()
+            true
+        }
 
         // Controller hasn't been forward cached so create it
         if(controller == null) {
