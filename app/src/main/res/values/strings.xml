@@ -17,4 +17,7 @@
     <string name="add_interval">Add Interval</string>
     <string name="start_all_intervals">Start all intervals</string>
     <string name="remove_interval_button">Remove interval button</string>
+    <string name="swap_selected_intervals">Swap Selected Intervals</string>
+    <string name="debug_fix_group_positions">DEBUG: Fix Group Positions</string>
+    <string name="edit">Edit</string>
 </resources>
