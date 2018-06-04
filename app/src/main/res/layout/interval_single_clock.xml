@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme"
-    tools:context=".IntervalClockSampleActivity">
+    tools:context=".IntervalClockSampleActivity"
+    android:background="@android:color/white">
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/clockSingleEditButton"
@@ -40,12 +41,23 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:text="Name"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/clockSingleEditButton"
         app:layout_constraintStart_toEndOf="@+id/frameLayout"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/clockLabelPos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:text="0"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/frameLayout"
+        app:layout_constraintTop_toBottomOf="@+id/clockLabelTxt" />
 
     <CheckBox
         android:id="@+id/clockEditCheckbox"
@@ -53,6 +65,8 @@
         android:layout_height="wrap_content"
         android:checked="false"
         android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
