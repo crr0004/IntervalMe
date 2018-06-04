@@ -13,6 +13,22 @@
         android:title="@string/start_all_intervals"
         app:showAsAction="withText"
         />
+    <item
+        android:id="@+id/action_swap_intervals"
+        android:title="@string/swap_selected_intervals"
+        app:showAsAction="withText"
+        />
+    <item
+        android:id="@+id/action_fix_group_positions"
+        android:title="@string/debug_fix_group_positions"
+        app:showAsAction="withText"
+        />
+    <item
+        android:id="@+id/action_edit_items"
+        android:title="@string/edit"
+        android:icon="@drawable/ic_mode_edit_white_24dp"
+        app:showAsAction="ifRoom"
+        />
 
 
 </menu>
