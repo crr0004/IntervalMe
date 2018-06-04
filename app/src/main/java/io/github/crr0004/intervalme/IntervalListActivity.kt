@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v4.app.ActivityCompat
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.AbsListView.CHOICE_MODE_MULTIPLE
 import android.widget.ExpandableListView
 import android.widget.Toast
 import io.github.crr0004.intervalme.IntervalAddActivity.Companion.EDIT_MODE_FLAG_INTERVAL_ID
@@ -43,6 +45,7 @@ class IntervalListActivity : AppCompatActivity() {
         mExpandableListView = findViewById(R.id.intervalsExpList)
         mAdapter = IntervalListAdapter(this, mExpandableListView!!)
         mExpandableListView!!.setAdapter(mAdapter)
+        mExpandableListView!!.choiceMode = CHOICE_MODE_MULTIPLE
         setSupportActionBar(findViewById(R.id.interval_list_actionbar))
         if(savedInstanceState != null){
             val expandedState = savedInstanceState.getBooleanArray(INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID)
@@ -55,21 +58,23 @@ class IntervalListActivity : AppCompatActivity() {
         }
         mDragDropSortController = DragDropAnimationController(this, mAdapter as DragDropAnimationController.DragDropViewSource<IntervalData>)
 
-        mExpandableListView!!.setOnItemLongClickListener { parentAdapter, _, position, _ ->
-            val intervalDataParent = parentAdapter.getItemAtPosition(position) as IntervalData
-            if(intervalDataParent.ownerOfGroup) {
-                val groupUUID = intervalDataParent.group.toString()
+        mExpandableListView!!.setOnItemLongClickListener { parentAdapter, v, position, _ ->
+            val intervalData = parentAdapter.getItemAtPosition(position) as IntervalData
+            if(intervalData.ownerOfGroup) {
+                val groupUUID = intervalData.group.toString()
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData = ClipData.newPlainText("group uuid", groupUUID)
                 Toast.makeText(this, "Copied UUID", Toast.LENGTH_SHORT).show()
 
                 clipboard.primaryClip = clipData
 
-                true
+                false
             }else{
+
                 false
             }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -87,6 +92,55 @@ class IntervalListActivity : AppCompatActivity() {
             }
             R.id.action_start_all_clocks ->{
                 mAdapter?.startAllIntervals()
+                true
+            }
+            R.id.action_swap_intervals ->{
+                val itemPositions = mAdapter!!.mChecked
+                if(itemPositions.size() != 2){
+                    Toast.makeText(this, "Please select two items", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+                val item1 = mExpandableListView!!.getItemAtPosition(itemPositions.keyAt(0)) as IntervalData
+                val item2 = mExpandableListView!!.getItemAtPosition(itemPositions.keyAt(1)) as IntervalData
+
+                mAdapter!!.setItemChecked(itemPositions.keyAt(0), false)
+                mAdapter!!.setItemChecked(itemPositions.keyAt(1), false)
+
+                mDragDropSortController.swapItems(item1,item2)
+
+
+                true
+            }
+            R.id.action_fix_group_positions -> {
+                val intervalDao = IntervalMeDatabase.getInstance(this)!!.intervalDataDao()
+                val groups = intervalDao.getGroupOwners()
+                groups.forEach {
+                    val groupMembers = intervalDao.getAllOfGroupWithoutOwner(it.group)
+                    groupMembers.forEachIndexed { index, intervalData ->
+                        intervalData.groupPosition = (index).toLong()
+                        intervalDao.update(intervalData)
+                    }
+                }
+                mAdapter!!.notifyDataSetInvalidated()
+                true
+            }
+            R.id.action_edit_items -> {
+                if(!mAdapter!!.mInEditMode) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        item.icon = resources.getDrawable(R.drawable.ic_done_white_24dp, theme)
+                    }else{
+                        item.icon = resources.getDrawable(R.drawable.ic_done_white_24dp)
+                    }
+                }else{
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        item.icon = resources.getDrawable(R.drawable.ic_mode_edit_white_24dp, theme)
+                    }else{
+                        item.icon = resources.getDrawable(R.drawable.ic_mode_edit_white_24dp)
+                    }
+                }
+                mAdapter!!.mInEditMode = !mAdapter!!.mInEditMode
+                mAdapter!!.notifyDataSetChanged()
                 true
             }
             else ->

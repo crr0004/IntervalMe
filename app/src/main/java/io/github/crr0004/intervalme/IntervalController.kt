@@ -130,6 +130,10 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         return true
     }
 
+    override fun onLongPress(e: MotionEvent?) {
+        super.onLongPress(e)
+    }
+
     override fun onDown(e: MotionEvent?): Boolean {
         return true
     }

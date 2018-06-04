@@ -1,19 +1,26 @@
 package io.github.crr0004.intervalme
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.content.Context
 import android.support.v7.widget.AppCompatImageButton
+import android.util.Log
+import android.util.SparseBooleanArray
+import android.view.DragEvent.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseExpandableListAdapter
-import android.widget.ExpandableListAdapter
-import android.widget.ExpandableListView
-import android.widget.TextView
+import android.view.animation.DecelerateInterpolator
+import android.widget.*
+import android.widget.ExpandableListView.getPackedPositionForChild
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalClockView
+import kotlinx.android.synthetic.main.interval_single_clock.view.*
+import java.util.*
 
 
 /**
@@ -27,6 +34,8 @@ class IntervalListAdapter
     private var mIntervalDao: IntervalDataDOA? = null
     private val mCachedViews: HashMap<Long, View> = HashMap()
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
+    public val mChecked = SparseBooleanArray()
+    public var mInEditMode: Boolean = false
 
     init {
         mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
@@ -39,12 +48,23 @@ class IntervalListAdapter
 
     override fun swapItems(a: IntervalData, b: IntervalData) {
         val aPos = a.groupPosition
-        val bPos = b.groupPosition
+        var bPos = b.groupPosition
+        val aGroup = a.group
+        val bGroup = b.group
+
+        if(aPos == bPos){
+            bPos++
+        }
 
         b.groupPosition = aPos
         a.groupPosition = bPos
 
-        mCachedControllers[b.id]!!.setNextInterval(mCachedControllers[a.id])
+        b.group = aGroup
+        a.group = bGroup
+
+        if(aGroup == bGroup) {
+            mCachedControllers[b.id]!!.setNextInterval(mCachedControllers[a.id])
+        }
 
         mIntervalDao!!.update(a)
         mIntervalDao!!.update(b)
@@ -83,6 +103,39 @@ class IntervalListAdapter
         val intervalData = getGroup(groupPosition)
         toReturn!!.findViewById<TextView>(R.id.textView).text = intervalData.label ?: "Interval not found"
         toReturn.setTag(R.id.id_interval_view_interval, intervalData)
+        val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupEditButton)
+
+        if(mInEditMode){
+            editButton.visibility = View.VISIBLE
+        }else{
+            editButton.visibility = View.GONE
+        }
+
+        editButton.setOnClickListener {
+            mHostActivity.launchAddInEditMode(intervalData)
+        }
+
+        toReturn.setOnDragListener { v, event ->
+            val eventType = event.action
+            val interval: IntervalData = event.localState as IntervalData
+
+            when(eventType){
+                ACTION_DRAG_ENTERED -> {
+                    true
+                }
+                ACTION_DROP -> {
+                    val groupUUID = intervalData.group
+                    if(interval.group != groupUUID) {
+                        moveIntervalToGroup(interval, groupUUID)
+                        mHost.expandGroup(groupPosition)
+                    }
+                    true
+                }else -> {
+
+                true
+                }
+            }
+        }
 
         //toReturn.setOnLongClickListener(intervalLongClickListener)
 
@@ -102,6 +155,14 @@ class IntervalListAdapter
         }
 
         return toReturn
+    }
+
+    private fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
+        mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+        interval.group = groupUUID
+        interval.groupPosition = mIntervalDao!!.getChildSizeOfGroup(groupUUID) + 1
+        mIntervalDao!!.update(interval)
+        notifyDataSetChanged()
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
@@ -128,7 +189,7 @@ class IntervalListAdapter
 
     }
 
-    private var mInEditMode: Boolean = false
+
 
     @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
@@ -161,7 +222,10 @@ class IntervalListAdapter
         val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
         val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleDeleteButton)
+        val checkBox = toReturn.findViewById<CheckBox>(R.id.clockEditCheckbox)
+
         toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
+        toReturn.findViewById<TextView>(R.id.clockLabelPos)?.text = childOfInterval.groupPosition.toString()
 
         if(mInEditMode){
             toReturn.findViewById<View>(R.id.clockEditCheckbox).visibility = View.VISIBLE
@@ -174,8 +238,87 @@ class IntervalListAdapter
         }
 
         toReturn.setOnLongClickListener {
-            mInEditMode = !mInEditMode
-            this.notifyDataSetChanged()
+            //mInEditMode = !mInEditMode
+            //this.notifyDataSetChanged()
+            toReturn.startDrag(ClipData.newPlainText("",""), View.DragShadowBuilder(toReturn), childOfInterval, View.DRAG_FLAG_GLOBAL)
+            true
+        }
+
+        toReturn.setOnDragListener { v, event ->
+            val eventType = event.action
+            val interval = event.localState as IntervalData
+            v.pivotX = 0f
+            v.pivotY = v.height.toFloat()
+
+            when(eventType){
+                ACTION_DRAG_ENTERED -> {
+                    val set = AnimatorSet()
+                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                                    1f, 0.8f))
+                    set.duration = v.resources.getInteger(
+                            android.R.integer.config_mediumAnimTime).toLong()
+                    set.interpolator = DecelerateInterpolator()
+                    set.start()
+
+                    // Invalidate the view to force a redraw in the new tint
+                    v.invalidate()
+
+                }
+                ACTION_DRAG_EXITED -> {
+                    val set = AnimatorSet()
+                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                            0.8f, 1f))
+                    set.duration = v.resources.getInteger(
+                            android.R.integer.config_mediumAnimTime).toLong()
+                    set.interpolator = DecelerateInterpolator()
+                    set.start()
+                }
+                ACTION_DROP -> {
+                    /**
+                     * First we remove interval from it's current group
+                     * by shuffling everything up from it's current groupPosition
+                     *
+                     * Then we want to drop it into a new position.
+                     * So we need to move everything bellow the new position down
+                     */
+                    val set = AnimatorSet()
+                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                            0.8f, 1f))
+                    set.duration = v.resources.getInteger(
+                            android.R.integer.config_mediumAnimTime).toLong()
+                    set.interpolator = DecelerateInterpolator()
+                    set.start()
+                    val intervalData: IntervalData = v.intervalClockView.mController!!.mChildOfInterval
+
+                    mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+
+                    // Make room in the group for the incoming interval
+                    // -1 from groupPosition so it gets moved as well
+                    mIntervalDao!!.shuffleChildrenDownFrom(intervalData.groupPosition-1, intervalData.group)
+
+                    interval.group = intervalData.group
+                    // Put the interval into the spot above the dropped onto item
+                    interval.groupPosition = intervalData.groupPosition
+                    mIntervalDao!!.update(interval)
+                    this.notifyDataSetChanged()
+                    //swapItems(interval, intervalData)
+                }
+                ACTION_DRAG_ENDED -> {
+                    if(v.scaleY < 1f){
+                        val set = AnimatorSet()
+                        set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                                0.8f, 1f))
+                        set.duration = v.resources.getInteger(
+                                android.R.integer.config_mediumAnimTime).toLong()
+                        set.interpolator = DecelerateInterpolator()
+                        set.start()
+                    }
+                }
+                else -> {
+
+                }
+
+            }
             true
         }
 
@@ -189,6 +332,8 @@ class IntervalListAdapter
             controller.connectNewClockView(clockView)
             clockView.mController = controller
         }
+        // Ensure controller is up to date
+        controller.mChildOfInterval = childOfInterval
 
         if(childPosition > 0)
             mCachedControllers[previousInterval!!.id]!!.setNextInterval(controller)
@@ -196,6 +341,13 @@ class IntervalListAdapter
         //mCachedViews[childOfInterval.id] = toReturn
         mCachedControllers[childOfInterval.id] = controller
 
+        checkBox.setOnClickListener {
+            val flatListPosition = mHost.getFlatListPosition(getPackedPositionForChild(groupPosition, childPosition))
+            setItemChecked(flatListPosition, checkBox.isChecked)
+            //mChecked.put(flatListPosition, checkBox.isChecked)
+            Log.d("ILA", "Checked: " + checkBox.isChecked)
+            //checkBox.toggle()
+        }
 
         editButton.setOnClickListener {
             mHostActivity.launchAddInEditMode(childOfInterval)
@@ -234,6 +386,14 @@ class IntervalListAdapter
     fun startAllIntervals() {
         mCachedControllers.forEach { id, controller ->
             controller.startClockAsNew()
+        }
+    }
+
+    fun setItemChecked(keyAt: Int, b: Boolean) {
+        if(b) {
+            mChecked.put(keyAt, b)
+        }else{
+            mChecked.delete(keyAt)
         }
     }
 }

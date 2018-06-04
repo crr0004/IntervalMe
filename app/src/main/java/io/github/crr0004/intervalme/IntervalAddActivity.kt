@@ -123,7 +123,6 @@ class IntervalAddActivity : AppCompatActivity() {
                     intervalDao.shuffleChildrenInGroupUpFrom(mIntervalToEdit!!.groupPosition, mIntervalToEdit!!.group)
                     mIntervalToEdit!!.group = groupUUID
                     mIntervalToEdit!!.groupPosition = intervalDao.getChildSizeOfGroup(groupUUID)+1
-
                 }
                 mIntervalToEdit!!.ownerOfGroup = false
             }catch (e: IllegalArgumentException){
