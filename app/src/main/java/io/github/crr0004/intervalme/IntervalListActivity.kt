@@ -184,7 +184,13 @@ class IntervalListActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
+
         super.onResume()
+        val cachedControllers = mAdapter!!.mCachedControllers
+        val mIntervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
+        cachedControllers.forEach { key, controller ->
+            controller.onResume(this.applicationContext)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {

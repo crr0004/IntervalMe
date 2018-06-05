@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.content.Context
 import android.os.Handler
 import android.os.SystemClock
 import android.support.v4.view.GestureDetectorCompat
@@ -34,11 +35,12 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
      */
     constructor(mClockView: IntervalClockView? = null,
                 mChildOfInterval: IntervalData,
-                mNextInterval: IntervalController? = null) {
-        init(mClockView, mChildOfInterval, mNextInterval)
+                mNextInterval: IntervalController? = null,
+                applicationContext: Context? = null) {
+        init(mClockView, mChildOfInterval, mNextInterval, applicationContext = applicationContext)
     }
 
-    fun init(clockView: IntervalClockView?, childOfInterval: IntervalData, nextInterval: IntervalController? = null) {
+    fun init(clockView: IntervalClockView?, childOfInterval: IntervalData, nextInterval: IntervalController? = null, applicationContext: Context? = null) {
         mClockView = clockView
         mChildOfInterval = childOfInterval
         mNextInterval = nextInterval
@@ -55,8 +57,8 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             mClockView?.setClockTime(mClockTickRunnable.mTimeToRun)
         }
         //Only create new sound mController if it's been previously released
-        //if(mSoundController == null)
-            //mSoundController = IntervalSoundController(clockView.context,R.raw.digital_watch_alarm_1)
+        if(mSoundController == null && applicationContext != null)
+            mSoundController = IntervalSoundController.instanceWith(applicationContext.applicationContext,R.raw.digital_watch_alarm_1)
     }
 
     open fun disconnectFromViews(){
@@ -156,11 +158,17 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     open fun onPause() {
         mChildOfInterval.runningDuration = mClockTickRunnable.mTimeToRun
+        if(mSoundController != null)
+            IntervalSoundController.release(mSoundController!!)
+        mSoundController = null
+    }
+
+    fun onResume(context: Context){
+        mSoundController = IntervalSoundController.instanceWith(context.applicationContext, R.raw.digital_watch_alarm_1)
     }
 
     open fun onStop() {
-        mSoundController?.release()
-        mSoundController = null
+
     }
 
     open fun setNextInterval(intervalController: IntervalController?) {

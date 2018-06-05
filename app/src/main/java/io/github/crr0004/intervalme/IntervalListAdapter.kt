@@ -147,7 +147,7 @@ class IntervalListAdapter
                 childAboveController =  mCachedControllers[childAbove.id]
             }
             val childController = if(mCachedControllers[childInterval.id] == null) {
-                IntervalController(null, childInterval, childAboveController)
+                IntervalController(null, childInterval, childAboveController, applicationContext = this.mHostActivity.applicationContext)
             }else{
                 mCachedControllers[childInterval.id]
             }
@@ -324,7 +324,7 @@ class IntervalListAdapter
 
         // Controller hasn't been forward cached so create it
         if(controller == null) {
-            controller = IntervalController(clockView, childOfInterval)
+            controller = IntervalController(clockView, childOfInterval, applicationContext = this.mHostActivity.applicationContext)
         }else {
             // We need to tell the other mController to disconnect from the clock
             clockView.mController?.disconnectFromViews()
