@@ -149,7 +149,11 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             mNextInterval!!.previousTimerFinished(this)
         }
         //Log.d(DEBUG_TAG, "IntervalController $mChildOfInterval done")
-        mSoundController?.playDone()
+        if(mNextInterval != null) {
+            mSoundController?.playDone()
+        }else{
+            mSoundController?.playLoop(2)
+        }
     }
 
     private fun previousTimerFinished(previousIntervalController: IntervalController){

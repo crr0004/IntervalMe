@@ -40,6 +40,18 @@ class IntervalSoundController {
         mMediaPlayer.start() // no need to call prepare(); create() does that for you
     }
 
+    fun playLoop(loops: Int){
+        //mMediaPlayer.isLooping = true
+        var loopCount = 0
+        mMediaPlayer.setOnCompletionListener {
+            loopCount++
+            if(loopCount < loops){
+                mMediaPlayer.start()
+            }
+        }
+        mMediaPlayer.start()
+    }
+
     fun release() {
         mMediaPlayer.stop()
         mMediaPlayer.release()
