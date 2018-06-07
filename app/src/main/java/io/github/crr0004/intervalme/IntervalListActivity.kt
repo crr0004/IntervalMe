@@ -114,12 +114,14 @@ class IntervalListActivity : AppCompatActivity() {
             R.id.action_fix_group_positions -> {
                 val intervalDao = IntervalMeDatabase.getInstance(this)!!.intervalDataDao()
                 val groups = intervalDao.getGroupOwners()
-                groups.forEach {
+                groups.forEachIndexed { i, it ->
                     val groupMembers = intervalDao.getAllOfGroupWithoutOwner(it.group)
                     groupMembers.forEachIndexed { index, intervalData ->
                         intervalData.groupPosition = (index).toLong()
                         intervalDao.update(intervalData)
                     }
+                    it.groupPosition = i.toLong()
+                    intervalDao.update(it)
                 }
                 mAdapter!!.notifyDataSetInvalidated()
                 true

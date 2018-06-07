@@ -157,10 +157,10 @@ class IntervalAddActivity : AppCompatActivity() {
                     duration = durationText.toString().toLong(),
                     group = groupUUID,
                     ownerOfGroup = false,
-                    groupPosition = childCount+1)
+                    groupPosition = childCount)
         }catch (e: IllegalArgumentException){
             //Toast.makeText(this, "Invalid UUID. Setting to random", Toast.LENGTH_SHORT).show()
-            IntervalData(label=text.toString(), duration = durationText.toString().toLong())
+            IntervalData(label=text.toString(), duration = durationText.toString().toLong(),groupPosition = intervalDao.getGroupOwners().size.toLong())
         }
 
         intervalDao.insert(interval)

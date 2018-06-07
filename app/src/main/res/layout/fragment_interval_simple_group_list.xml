@@ -3,12 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IntervalClockSampleActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".IntervalSimpleGroupList">
 
-
-    <fragment
-        android:id="@+id/fragment"
-        android:name="io.github.crr0004.intervalme.IntervalSimpleGroupList"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/clockSampleRecycleList"
         android:layout_width="match_parent"
-        android:layout_height="64dp" />
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

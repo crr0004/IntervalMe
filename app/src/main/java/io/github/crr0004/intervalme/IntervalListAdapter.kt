@@ -101,7 +101,7 @@ class IntervalListAdapter
         //}
 
         val intervalData = getGroup(groupPosition)
-        toReturn!!.findViewById<TextView>(R.id.textView).text = intervalData.label ?: "Interval not found"
+        toReturn!!.findViewById<TextView>(R.id.intervalGroupNameTxt).text = intervalData.label ?: "Interval not found"
         toReturn.setTag(R.id.id_interval_view_interval, intervalData)
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupEditButton)
 
