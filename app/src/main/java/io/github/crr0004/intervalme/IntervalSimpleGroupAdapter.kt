@@ -1,8 +1,7 @@
 package io.github.crr0004.intervalme
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.PorterDuff
+import android.os.AsyncTask
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -45,13 +44,31 @@ class IntervalSimpleGroupAdapter(mContext: Context): RecyclerView.Adapter<Interv
     private val mIntervalDAO: IntervalDataDOA
     private var mTracker: SelectionTracker<Long>? = null
     private val mGroupsList: HashMap<Long, IntervalData?>
+        @Synchronized
+        get
 
     init{
         mDb = IntervalMeDatabase.getInstance(mContext)!!
         mIntervalDAO = mDb.intervalDataDao()
         mGroupsList = HashMap(3)
-        mIntervalDAO.getGroupOwners().forEachIndexed { index, intervalData ->
-            mGroupsList[intervalData.id] = intervalData
+        val doneCallBack = {
+            this.notifyDataSetChanged()
+        }
+        GetGroups(mGroupsList, doneCallBack).execute(mContext)
+
+        //mIntervalDAO.getGroupOwners().
+    }
+
+    private class GetGroups(val groupsList: HashMap<Long, IntervalData?>, val doneCallBack: () -> Unit): AsyncTask<Context, Int, Array<IntervalData>>(){
+        override fun doInBackground(vararg p0: Context?): Array<IntervalData> {
+            return IntervalMeDatabase.getInstance(p0[0]!!)!!.intervalDataDao().getGroupOwners()
+        }
+
+        override fun onPostExecute(result: Array<IntervalData>?) {
+            result!!.forEachIndexed { _, intervalData ->
+                groupsList[intervalData.id] = intervalData
+            }
+            doneCallBack()
         }
     }
 
@@ -64,17 +81,13 @@ class IntervalSimpleGroupAdapter(mContext: Context): RecyclerView.Adapter<Interv
 
     override fun getItemCount(): Int {
 
-        return mIntervalDAO.getGroupOwners().size
+        return mGroupsList.size
     }
 
     override fun onBindViewHolder(holder: SimpleGroupViewHolder, position: Int) {
         val groupData = mGroupsList.values.elementAt(position)!!
         holder.bind(groupData)
-        if(mTracker!!.isSelected(groupData.id)){
-            holder.itemView.background.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY)
-        }else{
-            holder.itemView.background.clearColorFilter()
-        }
+
         holder.itemView.invalidate()
     }
 

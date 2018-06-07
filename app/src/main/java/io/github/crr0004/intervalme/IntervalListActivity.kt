@@ -49,7 +49,8 @@ class IntervalListActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.interval_list_actionbar))
         if(savedInstanceState != null){
             val expandedState = savedInstanceState.getBooleanArray(INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID)
-            expandedState.forEachIndexed { index, b ->
+
+            expandedState?.forEachIndexed { index, b ->
                 mExpandableListView!!.expandGroup(index+1)
             }
         }
@@ -157,15 +158,18 @@ class IntervalListActivity : AppCompatActivity() {
      */
     override fun onPause() {
         super.onPause()
-        val cachedControllers = mAdapter!!.mCachedControllers
-        val mIntervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
-        cachedControllers.forEach { key, controller ->
-            controller.onPause()
-            val intervalData = controller.mChildOfInterval
-            if (intervalData != null) {
-                mIntervalDao.update(intervalData)
+        Thread(Runnable {
+            val cachedControllers = mAdapter!!.mCachedControllers
+            val mIntervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
+            cachedControllers.forEach { key, controller ->
+                controller.onPause()
+                val intervalData = controller.mChildOfInterval
+                if (intervalData != null) {
+                    mIntervalDao.update(intervalData)
+                }
             }
-        }
+        }).start()
+
     }
 
     /**

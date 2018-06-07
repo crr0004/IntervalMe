@@ -20,7 +20,8 @@ import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import java.util.*
 
-class IntervalAddActivity : AppCompatActivity() {
+class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragement.OnFragmentInteractionListener {
+
 
     private var mDuration: Int = 0
     private var mDurationTextView: EditText? = null
@@ -29,6 +30,7 @@ class IntervalAddActivity : AppCompatActivity() {
     private val mDurationGestureDetector: DurationGestureDetector = DurationGestureDetector()
     private var mIntervalToEditID: Long = -1
     private var mIntervalToEdit: IntervalData? = null
+    private var mSelectedIntervalGroup: IntervalData? = null
 
     companion object {
         const val EDIT_MODE_FLAG_ID = "edit_mode"
@@ -40,6 +42,7 @@ class IntervalAddActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_interveraladd)
 
         (findViewById<View>(R.id.goToListBtn)).setOnClickListener {
@@ -55,6 +58,13 @@ class IntervalAddActivity : AppCompatActivity() {
         mDurationTextView = findViewById(R.id.intervalDurationTxt)
         mGestureDetector = GestureDetectorCompat(this.applicationContext, mDurationGestureDetector)
 
+        onCreateSetListeners()
+
+        createInEditMode()
+
+    }
+
+    private fun onCreateSetListeners() {
         findViewById<Button>(R.id.intervalAddBtn).setOnClickListener(addIntervalListener)
         findViewById<Button>(R.id.goToClockSampleBtn).setOnClickListener(clockSampleBtnListener)
 
@@ -64,7 +74,7 @@ class IntervalAddActivity : AppCompatActivity() {
             mDurationGestureDetector.direction = 1
 
             val results = mGestureDetector!!.onTouchEvent(event)
-            if(event?.action == MotionEvent.ACTION_UP){
+            if (event?.action == MotionEvent.ACTION_UP) {
                 mDurationGestureDetector.onUp(event)
             }
             results
@@ -72,14 +82,14 @@ class IntervalAddActivity : AppCompatActivity() {
         findViewById<View>(R.id.decreaseDurationBtn).setOnTouchListener { v, event ->
             mDurationGestureDetector.direction = -1
             val results = mGestureDetector!!.onTouchEvent(event)
-            if(event?.action == MotionEvent.ACTION_UP){
+            if (event?.action == MotionEvent.ACTION_UP) {
                 mDurationGestureDetector.onUp(event)
             }
             results
         }
 
         mDurationTextView?.setOnEditorActionListener { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_DONE){
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val seconds = v.text.toString().toLong()
                 mDurationGestureDetector.mDuration = seconds
                 v.clearFocus()
@@ -88,12 +98,14 @@ class IntervalAddActivity : AppCompatActivity() {
             }
             true
         }
+    }
 
+    private fun createInEditMode() {
         val isEditMode = intent.getBooleanExtra(EDIT_MODE_FLAG_ID, false)
-        if(isEditMode){
+        if (isEditMode) {
             mIntervalToEditID = intent.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
             mIntervalToEdit = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao().get(mIntervalToEditID)
-            if(mIntervalToEdit != null) {
+            if (mIntervalToEdit != null) {
                 mDurationTextView?.setText(mIntervalToEdit?.duration.toString())
                 findViewById<TextView>(R.id.intervalNameTxt).text = mIntervalToEdit?.label
                 if (!mIntervalToEdit!!.ownerOfGroup)
@@ -105,29 +117,27 @@ class IntervalAddActivity : AppCompatActivity() {
             }
 
         }
-
     }
 
     private val addIntervalEditModeListener = fun(v: View){
         if(mIntervalToEdit != null) {
             val text = (findViewById<TextView>(R.id.intervalNameTxt)).text
             val durationText = (findViewById<TextView>(R.id.intervalDurationTxt)).text
-            val groupText = (findViewById<TextView>(R.id.intervalParentTxt)).text
             val intervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
 
             mIntervalToEdit!!.duration = durationText.toString().toLong()
             mIntervalToEdit!!.label = text.toString()
-            try {
-                val groupUUID = UUID.fromString(groupText.toString())
-                if(mIntervalToEdit!!.group != groupUUID) {
-                    intervalDao.shuffleChildrenInGroupUpFrom(mIntervalToEdit!!.groupPosition, mIntervalToEdit!!.group)
-                    mIntervalToEdit!!.group = groupUUID
-                    mIntervalToEdit!!.groupPosition = intervalDao.getChildSizeOfGroup(groupUUID)+1
-                }
+            val groupUUID = mSelectedIntervalGroup?.group
+            if(mIntervalToEdit!!.group != groupUUID && groupUUID != null) {
+                intervalDao.shuffleChildrenInGroupUpFrom(mIntervalToEdit!!.groupPosition, mIntervalToEdit!!.group)
+                mIntervalToEdit!!.group = groupUUID
+                mIntervalToEdit!!.groupPosition = intervalDao.getChildSizeOfGroup(groupUUID)+1
                 mIntervalToEdit!!.ownerOfGroup = false
-            }catch (e: IllegalArgumentException){
-
+            }else if(mSelectedIntervalGroup == null){
+                mIntervalToEdit!!.ownerOfGroup = true
+                mIntervalToEdit!!.group = UUID.randomUUID()
             }
+
 
             mIntervalToEdit!!.lastModified = Date()
             intervalDao.update(mIntervalToEdit!!)
@@ -166,6 +176,14 @@ class IntervalAddActivity : AppCompatActivity() {
         intervalDao.insert(interval)
         mUpdatedInterval = true
         Toast.makeText(this, "Added interval", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onItemSelected(interval: IntervalData, isSelected: Boolean) {
+        if(isSelected) {
+            mSelectedIntervalGroup = interval
+        }else{
+            mSelectedIntervalGroup =  null
+        }
     }
 
     private class DurationGestureDetector : GestureDetector.SimpleOnGestureListener() {

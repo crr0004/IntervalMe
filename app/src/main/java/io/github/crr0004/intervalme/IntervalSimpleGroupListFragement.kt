@@ -1,6 +1,8 @@
 package io.github.crr0004.intervalme
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -20,13 +22,13 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [IntervalSimpleGroupList.OnFragmentInteractionListener] interface
+ * [IntervalSimpleGroupListFragement.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [IntervalSimpleGroupList.newInstance] factory method to
+ * Use the [IntervalSimpleGroupListFragement.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class IntervalSimpleGroupList : Fragment() {
+class IntervalSimpleGroupListFragement : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
@@ -51,6 +53,7 @@ class IntervalSimpleGroupList : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mViewManager = LinearLayoutManager(view.context)
         mAdapter = IntervalSimpleGroupAdapter(view.context)
         mAdapter.setHasStableIds(true)
@@ -71,20 +74,28 @@ class IntervalSimpleGroupList : Fragment() {
                 .withOnItemActivatedListener(myItemActivatedListener)
                 .withSelectionPredicate(SelectionPredicates.createSelectSingleAnything())
                 .build()
-        mAdapter.setTracker(mTracker)
+
         mTracker.addObserver(object : SelectionTracker.SelectionObserver<Long>(){
             override fun onItemStateChanged(key: Long, selected: Boolean) {
-                super.onItemStateChanged(key, selected)
+
                 listener?.onItemSelected(mAdapter.getItemAt(key)!!, selected)
+                val holder = mRecycleListView.findViewHolderForItemId(key)
+                if(selected){
+                    holder.itemView.background.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY)
+                }else{
+                    holder.itemView.background.clearColorFilter()
+                }
+                holder.itemView.invalidate()
+                //mAdapter.notifyItemChanged(mAdapter.getPositionOfId(key).toInt())
             }
         })
-        super.onViewCreated(view, savedInstanceState)
+        mAdapter.setTracker(mTracker)
+
     }
 
     private val myItemActivatedListener = fun(item: ItemDetailsLookup.ItemDetails<Long>, e: MotionEvent): Boolean{
         mTracker.select(item.selectionKey!!)
-        mAdapter.notifyItemChanged(item.position)
-
+        mAdapter.notifyItemChanged(mAdapter.itemCount)
         return true
     }
 
@@ -124,11 +135,11 @@ class IntervalSimpleGroupList : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment IntervalSimpleGroupList.
+         * @return A new instance of fragment IntervalSimpleGroupListFragement.
          */
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                IntervalSimpleGroupList().apply {
+                IntervalSimpleGroupListFragement().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
