@@ -19,6 +19,7 @@ import android.widget.Toast
 import io.github.crr0004.intervalme.IntervalAddActivity.Companion.EDIT_MODE_FLAG_INTERVAL_ID
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
+import java.util.*
 
 class IntervalListActivity : AppCompatActivity() {
 
@@ -31,6 +32,7 @@ class IntervalListActivity : AppCompatActivity() {
         const val INTENT_EXTRA_RENEW_DATA_ID = "ilrd"
         const val INTENT_EDIT_REQUEST_CODE = 1
         const val INTENT_ADD_REQUEST_CODE = 2
+        val ETC_GROUP_UUID = UUID.fromString("5c9a12d5-4a99-4957-925e-e61c0bd74a77")
     }
 
     init {
@@ -144,6 +146,22 @@ class IntervalListActivity : AppCompatActivity() {
                 }
                 mAdapter!!.mInEditMode = !mAdapter!!.mInEditMode
                 mAdapter!!.notifyDataSetChanged()
+                true
+            }
+            R.id.action_create_etc_group -> {
+                val intervalDao = IntervalMeDatabase.getInstance(this)!!.intervalDataDao()
+                var etcGroup = intervalDao.getGroupByUUID(ETC_GROUP_UUID)
+                if(etcGroup == null){
+                    // Create etcgroup
+                    etcGroup = IntervalData(label = "ETC", group = ETC_GROUP_UUID, ownerOfGroup = true, groupPosition = intervalDao.getGroupOwners().size.toLong()+1)
+                    etcGroup.id = intervalDao.insert(etcGroup)
+                }
+                val intervalsWithoutGroup = intervalDao.getIntervalsWithoutGroups()
+                intervalsWithoutGroup.forEachIndexed { index, intervalData ->
+                    intervalData.group = ETC_GROUP_UUID
+                    intervalDao.update(intervalData)
+                }
+                mAdapter?.notifyDataSetChanged()
                 true
             }
             else ->
