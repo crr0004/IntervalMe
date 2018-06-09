@@ -93,12 +93,14 @@ class IntervalListAdapter
         var toReturn: View? = null
 
 
-       // toReturn = convertView
+        //Top null check for cached view
+        if(convertView?.id == R.layout.interval_group)
+            toReturn = convertView
 
-        //if (toReturn == null) {
+        if (toReturn == null) {
             val infalInflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            toReturn = infalInflater.inflate(R.layout.interval_group, null)
-        //}
+            toReturn = infalInflater.inflate(R.layout.interval_group, parent, false)
+        }
 
         val intervalData = getGroup(groupPosition)
         toReturn!!.findViewById<TextView>(R.id.intervalGroupNameTxt).text = intervalData.label ?: "Interval not found"
@@ -108,7 +110,7 @@ class IntervalListAdapter
         if(mInEditMode){
             editButton.visibility = View.VISIBLE
         }else{
-            editButton.visibility = View.GONE
+            editButton.visibility = View.INVISIBLE
         }
 
         editButton.setOnClickListener {
@@ -210,8 +212,6 @@ class IntervalListAdapter
         var controller: IntervalController? = mCachedControllers[childOfInterval.id]
         // If we're using an existing mController we must make sure to release properly before re-init
 
-
-
         // second null check for using a converted view
         if (toReturn == null) {
             val inflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -232,9 +232,9 @@ class IntervalListAdapter
             toReturn.findViewById<View>(R.id.clockSingleEditButton).visibility = View.VISIBLE
             toReturn.findViewById<View>(R.id.clockSingleDeleteButton).visibility = View.VISIBLE
         }else{
-            toReturn.findViewById<View>(R.id.clockEditCheckbox).visibility = View.GONE
-            toReturn.findViewById<View>(R.id.clockSingleEditButton).visibility = View.GONE
-            toReturn.findViewById<View>(R.id.clockSingleDeleteButton).visibility = View.GONE
+            toReturn.findViewById<View>(R.id.clockEditCheckbox).visibility = View.INVISIBLE
+            toReturn.findViewById<View>(R.id.clockSingleEditButton).visibility = View.INVISIBLE
+            toReturn.findViewById<View>(R.id.clockSingleDeleteButton).visibility = View.INVISIBLE
         }
 
         toReturn.setOnLongClickListener {
