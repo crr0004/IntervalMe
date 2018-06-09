@@ -29,6 +29,11 @@
         android:icon="@drawable/ic_mode_edit_white_24dp"
         app:showAsAction="ifRoom"
         />
+    <item
+        android:id="@+id/action_create_etc_group"
+        android:title="@string/create_etc_group"
+        app:showAsAction="withText"
+        />
 
 
 </menu>

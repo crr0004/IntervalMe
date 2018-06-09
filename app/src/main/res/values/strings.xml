@@ -20,4 +20,5 @@
     <string name="swap_selected_intervals">Swap Selected Intervals</string>
     <string name="debug_fix_group_positions">DEBUG: Fix Group Positions</string>
     <string name="edit">Edit</string>
+    <string name="create_etc_group">Create etc group</string>
 </resources>
