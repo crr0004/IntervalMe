@@ -5,6 +5,7 @@ import android.support.test.espresso.Espresso.onData
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import android.support.test.espresso.intent.Intents
 import android.support.test.espresso.intent.Intents.intended
 import android.support.test.espresso.intent.Intents.intending
@@ -15,7 +16,6 @@ import android.support.test.filters.SmallTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.itemFollows
-import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.setTextInTextView
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withIntervalData
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
@@ -50,14 +50,16 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
         val context = InstrumentationRegistry.getTargetContext()
         mDb = IntervalMeDatabase.getInstance(context)
         mIntervalDao = mDb!!.intervalDataDao()
-        mIntervalDao?.insert(mIntervalParent!!)
-        mIntervalDao?.insert(mSecondIntervalParent!!)
+        mIntervalParent!!.groupPosition = 0
+        mSecondIntervalParent!!.groupPosition = 1
+        mIntervalDao?.insert(mIntervalParent)
+        mIntervalDao?.insert(mSecondIntervalParent)
         mIds = mIntervalDao?.insert(mTestIntervals)!!
     }
 
     override fun afterActivityFinished() {
         super.afterActivityFinished()
-        IntervalMeDatabase.destroyInstance()
+        //IntervalMeDatabase.destroyInstance()
     }
 
     @Before
@@ -105,6 +107,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .check(matches(isDisplayed()))
                 .perform(click())
+        onView(withId(R.id.action_edit_items)).check(matches(isDisplayed())).perform(click())
         onData(allOf((
                 instanceOf(IntervalData::class.java)), withIntervalData(mTestIntervals[0]!!)))
                 .inAdapterView(withId(R.id.intervalsExpList))
@@ -158,9 +161,9 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
 
         // Click edit on one the child intervals
         var intervalToEdit = mIntervalDao!!.get(mIds[mTestIntervalSize/2])
+        onView(withId(R.id.action_edit_items)).check(matches(isDisplayed())).perform(click())
         onData(allOf((
                 instanceOf(IntervalData::class.java)), withIntervalData(intervalToEdit)))
-                .inAdapterView(withId(R.id.intervalsExpList))
                 .onChildView(withId(R.id.clockSingleEditButton))
                 .check(matches(isDisplayed()))
                 .perform(click())
@@ -168,7 +171,8 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
         onView(withId(R.id.intervalNameTxt)).check(matches(withText(intervalToEdit.label.toString())))
 
         // Update the group value and come back to ListActivity
-        onView(withId(R.id.intervalParentTxt)).perform(setTextInTextView(mSecondIntervalParent!!.group.toString()))
+        onView(withId(R.id.clockSampleRecycleList))
+                .perform(actionOnItemAtPosition<IntervalSimpleGroupAdapter.SimpleGroupViewHolder>(mSecondIntervalParent!!.groupPosition.toInt(), click()))
         onView(withId(R.id.intervalAddBtn)).perform(click())
         onView(withId(R.id.goToListBtn)).perform(click())
 
