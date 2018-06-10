@@ -61,8 +61,10 @@ class IntervalSimpleGroupListFragement : Fragment() {
         mRecycleListView = view.findViewById(R.id.clockSampleRecycleList)
 
         mRecycleListView.apply {
+            setHasFixedSize(true)
             layoutManager = mViewManager
             adapter = mAdapter
+
         }
 
         mTracker = SelectionTracker.Builder(
