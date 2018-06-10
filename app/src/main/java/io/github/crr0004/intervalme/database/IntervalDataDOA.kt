@@ -35,13 +35,13 @@ interface IntervalDataDOA {
     @Query("select * from Interval where Interval.`group` = :group")
     fun getAllOfGroup(group: UUID): Array<IntervalData>
 
-    @Query("select * from Interval where `group` = :group AND NOT ownerOfGroup")
+    @Query("select * from Interval where `group` = :group AND NOT ownerOfGroup order by groupPosition")
     fun getAllOfGroupWithoutOwner(group: UUID): Array<IntervalData>
 
     @Query("select * from Interval where `group` = :group AND ownerOfGroup")
     fun getOwnerOfGroup(group: UUID): IntervalData
 
-    @Query("select * from Interval where ownerOfGroup")
+    @Query("select * from Interval where ownerOfGroup order by groupPosition")
     fun getGroupOwners(): Array<IntervalData>
 
     @Query("select * from Interval where id = :id AND ownerOfGroup")
@@ -74,4 +74,10 @@ interface IntervalDataDOA {
 
     @Query("select * from Interval where NOT ownerOfGroup AND `group` NOT IN (select `group` from Interval WHERE ownerOfGroup)")
     fun getIntervalsWithoutGroups(): Array<IntervalData>
+
+    @Query("select * from Interval where lastModified >= :since ORDER BY groupPosition")
+    fun getModifiedIntervalsSince(since: Date): Array<IntervalData>
+
+    @Query("select COUNT(id) from Interval where `group` = :group AND NOT ownerOfGroup")
+    fun getGroupCount(group: UUID): Int
 }
