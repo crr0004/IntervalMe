@@ -132,7 +132,6 @@ class IntervalDataDatabaseTest {
         Assert.assertEquals(intervalTestOut.group, intervalTestInput[1]!!.group)
         intervalTestOut = mIntervalDao!!.getGroupByOffset(13)
         Assert.assertEquals(intervalTestOut.group, intervalTestInput[2]!!.group)
-
     }
 
 }

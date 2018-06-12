@@ -21,6 +21,7 @@ import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalClockView
 import kotlinx.android.synthetic.main.interval_single_clock.view.*
 import java.util.*
+import kotlin.collections.HashMap
 
 
 /**
@@ -32,10 +33,10 @@ class IntervalListAdapter
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
-    private val mCachedViews: HashMap<Long, View> = HashMap()
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
     public val mChecked = SparseBooleanArray()
     public var mInEditMode: Boolean = false
+    private var mIntervalsList: HashMap<Long, Array<IntervalData>>? = null
 
     init {
         mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
@@ -46,39 +47,37 @@ class IntervalListAdapter
         return this
     }
 
-    override fun swapItems(a: IntervalData, b: IntervalData) {
-        val aPos = a.groupPosition
-        var bPos = b.groupPosition
-        val aGroup = a.group
-        val bGroup = b.group
+    override fun swapItems(item1: IntervalData, item2: IntervalData) {
+        val aPos = item1.groupPosition
+        var bPos = item2.groupPosition
+        val aGroup = item1.group
+        val bGroup = item2.group
 
         if(aPos == bPos){
             bPos++
         }
 
-        b.groupPosition = aPos
-        a.groupPosition = bPos
+        item2.groupPosition = aPos
+        item1.groupPosition = bPos
 
-        b.group = aGroup
-        a.group = bGroup
+        item2.group = aGroup
+        item1.group = bGroup
 
         if(aGroup == bGroup) {
-            mCachedControllers[b.id]!!.setNextInterval(mCachedControllers[a.id])
+            mCachedControllers[item2.id]!!.setNextInterval(mCachedControllers[item1.id])
         }
 
-        mIntervalDao!!.update(a)
-        mIntervalDao!!.update(b)
+        mIntervalDao!!.update(item1)
+        mIntervalDao!!.update(item2)
 
         this.notifyDataSetChanged()
     }
 
     override fun getGroup(groupPosition: Int): IntervalData {
-        val intervalDataParent = mIntervalDao?.getGroupByOffset((groupPosition+1).toLong())
-        return intervalDataParent!!
+        return mIntervalsList!![groupPosition.toLong()]?.get(0)!!
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
-        //TODO("implement this properly") //To change body of created functions use File | Settings | File Templates.
         return true
     }
 
@@ -168,15 +167,15 @@ class IntervalListAdapter
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        val intervalDataParent = getGroup(groupPosition)
-        return mIntervalDao!!.getAllOfGroupWithoutOwner(intervalDataParent.group).size
+        var size = mIntervalsList?.get(0)?.size ?: 0
+        // Remove one from size because the first element is the group
+        if(size > 0)
+            size--
+        return size
     }
 
-    override fun getChild(groupPosition: Int, childPosition: Int): Any {
-        val intervalDataParent = getGroup(groupPosition)
-        return mIntervalDao!!.getChildOfGroupByOffset(
-                (childPosition+ 1).toLong(),
-                intervalDataParent.group)
+    override fun getChild(groupPosition: Int, childPosition: Int): IntervalData {
+        return mIntervalsList!![groupPosition.toLong()]?.get(childPosition+1)!!
     }
 
     override fun getGroupId(groupPosition: Int): Long {
@@ -196,11 +195,11 @@ class IntervalListAdapter
     @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View? = null
-        val childOfInterval = getChild(groupPosition, childPosition) as IntervalData
+        val childOfInterval = getChild(groupPosition, childPosition)
         var previousInterval: IntervalData? = null
 
         if(childPosition > 0) {
-            previousInterval = getChild(groupPosition, childPosition - 1) as IntervalData
+            previousInterval = getChild(groupPosition, childPosition - 1)
         }
 
         //toReturn = mCachedViews[childOfInterval.id]
@@ -366,12 +365,12 @@ class IntervalListAdapter
     }
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {
-        val childOfInterval = getChild(groupPosition,childPosition) as IntervalData
+        val childOfInterval = getChild(groupPosition,childPosition)
         return childOfInterval.id
     }
 
     override fun getGroupCount(): Int {
-        return mIntervalDao!!.getGroupOwners().size
+        return mIntervalsList?.size ?: 0
     }
 
     fun updateInterval(id: Long) {
@@ -379,12 +378,11 @@ class IntervalListAdapter
         if(updatedInterval != null) {
             mCachedControllers[id]?.refreshInterval(updatedInterval)
             mCachedControllers[id]?.stopAndRefreshClock()
-            mCachedViews[id]?.findViewById<TextView>(R.id.clockLabelTxt)?.text = updatedInterval.label
         }
     }
 
     fun startAllIntervals() {
-        mCachedControllers.forEach { id, controller ->
+        mCachedControllers.forEach { _, controller ->
             controller.startClockAsNew()
         }
     }

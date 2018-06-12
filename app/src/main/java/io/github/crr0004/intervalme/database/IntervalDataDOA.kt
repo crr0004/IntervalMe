@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme.database
 
+import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.ABORT
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
@@ -32,6 +33,9 @@ interface IntervalDataDOA {
     @Query("select * from Interval where id = :id")
     fun get(id: Long): IntervalData
 
+    @Query("select * from Interval where id = :id")
+    fun getLive(id: Long): LiveData<IntervalData>
+
     @Query("select * from Interval where Interval.`group` = :group")
     fun getAllOfGroup(group: UUID): Array<IntervalData>
 
@@ -41,7 +45,7 @@ interface IntervalDataDOA {
     @Query("select * from Interval where `group` = :group AND ownerOfGroup")
     fun getOwnerOfGroup(group: UUID): IntervalData
 
-    @Query("select * from Interval where ownerOfGroup order by groupPosition")
+    @Query("select * from Interval where ownerOfGroup")
     fun getGroupOwners(): Array<IntervalData>
 
     @Query("select * from Interval where id = :id AND ownerOfGroup")
@@ -80,4 +84,13 @@ interface IntervalDataDOA {
 
     @Query("select COUNT(id) from Interval where `group` = :group AND NOT ownerOfGroup")
     fun getGroupCount(group: UUID): Int
+
+    @Query("select COUNT(id) from Interval where ownerOfGroup")
+    fun getGroupOwnersCount(): Long
+
+    @Query("select * from Interval ORDER BY groupPosition")
+    fun getAllLive() : LiveData<Array<IntervalData>>
+
+    @Query("select * from Interval WHERE `group` = :group ORDER BY groupPosition, ownerOfGroup")
+    fun getAllOfGroupLive(group: UUID): LiveData<Array<IntervalData>>
 }

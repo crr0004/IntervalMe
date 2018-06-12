@@ -30,10 +30,10 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
 
             return returnValue
         }
-        fun generate(amount: Int, intervalParent: IntervalData?): Array<IntervalData?> {
+        fun generate(amount: Int, intervalParent: IntervalData?,startGroupPosition: Int = 0): Array<IntervalData?> {
             val returnValue = arrayOfNulls<IntervalData>(amount)
             for(i in 0 until returnValue.size){
-                returnValue[i] = IntervalData(label = UUID.randomUUID().toString(), group = intervalParent!!.group, ownerOfGroup = false,groupPosition = i.toLong())
+                returnValue[i] = IntervalData(label = UUID.randomUUID().toString(), group = intervalParent!!.group, ownerOfGroup = false,groupPosition = startGroupPosition + i.toLong())
                 returnValue[i]!!.duration= (Math.random()*100L).toLong()
             }
 
