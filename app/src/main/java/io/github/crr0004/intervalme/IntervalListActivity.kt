@@ -1,6 +1,7 @@
 package io.github.crr0004.intervalme
 
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -19,6 +20,7 @@ import android.widget.Toast
 import io.github.crr0004.intervalme.IntervalAddActivity.Companion.EDIT_MODE_FLAG_INTERVAL_ID
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
+import io.github.crr0004.intervalme.views.IntervalViewModel
 import java.util.*
 
 class IntervalListActivity : AppCompatActivity() {
@@ -77,6 +79,23 @@ class IntervalListActivity : AppCompatActivity() {
                 false
             }
         }
+
+        val provider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
+        provider.getGroups()
+                .observe(this, android.arch.lifecycle.Observer {
+                    mAdapter?.setCacheSize(it?.size)
+                    it?.forEachIndexed { index, intervalData ->
+                        provider.getAllOfGroup(intervalData.group).observe(this, android.arch.lifecycle.Observer {
+                            if(it == null || it.isEmpty()){
+                                mAdapter?.removeGroup(intervalData)
+                            }else{
+                                mAdapter?.setGroup(it[0].groupPosition, it)
+                            }
+                            mAdapter?.notifyDataSetChanged()
+                        })
+                    }
+                })
+
 
     }
 

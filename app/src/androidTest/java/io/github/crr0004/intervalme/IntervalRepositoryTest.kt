@@ -108,7 +108,7 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
 
     @Test
     fun getAllTest(){
-        mRepo!!.setExecutorToSync()
+        //mRepo!!.setExecutorToSync()
         val thread = Thread.currentThread()
         var observerAssertFunction = { it: Array<IntervalData>? ->
 

@@ -48,6 +48,9 @@ interface IntervalDataDOA {
     @Query("select * from Interval where ownerOfGroup")
     fun getGroupOwners(): Array<IntervalData>
 
+    @Query("select * from Interval where ownerOfGroup")
+    fun getGroupOwnersLive(): LiveData<Array<IntervalData>>
+
     @Query("select * from Interval where id = :id AND ownerOfGroup")
     fun getGroupOwnerWithID(id: Long): IntervalData
 

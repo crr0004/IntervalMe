@@ -105,11 +105,7 @@ class IntervalRepository {
     }
 
     fun get(id: Long): LiveData<IntervalData> {
-        var data: LiveData<IntervalData>? = null
-        mExecutor.execute {
-            data = mIntervalDao!!.getLive(id)
-        }
-        return data!!
+        return mIntervalDao!!.getLive(id)
     }
 
     fun deleteAll() {
@@ -122,6 +118,10 @@ class IntervalRepository {
 
     fun getAllOfGroup(group: UUID): LiveData<Array<IntervalData>>{
         return mIntervalDao!!.getAllOfGroupLive(group)
+    }
+
+    fun getGroups(): LiveData<Array<IntervalData>> {
+        return mIntervalDao!!.getGroupOwnersLive()
     }
 
 

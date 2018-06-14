@@ -74,7 +74,11 @@ class IntervalListAdapter
     }
 
     override fun getGroup(groupPosition: Int): IntervalData {
-        return mIntervalsList!![groupPosition.toLong()]?.get(0)!!
+        var group = mIntervalsList!![groupPosition.toLong()]?.get(0)
+        if(group == null){
+            group = IntervalData.generate(1)[0]
+        }
+        return group!!
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
@@ -393,5 +397,17 @@ class IntervalListAdapter
         }else{
             mChecked.delete(keyAt)
         }
+    }
+
+    fun removeGroup(intervalData: IntervalData) {
+        mIntervalsList?.remove(intervalData.groupPosition)
+    }
+
+    fun setGroup(groupPosition: Long, it: Array<IntervalData>) {
+        mIntervalsList!![groupPosition] = it
+    }
+
+    fun setCacheSize(size: Int?) {
+        mIntervalsList = HashMap(size?: 1)
     }
 }
