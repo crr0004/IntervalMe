@@ -45,15 +45,6 @@ class IntervalRepository {
         mExecutor.execute(buildGroupAndChildOffsetCacheRunnable)
     }
 
-    fun getGroupCount(): Long{
-        return mGroupCount
-    }
-
-    fun getChildCount(group: UUID): Long{
-        val intervals = mIntervalChildrenCache[group]
-        return intervals?.size?.toLong() ?: 0L
-    }
-
     fun getGroupByOffset(offset: Long): IntervalData{
         val returnInterval = mIntervalGroupsCache[offset-1]
 
@@ -94,11 +85,6 @@ class IntervalRepository {
     }
 
     fun update(interval: IntervalData){
-        if(interval.ownerOfGroup){
-            mIntervalGroupsCache[interval.groupPosition] = interval
-        }else{
-            mIntervalChildrenCache[interval.group]!![interval.groupPosition.toInt()] = interval
-        }
         mExecutor.execute {
             mIntervalDao!!.update(interval)
         }
@@ -112,9 +98,10 @@ class IntervalRepository {
         mIntervalDao!!.deleteAll()
     }
 
-    fun getAll(): LiveData<Array<IntervalData>> {
-        return mIntervalDao!!.getAllLive()
-    }
+
+
+
+
 
     fun getAllOfGroup(group: UUID): LiveData<Array<IntervalData>>{
         return mIntervalDao!!.getAllOfGroupLive(group)
@@ -122,6 +109,18 @@ class IntervalRepository {
 
     fun getGroups(): LiveData<Array<IntervalData>> {
         return mIntervalDao!!.getGroupOwnersLive()
+    }
+
+    fun shuffleChildrenInGroupUpFrom(groupPosition: Long, group: UUID) {
+        mIntervalDao!!.shuffleChildrenInGroupUpFrom(groupPosition, group)
+    }
+
+    fun getChildCountLive(groupUUID: UUID): LiveData<Long> {
+        return mIntervalDao!!.getChildSizeOfGroupLive(groupUUID)
+    }
+
+    fun getGroupsSize(): LiveData<Long> {
+        return mIntervalDao!!.getGroupsCountLive()
     }
 
 

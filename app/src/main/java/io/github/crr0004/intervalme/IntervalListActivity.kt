@@ -28,6 +28,8 @@ class IntervalListActivity : AppCompatActivity() {
     private var mAdapter: IntervalListAdapter? = null
     private var mExpandableListView: ExpandableListView? = null
     private lateinit var mDragDropSortController: DragDropAnimationController<IntervalData>
+    private lateinit var mProvider: IntervalViewModel
+    private var mDoneLoadingDataCallback: () -> Unit? = {}
 
     companion object {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
@@ -40,6 +42,8 @@ class IntervalListActivity : AppCompatActivity() {
     init {
 
     }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,23 +84,24 @@ class IntervalListActivity : AppCompatActivity() {
             }
         }
 
-        val provider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
-        provider.getGroups()
-                .observe(this, android.arch.lifecycle.Observer {
-                    mAdapter?.setCacheSize(it?.size)
-                    it?.forEachIndexed { index, intervalData ->
-                        provider.getAllOfGroup(intervalData.group).observe(this, android.arch.lifecycle.Observer {
+        mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
+        mProvider.getGroups()
+                .observe(this, android.arch.lifecycle.Observer { groups: Array<IntervalData>? ->
+                    groups?.forEachIndexed { index, intervalData ->
+                        mProvider.getAllOfGroup(intervalData.group).observe(this, android.arch.lifecycle.Observer {
                             if(it == null || it.isEmpty()){
                                 mAdapter?.removeGroup(intervalData)
                             }else{
                                 mAdapter?.setGroup(it[0].groupPosition, it)
                             }
+                            if(index == groups.size-1){
+                                mDoneLoadingDataCallback()
+                            }
                             mAdapter?.notifyDataSetChanged()
                         })
                     }
+
                 })
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -197,13 +202,10 @@ class IntervalListActivity : AppCompatActivity() {
         super.onPause()
         Thread(Runnable {
             val cachedControllers = mAdapter!!.mCachedControllers
-            val mIntervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
             cachedControllers.forEach { key, controller ->
                 controller.onPause()
                 val intervalData = controller.mChildOfInterval
-                if (intervalData != null) {
-                    mIntervalDao.update(intervalData)
-                }
+                mProvider.update(intervalData)
             }
         }).start()
 
@@ -230,7 +232,6 @@ class IntervalListActivity : AppCompatActivity() {
 
         super.onResume()
         val cachedControllers = mAdapter!!.mCachedControllers
-        val mIntervalDao = IntervalMeDatabase.getInstance(this.applicationContext)!!.intervalDataDao()
         cachedControllers.forEach { key, controller ->
             controller.onResume(this.applicationContext)
         }
@@ -265,5 +266,15 @@ class IntervalListActivity : AppCompatActivity() {
         intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
         //startActivity(mContext,intent,null)
         ActivityCompat.startActivityForResult(this, intent, INTENT_EDIT_REQUEST_CODE, null)
+    }
+
+    fun update(item: IntervalData) {
+        mProvider.update(item)
+    }
+
+
+
+    fun setOnLoadedDataCallback(doneLoadingData: () -> Unit) {
+        mDoneLoadingDataCallback = doneLoadingData
     }
 }

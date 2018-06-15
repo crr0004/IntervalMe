@@ -36,7 +36,7 @@ class IntervalListAdapter
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
     public val mChecked = SparseBooleanArray()
     public var mInEditMode: Boolean = false
-    private var mIntervalsList: HashMap<Long, Array<IntervalData>>? = null
+    private var mIntervalsList: HashMap<Long, Array<IntervalData>>? = HashMap(10)
 
     init {
         mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
@@ -67,8 +67,8 @@ class IntervalListAdapter
             mCachedControllers[item2.id]!!.setNextInterval(mCachedControllers[item1.id])
         }
 
-        mIntervalDao!!.update(item1)
-        mIntervalDao!!.update(item2)
+        mHostActivity.update(item1)
+        mHostActivity.update(item2)
 
         this.notifyDataSetChanged()
     }
@@ -171,7 +171,7 @@ class IntervalListAdapter
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        var size = mIntervalsList?.get(0)?.size ?: 0
+        var size = mIntervalsList?.get(groupPosition.toLong())?.size ?: 0
         // Remove one from size because the first element is the group
         if(size > 0)
             size--

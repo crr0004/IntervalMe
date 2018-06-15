@@ -94,6 +94,12 @@ interface IntervalDataDOA {
     @Query("select * from Interval ORDER BY groupPosition")
     fun getAllLive() : LiveData<Array<IntervalData>>
 
-    @Query("select * from Interval WHERE `group` = :group ORDER BY groupPosition, ownerOfGroup")
+    @Query("select * from Interval WHERE `group` = :group AND ownerOfGroup UNION select * from Interval WHERE `group` = :group AND NOT ownerOfGroup ORDER BY groupPosition")
     fun getAllOfGroupLive(group: UUID): LiveData<Array<IntervalData>>
+
+    @Query("select COUNT(id) from Interval WHERE (NOT ownerOfGroup) AND `group` = :group")
+    fun getChildSizeOfGroupLive(group: UUID): LiveData<Long>
+
+    @Query("select COUNT(id) from Interval where ownerOfGroup")
+    fun getGroupsCountLive(): LiveData<Long>
 }

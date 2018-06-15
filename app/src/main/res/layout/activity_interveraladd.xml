@@ -89,20 +89,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor" />
 
-    <EditText
-        android:id="@+id/intervalParentTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:ems="10"
-        android:inputType="text"
-        android:textSize="30sp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@+id/intervalChildDurationTxt"
-        app:layout_constraintTop_toBottomOf="@+id/intervalChildDurationTxt"
-        tools:text="000" />
-
     <TextView
         android:id="@+id/intervalChildDurationTxt"
         android:layout_width="wrap_content"

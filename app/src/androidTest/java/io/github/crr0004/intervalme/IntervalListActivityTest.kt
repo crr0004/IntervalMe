@@ -1,5 +1,7 @@
 package io.github.crr0004.intervalme
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onData
 import android.support.test.espresso.Espresso.onView
@@ -20,6 +22,7 @@ import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withInte
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
+import io.github.crr0004.intervalme.views.IntervalViewModel
 import junit.framework.Assert.assertEquals
 import org.hamcrest.Matchers.*
 import org.junit.*
@@ -47,6 +50,8 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
 
     override fun beforeActivityLaunched() {
         super.beforeActivityLaunched()
+
+
         val context = InstrumentationRegistry.getTargetContext()
         mDb = IntervalMeDatabase.getInstance(context)
         mIntervalDao = mDb!!.intervalDataDao()
@@ -59,12 +64,14 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
 
     override fun afterActivityFinished() {
         super.afterActivityFinished()
+
         //IntervalMeDatabase.destroyInstance()
     }
 
     @Before
     fun setup() {
         Intents.init()
+
     }
 
     @After
@@ -125,6 +132,19 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
     @Test
     fun swapItems(){
         // Check first group and expand it
+
+        val thread = Thread.currentThread()
+        val model = ViewModelProviders.of(this.activity).get(IntervalViewModel::class.java)
+        // We do this so we can wait until all the data is done loading
+        model.getGroups().observe(this.activity, Observer {
+            if(it != null && it.isNotEmpty()) {
+                model.getAllOfGroup(it[it.size - 1].group).observe(this.activity, Observer {
+                    if(it != null)
+                        synchronized(thread, {(thread as java.lang.Object).notify()})
+                })
+            }
+        })
+        synchronized(thread, {(thread as java.lang.Object).wait()})
         onData(allOf(instanceOf(IntervalData::class.java), equalTo(mIntervalParent)))
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .check(matches(isDisplayed()))

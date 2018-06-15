@@ -17,4 +17,28 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
     fun getAllOfGroup(group: UUID): LiveData<Array<IntervalData>>{
         return mRepo.getAllOfGroup(group)
     }
+
+    fun update(intervalData: IntervalData) {
+        mRepo.update(intervalData)
+    }
+
+    fun get(id: Long): LiveData<IntervalData> {
+        return mRepo.get(id)
+    }
+
+    fun shuffleChildrenInGroupUpFrom(groupPosition: Long, group: UUID) {
+        mRepo.shuffleChildrenInGroupUpFrom(groupPosition, group)
+    }
+
+    fun getChildSizeOfGroup(groupUUID: UUID): LiveData<Long> {
+        return mRepo.getChildCountLive(groupUUID)
+    }
+
+    fun insert(interval: IntervalData) {
+        mRepo.insert(interval)
+    }
+
+    fun getGroupsSize(): LiveData<Long> {
+        return mRepo.getGroupsSize()
+    }
 }
