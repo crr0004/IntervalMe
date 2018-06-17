@@ -68,6 +68,9 @@ class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragemen
 
         createInEditMode()
         mGroupOwnersSize = mModelProvider.getGroupsSize()
+        mGroupOwnersSize!!.observe(this, android.arch.lifecycle.Observer {
+            Log.d(DEBUG_TAG, "Group owners size: $it")
+        })
 
     }
 
@@ -164,10 +167,8 @@ class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragemen
         val text = (findViewById<TextView>(R.id.intervalNameTxt)).text
         val durationText = (findViewById<TextView>(R.id.intervalDurationTxt)).text
 
-        val interval: IntervalData
-        // TODO No need for a try-catch here
-        interval = try {
-            val groupUUID = mSelectedIntervalGroup?.group ?: throw IllegalArgumentException()
+        val groupUUID = mSelectedIntervalGroup?.group
+        val interval = if(groupUUID != null){
             val childCount = mSelectedGroupChildSize
             IntervalData(
                     label=text.toString(),
@@ -175,9 +176,9 @@ class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragemen
                     group = groupUUID,
                     ownerOfGroup = false,
                     groupPosition = childCount)
-        }catch (e: IllegalArgumentException){
+        }else{
             //Toast.makeText(this, "Invalid UUID. Setting to random", Toast.LENGTH_SHORT).show()
-            IntervalData(label=text.toString(), duration = durationText.toString().toLong(),groupPosition = mGroupOwnersSize?.value ?: 0)
+            IntervalData(label=text.toString(), duration = durationText.toString().toLong(),groupPosition = mGroupOwnersSize!!.value!!)
         }
 
         mModelProvider.insert(interval)

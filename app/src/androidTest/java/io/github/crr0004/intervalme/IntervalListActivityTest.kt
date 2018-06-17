@@ -17,13 +17,13 @@ import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.filters.SmallTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.itemFollows
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withIntervalData
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalViewModel
 import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertNotNull
 import org.hamcrest.Matchers.*
 import org.junit.*
 import org.junit.runner.RunWith
@@ -140,29 +140,42 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
             if(it != null && it.isNotEmpty()) {
                 model.getAllOfGroup(it[it.size - 1].group).observe(this.activity, Observer {
                     if(it != null)
-                        synchronized(thread, {(thread as java.lang.Object).notify()})
+                        synchronized(thread) {(thread as java.lang.Object).notify()}
                 })
             }
         })
-        synchronized(thread, {(thread as java.lang.Object).wait()})
+        synchronized(thread) {(thread as java.lang.Object).wait()}
         onData(allOf(instanceOf(IntervalData::class.java), equalTo(mIntervalParent)))
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .check(matches(isDisplayed()))
                 .perform(click())
 
-        var interval1 = mIntervalDao!!.get(mIds[0])
-        var interval2 = mIntervalDao!!.get(mIds[1])
+        // For every get we now have to wait and block for the data to return on each get
+        val interval1 = model.get(mIds[0])
+        val observer = Observer<IntervalData> {
+            synchronized(thread) {(thread as java.lang.Object).notify()}
+        }
+        interval1.observe(this.activity, observer)
+        synchronized(thread) {(thread as java.lang.Object).wait()}
 
-        onView(withId(R.id.intervalsExpList)).perform(CustomViewActionsMatchers.swapIntervalListAdapterItems(interval1, interval2))
+        val interval2 = model.get(mIds[1])
+        interval2.observe(this.activity, observer)
+        synchronized(thread) {(thread as java.lang.Object).wait()}
 
-        interval1 = mIntervalDao!!.get(mIds[0])
-        interval2 = mIntervalDao!!.get(mIds[1])
 
-        assertEquals(interval1.groupPosition, 1)
-        assertEquals(interval2.groupPosition, 0)
+        assertNotNull(interval1.value)
+        assertNotNull(interval2.value)
+        onView(withId(R.id.intervalsExpList)).perform(CustomViewActionsMatchers.swapIntervalListAdapterItems(interval1.value!!, interval2.value!!))
 
+        assertEquals(interval1.value!!.groupPosition, 1)
+        assertEquals(interval2.value!!.groupPosition, 0)
+
+        /* This no longer works as intended because it relies on the adapter being up to date
+         * adapter is updating through a callback from Livedata
         onView(withId(R.id.intervalsExpList))
-                .check(itemFollows(0, interval2, interval1))
+                .check(itemFollows(0, interval2.value!!, interval1.value!!))
+         * Leaving for clarity and a reminder for myself
+         */
     }
 
     @Test
@@ -187,7 +200,6 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 .onChildView(withId(R.id.clockSingleEditButton))
                 .check(matches(isDisplayed()))
                 .perform(click())
-        onView(withId(R.id.intervalParentTxt)).check(matches(withText(intervalToEdit.group.toString())))
         onView(withId(R.id.intervalNameTxt)).check(matches(withText(intervalToEdit.label.toString())))
 
         // Update the group value and come back to ListActivity

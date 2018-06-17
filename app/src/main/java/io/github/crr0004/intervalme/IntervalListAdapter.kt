@@ -37,10 +37,16 @@ class IntervalListAdapter
     public val mChecked = SparseBooleanArray()
     public var mInEditMode: Boolean = false
     private var mIntervalsList: HashMap<Long, Array<IntervalData>>? = HashMap(10)
+    private val mNotFoundGroupLabel: String
+    private var mGroupSize: Int = 0
+    var groupSize: Int
+        get() {return mGroupSize}
+        set(value) {mGroupSize = value}
 
     init {
         mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
         mIntervalDao = mdb!!.intervalDataDao()
+        mNotFoundGroupLabel = mHostActivity.getString(R.string.group_not_found_label).toString()
     }
 
     override fun getAdapter(): ExpandableListAdapter {
@@ -76,7 +82,20 @@ class IntervalListAdapter
     override fun getGroup(groupPosition: Int): IntervalData {
         var group = mIntervalsList!![groupPosition.toLong()]?.get(0)
         if(group == null){
-            group = IntervalData.generate(1)[0]
+//            group = mIntervalsList!!.values.toList()[groupPosition][0]
+            group = IntervalData.generate(1)[0]!!
+            //group.groupPosition = groupPosition.toLong()
+            //group.label = group.label + " " + group.groupPosition
+            val errorInfo = StringBuilder(30)
+            errorInfo
+                    .append("getGroup hit a null at ")
+                    .append(groupPosition)
+                    .append(" list size is: ")
+                    .append(mIntervalsList?.size)
+                    .append(" value at pos is: ")
+                    .append(mIntervalsList!![groupPosition.toLong()])
+            errorInfo.trimToSize()
+            Log.d("ILA", errorInfo.toString())
         }
         return group!!
     }
@@ -107,17 +126,26 @@ class IntervalListAdapter
 
         val intervalData = getGroup(groupPosition)
         toReturn!!.findViewById<TextView>(R.id.intervalGroupNameTxt).text = intervalData.label ?: "Interval not found"
+        toReturn.findViewById<TextView>(R.id.intervalGroupPos).text = intervalData.groupPosition.toString()
         toReturn.setTag(R.id.id_interval_view_interval, intervalData)
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupEditButton)
+        val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupDeleteButton)
 
         if(mInEditMode){
             editButton.visibility = View.VISIBLE
+            deleteButton.visibility = View.VISIBLE
         }else{
             editButton.visibility = View.INVISIBLE
+            deleteButton.visibility = View.INVISIBLE
         }
 
         editButton.setOnClickListener {
             mHostActivity.launchAddInEditMode(intervalData)
+        }
+        deleteButton.setOnClickListener{
+            mHostActivity.delete(intervalData)
+            // We need to remove the last group because this is going to shuffle them all up
+            mIntervalsList!!.remove(mIntervalsList!!.size.toLong()-1)
         }
 
         toReturn.setOnDragListener { v, event ->
@@ -191,7 +219,7 @@ class IntervalListAdapter
      */
     override fun notifyDataSetChanged() {
         super.notifyDataSetChanged()
-
+        //Log.d("ILA", "notifyDataSetChanged Called")
     }
 
 
@@ -374,7 +402,8 @@ class IntervalListAdapter
     }
 
     override fun getGroupCount(): Int {
-        return mIntervalsList?.size ?: 0
+        val size = mIntervalsList?.size ?: 0
+        return size
     }
 
     fun updateInterval(id: Long) {
@@ -405,6 +434,7 @@ class IntervalListAdapter
 
     fun setGroup(groupPosition: Long, it: Array<IntervalData>) {
         mIntervalsList!![groupPosition] = it
+        Log.d("ILA", "$groupPosition being set")
     }
 
     fun setCacheSize(size: Int?) {

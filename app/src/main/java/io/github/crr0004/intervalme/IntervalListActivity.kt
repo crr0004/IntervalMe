@@ -1,6 +1,7 @@
 package io.github.crr0004.intervalme
 
 import android.app.Activity
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -30,6 +31,7 @@ class IntervalListActivity : AppCompatActivity() {
     private lateinit var mDragDropSortController: DragDropAnimationController<IntervalData>
     private lateinit var mProvider: IntervalViewModel
     private var mDoneLoadingDataCallback: () -> Unit? = {}
+    private var mGroupsSize: Long = 0
 
     companion object {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
@@ -42,6 +44,7 @@ class IntervalListActivity : AppCompatActivity() {
     init {
 
     }
+
 
 
 
@@ -85,23 +88,28 @@ class IntervalListActivity : AppCompatActivity() {
         }
 
         mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
-        mProvider.getGroups()
-                .observe(this, android.arch.lifecycle.Observer { groups: Array<IntervalData>? ->
+        val groupObserver = GroupObserver()
+        val liveGroups = mProvider.getGroups()
+                liveGroups.observe(this, android.arch.lifecycle.Observer { groups: Array<IntervalData>? ->
                     groups?.forEachIndexed { index, intervalData ->
-                        mProvider.getAllOfGroup(intervalData.group).observe(this, android.arch.lifecycle.Observer {
-                            if(it == null || it.isEmpty()){
-                                mAdapter?.removeGroup(intervalData)
-                            }else{
-                                mAdapter?.setGroup(it[0].groupPosition, it)
-                            }
-                            if(index == groups.size-1){
-                                mDoneLoadingDataCallback()
-                            }
-                            mAdapter?.notifyDataSetChanged()
-                        })
+                        mProvider.getAllOfGroup(intervalData.group).observe(this, groupObserver)
                     }
-
                 })
+
+        mProvider.getGroupsSize().observe(this, android.arch.lifecycle.Observer {
+            mAdapter?.groupSize = it?.toInt() ?: 0
+            mGroupsSize = it ?: 0L
+        })
+    }
+
+    inner class GroupObserver : Observer<Array<IntervalData>>{
+        override fun onChanged(it: Array<IntervalData>?) {
+            if(it != null && it.isNotEmpty()){
+                mAdapter?.setGroup(it[0].groupPosition, it)
+            }
+            mAdapter?.notifyDataSetChanged()
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -177,7 +185,7 @@ class IntervalListActivity : AppCompatActivity() {
                 var etcGroup = intervalDao.getGroupByUUID(ETC_GROUP_UUID)
                 if(etcGroup == null){
                     // Create etcgroup
-                    etcGroup = IntervalData(label = "ETC", group = ETC_GROUP_UUID, ownerOfGroup = true, groupPosition = intervalDao.getGroupOwners().size.toLong()+1)
+                    etcGroup = IntervalData(label = "ETC", group = ETC_GROUP_UUID, ownerOfGroup = true, groupPosition = mGroupsSize)
                     etcGroup.id = intervalDao.insert(etcGroup)
                 }
                 val intervalsWithoutGroup = intervalDao.getIntervalsWithoutGroups()
@@ -276,5 +284,10 @@ class IntervalListActivity : AppCompatActivity() {
 
     fun setOnLoadedDataCallback(doneLoadingData: () -> Unit) {
         mDoneLoadingDataCallback = doneLoadingData
+    }
+
+    fun delete(intervalData: IntervalData) {
+        mProvider.delete(intervalData)
+        mProvider.shuffleGroupsUpFrom(intervalData.groupPosition)
     }
 }

@@ -115,12 +115,20 @@ class IntervalRepository {
         mIntervalDao!!.shuffleChildrenInGroupUpFrom(groupPosition, group)
     }
 
+    fun shuffleGroupsUpFrom(groupPosition: Long){
+        mIntervalDao!!.shuffleGroupsUpFrom(groupPosition)
+    }
+
     fun getChildCountLive(groupUUID: UUID): LiveData<Long> {
         return mIntervalDao!!.getChildSizeOfGroupLive(groupUUID)
     }
 
     fun getGroupsSize(): LiveData<Long> {
         return mIntervalDao!!.getGroupsCountLive()
+    }
+
+    fun delete(intervalData: IntervalData) {
+        mIntervalDao!!.delete(intervalData)
     }
 
 

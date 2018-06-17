@@ -76,6 +76,9 @@ interface IntervalDataDOA {
     @Query("update Interval set groupPosition = groupPosition + 1 where `group` = :group AND groupPosition > :from AND NOT ownerOfGroup")
     fun shuffleChildrenDownFrom(from: Long, group: UUID)
 
+    @Query("update Interval set groupPosition = groupPosition - 1 WHERE groupPosition > :from AND ownerOfGroup")
+    fun shuffleGroupsUpFrom(from: Long)
+
     @Query("select * from Interval where `group` = :group AND ownerOfGroup")
     fun getGroupByUUID(group: UUID): IntervalData?
 
