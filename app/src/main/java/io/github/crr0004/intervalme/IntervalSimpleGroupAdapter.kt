@@ -1,7 +1,8 @@
 package io.github.crr0004.intervalme
 
 import android.content.Context
-import android.os.AsyncTask
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +10,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.database.IntervalDataDOA
-import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import kotlinx.android.synthetic.main.interval_group.view.*
 
-class IntervalSimpleGroupAdapter(mContext: Context): RecyclerView.Adapter<IntervalSimpleGroupAdapter.SimpleGroupViewHolder>() {
+class IntervalSimpleGroupAdapter(private val mContext: Context): RecyclerView.Adapter<IntervalSimpleGroupAdapter.SimpleGroupViewHolder>() {
 
     class SimpleGroupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         private var mBoundData: IntervalData? = null
@@ -25,6 +24,7 @@ class IntervalSimpleGroupAdapter(mContext: Context): RecyclerView.Adapter<Interv
         fun bind(groupData: IntervalData){
             mBoundData = groupData
             itemView.intervalGroupNameTxt.text = groupData.label
+            itemView.intervalGroupPos.visibility = View.INVISIBLE
         }
 
     }
@@ -40,37 +40,11 @@ class IntervalSimpleGroupAdapter(mContext: Context): RecyclerView.Adapter<Interv
 
     }
 
-    private val mDb: IntervalMeDatabase
-    private val mIntervalDAO: IntervalDataDOA
     private var mTracker: SelectionTracker<Long>? = null
-    private val mGroupsList: HashMap<Long, IntervalData?>
+    private val mIdToGroupPosition: HashMap<Long, Long> = HashMap(1)
+    var mGroupsList: Array<IntervalData>? = null
         @Synchronized
         get
-
-    init{
-        mDb = IntervalMeDatabase.getInstance(mContext)!!
-        mIntervalDAO = mDb.intervalDataDao()
-        mGroupsList = HashMap(3)
-        val doneCallBack = {
-            this.notifyDataSetChanged()
-        }
-        GetGroups(mGroupsList, doneCallBack).execute(mContext)
-
-        //mIntervalDAO.getGroupOwners().
-    }
-
-    private class GetGroups(val groupsList: HashMap<Long, IntervalData?>, val doneCallBack: () -> Unit): AsyncTask<Context, Int, Array<IntervalData>>(){
-        override fun doInBackground(vararg p0: Context?): Array<IntervalData> {
-            return IntervalMeDatabase.getInstance(p0[0]!!)!!.intervalDataDao().getGroupOwners()
-        }
-
-        override fun onPostExecute(result: Array<IntervalData>?) {
-            result!!.forEachIndexed { _, intervalData ->
-                groupsList[intervalData.id] = intervalData
-            }
-            doneCallBack()
-        }
-    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleGroupViewHolder {
@@ -81,13 +55,17 @@ class IntervalSimpleGroupAdapter(mContext: Context): RecyclerView.Adapter<Interv
 
     override fun getItemCount(): Int {
 
-        return mGroupsList.size
+        return mGroupsList?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: SimpleGroupViewHolder, position: Int) {
-        val groupData = mGroupsList.values.elementAt(position)!!
+        val groupData = mGroupsList!![position]!!
         holder.bind(groupData)
-
+        if(mTracker!!.isSelected(holder.itemId)){
+            holder.itemView.background?.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY)
+        }else{
+            holder.itemView.background?.clearColorFilter()
+        }
         holder.itemView.invalidate()
     }
 
@@ -96,20 +74,18 @@ class IntervalSimpleGroupAdapter(mContext: Context): RecyclerView.Adapter<Interv
     }
 
     override fun getItemId(position: Int): Long {
-        return mGroupsList.values.elementAt(position)!!.id
+        return mGroupsList!![position]!!.id
     }
 
-
-
-    override fun setHasStableIds(hasStableIds: Boolean) {
-        super.setHasStableIds(hasStableIds)
-    }
-
-    fun getPositionOfId(p0: Long): Long {
-        return mGroupsList[p0]!!.groupPosition
+    fun getPositionOfId(id: Long): Long {
+        return mIdToGroupPosition[id]!!
     }
 
     fun getItemAt(id: Long): IntervalData? {
-        return mGroupsList[id]
+        return mGroupsList!![mIdToGroupPosition[id]!!.toInt()]
+    }
+
+    fun setGroupPositionOfId(id: Long, groupPosition: Long) {
+        mIdToGroupPosition[id] = groupPosition
     }
 }

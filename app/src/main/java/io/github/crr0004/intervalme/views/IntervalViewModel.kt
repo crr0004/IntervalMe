@@ -49,4 +49,8 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
     fun delete(intervalData: IntervalData) {
         mRepo.delete(intervalData)
     }
+
+    fun getGroupOwner(group: UUID): LiveData<IntervalData> {
+        return mRepo.getGroupOwner(group)
+    }
 }

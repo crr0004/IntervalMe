@@ -24,7 +24,6 @@ import java.util.*
 
 class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragement.OnFragmentInteractionListener {
 
-
     private var mDuration: Int = 0
     private var mDurationTextView: EditText? = null
     private val DEBUG_TAG = "IntervalAdd"
@@ -36,6 +35,7 @@ class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragemen
     private var mSelectedGroupChildSize: Long = 0
     private lateinit var mModelProvider: IntervalViewModel
     private var mGroupOwnersSize: LiveData<Long>? = null
+    private var mGroupSelectionFragment: IntervalSimpleGroupListFragement? = null
 
     companion object {
         const val EDIT_MODE_FLAG_ID = "edit_mode"
@@ -71,6 +71,8 @@ class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragemen
         mGroupOwnersSize!!.observe(this, android.arch.lifecycle.Observer {
             Log.d(DEBUG_TAG, "Group owners size: $it")
         })
+
+        //mGroupSelectionFrag = findViewById<Frag>(R.id.intervalAddGroupSelectionFrag)
 
     }
 
@@ -123,6 +125,12 @@ class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragemen
                     findViewById<Button>(R.id.intervalAddBtn).text = resources.getString(R.string.update)
                     mDurationGestureDetector.mDuration = it.duration
                     mDurationGestureDetector.updateDurationText(0) // Ensures text is formatted correctly
+                    if(!it.ownerOfGroup) {
+                        mModelProvider.getGroupOwner(it.group).observe(this, android.arch.lifecycle.Observer {
+                            if (it != null)
+                                mGroupSelectionFragment?.selectItem(it)
+                        })
+                    }
                 }
             })
 
@@ -201,6 +209,16 @@ class IntervalAddActivity : AppCompatActivity(), IntervalSimpleGroupListFragemen
             mSelectedIntervalGroup =  null
             mSelectedGroupChildSize = 0
         }
+    }
+
+
+
+    override fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+        mGroupSelectionFragment = intervalSimpleGroupListFragment
+    }
+
+    override fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+        mGroupSelectionFragment = null
     }
 
     private class DurationGestureDetector : GestureDetector.SimpleOnGestureListener() {

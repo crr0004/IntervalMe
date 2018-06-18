@@ -131,6 +131,10 @@ class IntervalRepository {
         mIntervalDao!!.delete(intervalData)
     }
 
+    fun getGroupOwner(group: UUID): LiveData<IntervalData> {
+        return mIntervalDao!!.getOwnerOfGroupLive(group)
+    }
+
 
     internal inner class ThreadPerTaskExecutor : Executor {
         override fun execute(r: Runnable) {

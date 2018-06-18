@@ -114,7 +114,7 @@
         app:layout_constraintStart_toEndOf="@+id/intervalAddBtn" />
 
     <fragment
-        android:id="@+id/fragment2"
+        android:id="@+id/intervalAddGroupSelectionFrag"
         android:name="io.github.crr0004.intervalme.IntervalSimpleGroupListFragement"
         android:layout_width="0dp"
         android:layout_height="0dp"

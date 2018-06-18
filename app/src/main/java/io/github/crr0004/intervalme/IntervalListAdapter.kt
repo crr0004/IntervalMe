@@ -84,20 +84,23 @@ class IntervalListAdapter
         if(group == null){
 //            group = mIntervalsList!!.values.toList()[groupPosition][0]
             group = IntervalData.generate(1)[0]!!
+            group.label = ""
             //group.groupPosition = groupPosition.toLong()
             //group.label = group.label + " " + group.groupPosition
-            val errorInfo = StringBuilder(30)
-            errorInfo
-                    .append("getGroup hit a null at ")
-                    .append(groupPosition)
-                    .append(" list size is: ")
-                    .append(mIntervalsList?.size)
-                    .append(" value at pos is: ")
-                    .append(mIntervalsList!![groupPosition.toLong()])
-            errorInfo.trimToSize()
-            Log.d("ILA", errorInfo.toString())
+            if(BuildConfig.DEBUG) {
+                val errorInfo = StringBuilder(30)
+                errorInfo
+                        .append("getGroup hit a null at ")
+                        .append(groupPosition)
+                        .append(" list size is: ")
+                        .append(mIntervalsList?.size)
+                        .append(" value at pos is: ")
+                        .append(mIntervalsList!![groupPosition.toLong()])
+                errorInfo.trimToSize()
+                Log.d("ILA", errorInfo.toString())
+            }
         }
-        return group!!
+        return group
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
@@ -434,7 +437,6 @@ class IntervalListAdapter
 
     fun setGroup(groupPosition: Long, it: Array<IntervalData>) {
         mIntervalsList!![groupPosition] = it
-        Log.d("ILA", "$groupPosition being set")
     }
 
     fun setCacheSize(size: Int?) {

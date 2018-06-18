@@ -45,10 +45,13 @@ interface IntervalDataDOA {
     @Query("select * from Interval where `group` = :group AND ownerOfGroup")
     fun getOwnerOfGroup(group: UUID): IntervalData
 
+    @Query("select * from Interval where `group` = :group AND ownerOfGroup")
+    fun getOwnerOfGroupLive(group: UUID): LiveData<IntervalData>
+
     @Query("select * from Interval where ownerOfGroup")
     fun getGroupOwners(): Array<IntervalData>
 
-    @Query("select * from Interval where ownerOfGroup")
+    @Query("select * from Interval where ownerOfGroup order by groupPosition")
     fun getGroupOwnersLive(): LiveData<Array<IntervalData>>
 
     @Query("select * from Interval where id = :id AND ownerOfGroup")
@@ -97,7 +100,7 @@ interface IntervalDataDOA {
     @Query("select * from Interval ORDER BY groupPosition")
     fun getAllLive() : LiveData<Array<IntervalData>>
 
-    @Query("select * from Interval WHERE `group` = :group AND ownerOfGroup UNION select * from Interval WHERE `group` = :group AND NOT ownerOfGroup ORDER BY groupPosition")
+    @Query("select * from Interval WHERE `group` = :group AND ownerOfGroup UNION ALL select * from (select * from Interval WHERE `group` = :group AND NOT ownerOfGroup ORDER BY groupPosition)")
     fun getAllOfGroupLive(group: UUID): LiveData<Array<IntervalData>>
 
     @Query("select COUNT(id) from Interval WHERE (NOT ownerOfGroup) AND `group` = :group")

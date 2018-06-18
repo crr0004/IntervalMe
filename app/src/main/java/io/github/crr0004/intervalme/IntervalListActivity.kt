@@ -53,7 +53,7 @@ class IntervalListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_interval_list)
 
 
-        mExpandableListView = findViewById(R.id.intervalsExpList)
+        mExpandableListView = findViewById<ExpandableListView>(R.id.intervalsExpList)
         mAdapter = IntervalListAdapter(this, mExpandableListView!!)
         mExpandableListView!!.setAdapter(mAdapter)
         mExpandableListView!!.choiceMode = CHOICE_MODE_MULTIPLE
@@ -194,6 +194,17 @@ class IntervalListActivity : AppCompatActivity() {
                     intervalDao.update(intervalData)
                 }
                 mAdapter?.notifyDataSetChanged()
+                true
+            }
+            R.id.action_create_sample_groups -> {
+                val groups = IntervalData.generate(10)
+                val groupSize = mGroupsSize
+                groups.forEachIndexed { index, intervalData ->
+                    intervalData!!.groupPosition = groupSize+index
+                    intervalData.label = intervalData.groupPosition.toString()
+                    mProvider.insert(intervalData)
+                }
+
                 true
             }
             else ->

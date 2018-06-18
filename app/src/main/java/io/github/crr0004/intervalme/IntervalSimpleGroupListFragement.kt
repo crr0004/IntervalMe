@@ -1,5 +1,7 @@
 package io.github.crr0004.intervalme
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -13,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.*
 import io.github.crr0004.intervalme.database.IntervalData
+import io.github.crr0004.intervalme.views.IntervalViewModel
 
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -83,15 +86,23 @@ class IntervalSimpleGroupListFragement : Fragment() {
                 listener?.onItemSelected(mAdapter.getItemAt(key)!!, selected)
                 val holder = mRecycleListView.findViewHolderForItemId(key)
                 if(selected){
-                    holder.itemView.background.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY)
+                    holder?.itemView?.background?.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY)
                 }else{
-                    holder.itemView.background.clearColorFilter()
+                    holder?.itemView?.background?.clearColorFilter()
                 }
-                holder.itemView.invalidate()
+                holder?.itemView?.invalidate()
                 //mAdapter.notifyItemChanged(mAdapter.getPositionOfId(key).toInt())
             }
         })
         mAdapter.setTracker(mTracker)
+
+        ViewModelProviders.of(this).get(IntervalViewModel::class.java).getGroups().observe(this, Observer {
+            mAdapter.mGroupsList = it
+            it?.forEachIndexed { index, intervalData ->
+                mAdapter.setGroupPositionOfId(intervalData.id, intervalData.groupPosition)
+            }
+            mAdapter.notifyDataSetChanged()
+        })
 
     }
 
@@ -105,6 +116,7 @@ class IntervalSimpleGroupListFragement : Fragment() {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             listener = context
+            listener?.attachedTo(this)
         } else {
             throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
@@ -112,7 +124,14 @@ class IntervalSimpleGroupListFragement : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
+        listener?.detachedFrom(this)
         listener = null
+    }
+
+    fun selectItem(intervalData: IntervalData) {
+        //val id = mRecycleListView.findViewHolderForItemId(intervalData.id)?.itemId
+        //if(id != null)
+            mTracker.select(intervalData.id)
     }
 
     /**
@@ -128,6 +147,8 @@ class IntervalSimpleGroupListFragement : Fragment() {
      */
     interface OnFragmentInteractionListener {
         fun onItemSelected(interval: IntervalData, isSelected: Boolean)
+        fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement)
+        fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement)
     }
 
     companion object {

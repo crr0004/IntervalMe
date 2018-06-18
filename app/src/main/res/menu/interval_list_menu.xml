@@ -34,6 +34,10 @@
         android:title="@string/create_etc_group"
         app:showAsAction="withText"
         />
-
+    <item
+        android:id="@+id/action_create_sample_groups"
+        android:title="@string/create_sample_groups"
+        app:showAsAction="withText"
+        />
 
 </menu>
