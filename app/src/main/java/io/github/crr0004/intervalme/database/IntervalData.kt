@@ -19,6 +19,15 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
                         var groupPosition: Long = -1
 ) {
     constructor():this(label="")
+    constructor(intervalToCopy: IntervalData) : this(){
+        this.label = intervalToCopy.label
+        this.group = intervalToCopy.group
+        this.ownerOfGroup = intervalToCopy.ownerOfGroup
+        this.lastModified = Date()
+        this.duration = intervalToCopy.duration
+        this.runningDuration = intervalToCopy.runningDuration
+        this.groupPosition = intervalToCopy.groupPosition
+    }
 
     companion object {
         fun generate(amount: Int): Array<IntervalData?>{

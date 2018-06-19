@@ -65,4 +65,8 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
     fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
         mRepo.moveIntervalToGroup(interval, groupUUID)
     }
+
+    fun insertIntervalIntoGroup(interval: IntervalData, group: UUID) {
+        mRepo.insertIntervalIntoGroup(interval, group)
+    }
 }

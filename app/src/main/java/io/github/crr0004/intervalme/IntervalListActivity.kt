@@ -207,6 +207,15 @@ class IntervalListActivity : AppCompatActivity() {
 
                 true
             }
+            R.id.action_duplicate_intervals -> {
+                val checked = mAdapter!!.mChecked
+                for (it in 0..checked.size()) {
+                    val intervalToCopy = mExpandableListView!!.getItemAtPosition(checked.keyAt(it)) as IntervalData
+                    val copied = IntervalData(intervalToCopy)
+                    mProvider.insertIntervalIntoGroup(copied, intervalToCopy.group)
+                }
+                true
+            }
             else ->
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
