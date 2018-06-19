@@ -291,14 +291,11 @@ class IntervalListActivity : AppCompatActivity() {
         mProvider.update(item)
     }
 
-
-
-    fun setOnLoadedDataCallback(doneLoadingData: () -> Unit) {
-        mDoneLoadingDataCallback = doneLoadingData
-    }
-
     fun delete(intervalData: IntervalData) {
         mProvider.delete(intervalData)
         mProvider.shuffleGroupsUpFrom(intervalData.groupPosition)
+    }
+    fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
+        mProvider.moveIntervalAbove(interval, intervalData)
     }
 }

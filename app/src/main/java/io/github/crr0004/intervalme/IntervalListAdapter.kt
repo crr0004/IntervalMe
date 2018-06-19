@@ -19,7 +19,6 @@ import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalClockView
-import kotlinx.android.synthetic.main.interval_single_clock.view.*
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -322,19 +321,14 @@ class IntervalListAdapter
                             android.R.integer.config_mediumAnimTime).toLong()
                     set.interpolator = DecelerateInterpolator()
                     set.start()
-                    val intervalData: IntervalData = v.intervalClockView.mController!!.mChildOfInterval
+                    val packedPos = mHost.getExpandableListPosition(mHost.getPositionForView(v))
+                    val childPos = ExpandableListView.getPackedPositionChild(packedPos)
+                    val groupPos = ExpandableListView.getPackedPositionGroup(packedPos)
+                    val intervalData = getChild(groupPos, childPos)
 
-                    mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
 
-                    // Make room in the group for the incoming interval
-                    // -1 from groupPosition so it gets moved as well
-                    mIntervalDao!!.shuffleChildrenDownFrom(intervalData.groupPosition-1, intervalData.group)
-
-                    interval.group = intervalData.group
-                    // Put the interval into the spot above the dropped onto item
-                    interval.groupPosition = intervalData.groupPosition
-                    mIntervalDao!!.update(interval)
-                    this.notifyDataSetChanged()
+                    mHostActivity.moveIntervalAbove(interval, intervalData)
+                   // this.notifyDataSetChanged()
                     //swapItems(interval, intervalData)
                 }
                 ACTION_DRAG_ENDED -> {

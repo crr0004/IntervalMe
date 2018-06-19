@@ -53,4 +53,12 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
     fun getGroupOwner(group: UUID): LiveData<IntervalData> {
         return mRepo.getGroupOwner(group)
     }
+
+    fun shuffleChildrenDownFrom(pos: Long, group: UUID) {
+        mRepo.shuffleChildrenDownFrom(pos, group)
+    }
+
+    fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
+        mRepo.moveIntervalAbove(interval, intervalData)
+    }
 }

@@ -112,11 +112,11 @@ class IntervalRepository {
     }
 
     fun shuffleChildrenInGroupUpFrom(groupPosition: Long, group: UUID) {
-        mIntervalDao!!.shuffleChildrenInGroupUpFrom(groupPosition, group)
+        mExecutor.execute { mIntervalDao!!.shuffleChildrenInGroupUpFrom(groupPosition, group)}
     }
 
     fun shuffleGroupsUpFrom(groupPosition: Long){
-        mIntervalDao!!.shuffleGroupsUpFrom(groupPosition)
+       mExecutor.execute { mIntervalDao!!.shuffleGroupsUpFrom(groupPosition)}
     }
 
     fun getChildCountLive(groupUUID: UUID): LiveData<Long> {
@@ -133,6 +133,25 @@ class IntervalRepository {
 
     fun getGroupOwner(group: UUID): LiveData<IntervalData> {
         return mIntervalDao!!.getOwnerOfGroupLive(group)
+    }
+
+    fun shuffleChildrenDownFrom(pos: Long, group: UUID) {
+        executor.execute { mIntervalDao!!.shuffleChildrenDownFrom(pos, group) }
+    }
+
+    fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
+        executor.execute {
+            mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+
+            // Make room in the group for the incoming interval
+            // -1 from groupPosition so it gets moved as well
+            mIntervalDao!!.shuffleChildrenDownFrom(intervalData.groupPosition - 1, intervalData.group)
+
+            interval.group = intervalData.group
+            // Put the interval into the spot above the dropped onto item
+            interval.groupPosition = intervalData.groupPosition
+            mIntervalDao!!.update(interval)
+        }
     }
 
 
