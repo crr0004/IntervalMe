@@ -19,8 +19,6 @@ import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalClockView
-import java.util.*
-import kotlin.collections.HashMap
 
 
 /**
@@ -161,7 +159,7 @@ class IntervalListAdapter
                 ACTION_DROP -> {
                     val groupUUID = intervalData.group
                     if(interval.group != groupUUID) {
-                        moveIntervalToGroup(interval, groupUUID)
+                        mHostActivity.moveIntervalToGroup(interval, groupUUID)
                         mHost.expandGroup(groupPosition)
                     }
                     true
@@ -190,14 +188,6 @@ class IntervalListAdapter
         }
 
         return toReturn
-    }
-
-    private fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
-        mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
-        interval.group = groupUUID
-        interval.groupPosition = mIntervalDao!!.getChildSizeOfGroup(groupUUID) + 1
-        mIntervalDao!!.update(interval)
-        notifyDataSetChanged()
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {

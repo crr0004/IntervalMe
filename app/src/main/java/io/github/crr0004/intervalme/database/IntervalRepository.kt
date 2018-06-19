@@ -154,6 +154,15 @@ class IntervalRepository {
         }
     }
 
+    fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
+        executor.execute {
+            mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+            interval.group = groupUUID
+            interval.groupPosition = mIntervalDao!!.getChildSizeOfGroup(groupUUID)
+            mIntervalDao!!.update(interval)
+        }
+    }
+
 
     internal inner class ThreadPerTaskExecutor : Executor {
         override fun execute(r: Runnable) {

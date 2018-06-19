@@ -298,4 +298,8 @@ class IntervalListActivity : AppCompatActivity() {
     fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
         mProvider.moveIntervalAbove(interval, intervalData)
     }
+
+    fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
+        mProvider.moveIntervalToGroup(interval, groupUUID)
+    }
 }
