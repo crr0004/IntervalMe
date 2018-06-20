@@ -69,4 +69,16 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
     fun insertIntervalIntoGroup(interval: IntervalData, group: UUID) {
         mRepo.insertIntervalIntoGroup(interval, group)
     }
+
+    fun insertIntervalIntoGroup(children: Array<IntervalData?>, group: UUID){
+        mRepo.insertIntervalIntoGroup(children, group)
+    }
+
+    fun deleteGroupAndMoveChildrenToGroup(intervalData: IntervalData, group: UUID) {
+        mRepo.deleteGroupAndMoveChildrenToGroup(intervalData, group)
+    }
+
+    fun moveOrphanedChildrenToGroup(group: UUID) {
+        mRepo.moveOrphanedChildrenToGroup(group)
+    }
 }

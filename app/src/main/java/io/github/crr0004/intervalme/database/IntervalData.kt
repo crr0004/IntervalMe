@@ -79,7 +79,7 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
      * Returns a string representation of the object.
      */
     override fun toString(): String {
-        return "$id;$label;$duration;$ownerOfGroup;$group"
+        return "$id;$label;$duration;$ownerOfGroup;$group;$groupPosition"
     }
 
     override fun hashCode(): Int {

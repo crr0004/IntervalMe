@@ -165,10 +165,62 @@ class IntervalRepository {
 
     fun insertIntervalIntoGroup(interval: IntervalData, group: UUID) {
         executor.execute {
+            // Fixes the group positions in the old group
+            // This will have a net affect of nothing if it's the same group
             mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
             interval.group = group
             interval.groupPosition = mIntervalDao!!.getChildSizeOfGroup(group)
             mIntervalDao!!.insert(interval)
+        }
+    }
+    fun insertIntervalIntoGroup(children: Array<IntervalData?>, group: UUID) {
+        executor.execute {
+            val groupPosStart = mIntervalDao!!.getChildSizeOfGroup(group)
+            children.forEachIndexed { index, intervalData ->
+                // Fixes the group positions in the old group
+                // This will have a net affect of nothing if it's the same group or they're new
+                mIntervalDao!!.shuffleChildrenInGroupUpFrom(intervalData!!.groupPosition, intervalData.group)
+                intervalData.groupPosition = groupPosStart+index
+                intervalData.group = group
+                mIntervalDao!!.insert(intervalData)
+            }
+        }
+    }
+
+    fun deleteGroupAndMoveChildrenToGroup(intervalData: IntervalData, group: UUID) {
+        executor.execute {
+            val childrenToMove = mIntervalDao!!.getAllOfGroupWithoutOwner(intervalData.group)
+            var groupPosStart = mIntervalDao!!.getChildSizeOfGroup(group)
+            if(groupPosStart < 1) groupPosStart = 0
+            mIntervalDao!!.delete(intervalData)
+            mIntervalDao!!.shuffleGroupsUpFrom(intervalData.groupPosition)
+            childrenToMove.forEachIndexed { index, child ->
+                child.groupPosition = groupPosStart+index
+                child.group = group
+                mIntervalDao!!.update(child)
+            }
+
+        }
+    }
+
+    fun moveOrphanedChildrenToGroup(group: UUID) {
+        executor.execute {
+            var etcGroup = mIntervalDao!!.getGroupByUUID(group)
+            var startingGroupPos: Long
+            if(etcGroup == null){
+                // Create etcgroup
+                etcGroup = IntervalData(label = "ETC", group = group, ownerOfGroup = true, groupPosition = mIntervalDao!!.getGroupOwnersCount())
+                mIntervalDao!!.insert(etcGroup)
+                startingGroupPos = 0
+            }else{
+                startingGroupPos = mIntervalDao!!.getChildSizeOfGroup(group)
+            }
+            val intervalsWithoutGroup = mIntervalDao!!.getIntervalsWithoutGroups()
+            intervalsWithoutGroup.forEachIndexed { index, intervalData ->
+                intervalData.group = group
+                intervalData.groupPosition = startingGroupPos+index
+                mIntervalDao!!.update(intervalData)
+            }
         }
     }
 

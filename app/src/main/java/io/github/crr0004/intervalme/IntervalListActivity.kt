@@ -105,7 +105,15 @@ class IntervalListActivity : AppCompatActivity() {
     inner class GroupObserver : Observer<Array<IntervalData>>{
         override fun onChanged(it: Array<IntervalData>?) {
             if(it != null && it.isNotEmpty()){
-                mAdapter?.setGroup(it[0].groupPosition, it)
+                if(!it[0].ownerOfGroup){
+                    // This happens when the ETC group hasn't been created
+                    // With no ETC group children are moved to it without an owner
+                    //mProvider.moveOrphanedChildrenToGroup(ETC_GROUP_UUID)
+                    Log.d("ILA", "Group is getting set without a group owner")
+                }else{
+                    mAdapter?.setGroup(it[0].groupPosition, it)
+
+                }
             }
             mAdapter?.notifyDataSetChanged()
         }
@@ -181,19 +189,7 @@ class IntervalListActivity : AppCompatActivity() {
                 true
             }
             R.id.action_create_etc_group -> {
-                val intervalDao = IntervalMeDatabase.getInstance(this)!!.intervalDataDao()
-                var etcGroup = intervalDao.getGroupByUUID(ETC_GROUP_UUID)
-                if(etcGroup == null){
-                    // Create etcgroup
-                    etcGroup = IntervalData(label = "ETC", group = ETC_GROUP_UUID, ownerOfGroup = true, groupPosition = mGroupsSize)
-                    etcGroup.id = intervalDao.insert(etcGroup)
-                }
-                val intervalsWithoutGroup = intervalDao.getIntervalsWithoutGroups()
-                intervalsWithoutGroup.forEachIndexed { index, intervalData ->
-                    intervalData.group = ETC_GROUP_UUID
-                    intervalDao.update(intervalData)
-                }
-                mAdapter?.notifyDataSetChanged()
+                mProvider.moveOrphanedChildrenToGroup(ETC_GROUP_UUID)
                 true
             }
             R.id.action_create_sample_groups -> {
@@ -202,19 +198,30 @@ class IntervalListActivity : AppCompatActivity() {
                 groups.forEachIndexed { index, intervalData ->
                     intervalData!!.groupPosition = groupSize+index
                     intervalData.label = intervalData.groupPosition.toString()
+                    val children = IntervalData.generate(3, intervalData)
+                    children.forEachIndexed { childIndex, child ->
+                        child!!.label = "Child $childIndex"
+                    }
                     mProvider.insert(intervalData)
+                    mProvider.insertIntervalIntoGroup(children, intervalData.group)
                 }
 
                 true
             }
             R.id.action_duplicate_intervals -> {
                 val checked = mAdapter!!.mChecked
-                for (it in 0..checked.size()) {
-                    val intervalToCopy = mExpandableListView!!.getItemAtPosition(checked.keyAt(it)) as IntervalData
-                    val copied = IntervalData(intervalToCopy)
-                    mProvider.insertIntervalIntoGroup(copied, intervalToCopy.group)
+                if(checked.size() > 0) {
+                    val copiedList = Array<IntervalData?>(checked.size()) {
+                        val intervalToCopy = mExpandableListView!!.getItemAtPosition(checked.keyAt(it)) as IntervalData
+                        IntervalData(intervalToCopy)
+                    }
+                    mProvider.insertIntervalIntoGroup(copiedList, copiedList[0]!!.group)
+                    mAdapter!!.mChecked.clear()
+                }else{
+                    Toast.makeText(this, "Please select items", Toast.LENGTH_SHORT).show()
+                    return false
                 }
-                true
+                return true
             }
             else ->
                 // If we got here, the user's action was not recognized.
@@ -300,9 +307,8 @@ class IntervalListActivity : AppCompatActivity() {
         mProvider.update(item)
     }
 
-    fun delete(intervalData: IntervalData) {
-        mProvider.delete(intervalData)
-        mProvider.shuffleGroupsUpFrom(intervalData.groupPosition)
+    fun deleteGroupMoveChildrenToETC(intervalData: IntervalData) {
+        mProvider.deleteGroupAndMoveChildrenToGroup(intervalData, ETC_GROUP_UUID)
     }
     fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
         mProvider.moveIntervalAbove(interval, intervalData)

@@ -108,4 +108,7 @@ interface IntervalDataDOA {
 
     @Query("select COUNT(id) from Interval where ownerOfGroup")
     fun getGroupsCountLive(): LiveData<Long>
+
+    @Query("UPDATE Interval set `group` = :to where `group` = :from AND NOT ownerOfGroup")
+    fun forceMoveChildrenFromTo(from: UUID, to: UUID)
 }

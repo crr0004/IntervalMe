@@ -143,7 +143,7 @@ class IntervalListAdapter
             mHostActivity.launchAddInEditMode(intervalData)
         }
         deleteButton.setOnClickListener{
-            mHostActivity.delete(intervalData)
+            mHostActivity.deleteGroupMoveChildrenToETC(intervalData)
             // We need to remove the last group because this is going to shuffle them all up
             mIntervalsList!!.remove(mIntervalsList!!.size.toLong()-1)
         }
@@ -246,6 +246,7 @@ class IntervalListAdapter
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
         val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleDeleteButton)
         val checkBox = toReturn.findViewById<CheckBox>(R.id.clockEditCheckbox)
+        //checkBox.isChecked = mChecked.
 
         toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
         toReturn.findViewById<TextView>(R.id.clockLabelPos)?.text = childOfInterval.groupPosition.toString()
@@ -358,14 +359,14 @@ class IntervalListAdapter
 
         //mCachedViews[childOfInterval.id] = toReturn
         mCachedControllers[childOfInterval.id] = controller
-
+        val flatListPosition = mHost.getFlatListPosition(getPackedPositionForChild(groupPosition, childPosition))
         checkBox.setOnClickListener {
-            val flatListPosition = mHost.getFlatListPosition(getPackedPositionForChild(groupPosition, childPosition))
             setItemChecked(flatListPosition, checkBox.isChecked)
             //mChecked.put(flatListPosition, checkBox.isChecked)
-            Log.d("ILA", "Checked: " + checkBox.isChecked)
+            //Log.d("ILA", "Checked: " + checkBox.isChecked)
             //checkBox.toggle()
         }
+        checkBox.isChecked = mChecked.get(flatListPosition, false)
 
         editButton.setOnClickListener {
             mHostActivity.launchAddInEditMode(childOfInterval)
