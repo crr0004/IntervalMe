@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/interval_single_clock"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/AppTheme"
-    tools:context=".IntervalClockSampleActivity"
     android:background="@android:color/white"
-    android:id="@+id/interval_single_clock">
+    android:theme="@style/AppTheme"
+    tools:context=".IntervalClockSampleActivity">
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/clockSingleEditButton"
@@ -42,7 +42,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:text="Name"
+        android:text="@string/name"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/clockSingleEditButton"
         app:layout_constraintStart_toEndOf="@+id/frameLayout"
@@ -55,19 +55,44 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:text="0"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/frameLayout"
-        app:layout_constraintTop_toBottomOf="@+id/clockLabelTxt" />
+        app:layout_constraintTop_toBottomOf="@+id/clockLabelTxt"
+        tools:text="0" />
+
+    <TextView
+        android:id="@+id/clockLabelLoops"
+        android:layout_width="44dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:labelFor="@id/clockLoopsTxt"
+        android:text="@string/loops"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/frameLayout"
+        app:layout_constraintTop_toBottomOf="@+id/clockLabelPos" />
+
+    <TextView
+        android:id="@+id/clockLoopsTxt"
+        android:layout_width="27dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/clockLabelLoops"
+        app:layout_constraintTop_toBottomOf="@+id/clockLabelPos"
+        tools:text="999" />
 
     <CheckBox
         android:id="@+id/clockEditCheckbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checked="false"
-        android:visibility="gone"
         android:clickable="true"
         android:focusable="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

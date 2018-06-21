@@ -24,4 +24,5 @@
     <string name="group_not_found_label" type="id">Group Not Found</string>
     <string name="create_sample_groups">Create sample groups</string>
     <string name="duplicate_selected">Duplicate Selected</string>
+    <string name="loops">Loops:</string>
 </resources>

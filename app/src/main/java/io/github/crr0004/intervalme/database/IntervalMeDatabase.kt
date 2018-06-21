@@ -10,11 +10,12 @@ import android.content.Context
  * Created by crr00 on 24-Apr-18.
  */
 
-@Database(entities = [(IntervalData::class)], version = 6)
+@Database(entities = [IntervalData::class, IntervalRunProperties::class], version = 7)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
     abstract fun intervalDataDao(): IntervalDataDOA
+    abstract fun propertiesDao(): IntervalRunPropertiesDOA
 
     companion object {
         private var INSTANCE: IntervalMeDatabase? = null
