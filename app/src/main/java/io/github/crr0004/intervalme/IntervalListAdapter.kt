@@ -18,6 +18,7 @@ import android.widget.ExpandableListView.getPackedPositionForChild
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDOA
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
+import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
 
 
@@ -34,6 +35,7 @@ class IntervalListAdapter
     public val mChecked = SparseBooleanArray()
     public var mInEditMode: Boolean = false
     private var mIntervalsList: HashMap<Long, Array<IntervalData>>? = HashMap(10)
+    private var mIntervalProperties: HashMap<Long, IntervalRunProperties> = HashMap(1)
     private val mNotFoundGroupLabel: String
     private var mGroupSize: Int = 0
     var groupSize: Int
@@ -163,6 +165,10 @@ class IntervalListAdapter
 
         }
         true
+    }
+
+    fun setProperty(intervalId: Long, property: IntervalRunProperties){
+        mIntervalProperties[intervalId] = property
     }
 
     override fun getGroup(groupPosition: Int): IntervalData {

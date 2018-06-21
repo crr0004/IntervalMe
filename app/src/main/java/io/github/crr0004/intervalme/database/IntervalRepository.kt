@@ -11,6 +11,7 @@ class IntervalRepository {
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDOA? = null
+    private var mPropertiesDoa: IntervalRunPropertiesDOA? = null
     private val mIntervalChildrenCache: HashMap<UUID, ArrayList<IntervalData>> = HashMap()
     private val mIntervalGroupsCache: HashMap<Long, IntervalData> = HashMap()
     private var mExecutor: Executor = ThreadPerTaskExecutor()
@@ -22,6 +23,7 @@ class IntervalRepository {
     constructor(mContext: Context){
         mdb = IntervalMeDatabase.getInstance(mContext)
         mIntervalDao = mdb!!.intervalDataDao()
+        mPropertiesDoa = mdb!!.propertiesDao()
     }
 
     private val buildGroupAndChildOffsetCacheRunnable = {
@@ -236,6 +238,10 @@ class IntervalRepository {
             interval.groupPosition = intervalData.groupPosition
             mIntervalDao!!.update(interval)
         }
+    }
+
+    fun getAllIntervalProperties(): LiveData<Array<IntervalRunProperties>> {
+        return mPropertiesDoa!!.getAll()
     }
 
 

@@ -96,6 +96,11 @@ class IntervalListActivity : AppCompatActivity() {
             mAdapter?.groupSize = it?.toInt() ?: 0
             mGroupsSize = it ?: 0L
         })
+        mProvider.getProperties().observe(this, Observer {
+            it?.forEachIndexed { _, intervalRunProperties ->
+                mAdapter?.setProperty(intervalRunProperties.intervalId, intervalRunProperties)
+            }
+        })
     }
 
     inner class GroupObserver : Observer<Array<IntervalData>>{

@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRepository
+import io.github.crr0004.intervalme.database.IntervalRunProperties
 import java.util.*
 
 class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplication) {
@@ -84,5 +85,9 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
 
     fun moveIntervalGroupAboveGroup(interval: IntervalData, intervalData: IntervalData) {
         mRepo.moveIntervalGroupAboveGroup(interval, intervalData)
+    }
+
+    fun getProperties(): LiveData<Array<IntervalRunProperties>> {
+        return mRepo.getAllIntervalProperties()
     }
 }
