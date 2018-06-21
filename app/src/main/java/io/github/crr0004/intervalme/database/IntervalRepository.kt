@@ -139,7 +139,7 @@ class IntervalRepository {
         executor.execute { mIntervalDao!!.shuffleChildrenDownFrom(pos, group) }
     }
 
-    fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
+    fun moveChildIntervalAboveChild(interval: IntervalData, intervalData: IntervalData) {
         executor.execute {
             mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
 
@@ -221,6 +221,20 @@ class IntervalRepository {
                 intervalData.groupPosition = startingGroupPos+index
                 mIntervalDao!!.update(intervalData)
             }
+        }
+    }
+
+    fun moveIntervalGroupAboveGroup(interval: IntervalData, intervalData: IntervalData) {
+        executor.execute {
+            mIntervalDao!!.shuffleGroupsUpFrom(interval.groupPosition)
+
+            // Make room in the group for the incoming interval
+            // -1 from groupPosition so it gets moved as well
+            mIntervalDao!!.shuffleGroupsDownFrom(intervalData.groupPosition - 1)
+
+            // Put the interval into the spot above the dropped onto item
+            interval.groupPosition = intervalData.groupPosition
+            mIntervalDao!!.update(interval)
         }
     }
 

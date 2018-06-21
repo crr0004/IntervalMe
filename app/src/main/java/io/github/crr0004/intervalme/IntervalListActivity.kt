@@ -4,8 +4,6 @@ import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.AbsListView.CHOICE_MODE_MULTIPLE
 import android.widget.ExpandableListView
 import android.widget.Toast
@@ -70,22 +69,19 @@ class IntervalListActivity : AppCompatActivity() {
         }
         mDragDropSortController = DragDropAnimationController(this, mAdapter as DragDropAnimationController.DragDropViewSource<IntervalData>)
 
+
         mExpandableListView!!.setOnItemLongClickListener { parentAdapter, v, position, _ ->
             val intervalData = parentAdapter.getItemAtPosition(position) as IntervalData
             if(intervalData.ownerOfGroup) {
-                val groupUUID = intervalData.group.toString()
-                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clipData = ClipData.newPlainText("group uuid", groupUUID)
-                Toast.makeText(this, "Copied UUID", Toast.LENGTH_SHORT).show()
-
-                clipboard.primaryClip = clipData
-
-                false
+                mExpandableListView!!.collapseGroup(intervalData.groupPosition.toInt())
             }else{
 
-                false
+
             }
+            v.startDrag(ClipData.newPlainText("",""), View.DragShadowBuilder(v), intervalData, View.DRAG_FLAG_GLOBAL)
+            true
         }
+
 
         mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
         val groupObserver = GroupObserver()
@@ -310,11 +306,15 @@ class IntervalListActivity : AppCompatActivity() {
     fun deleteGroupMoveChildrenToETC(intervalData: IntervalData) {
         mProvider.deleteGroupAndMoveChildrenToGroup(intervalData, ETC_GROUP_UUID)
     }
-    fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
-        mProvider.moveIntervalAbove(interval, intervalData)
+    fun moveChildIntervalAboveChild(interval: IntervalData, intervalData: IntervalData) {
+        mProvider.moveChildIntervalAboveChild(interval, intervalData)
     }
 
     fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
         mProvider.moveIntervalToGroup(interval, groupUUID)
+    }
+
+    fun moveIntervalGroupAboveGroup(interval: IntervalData, intervalData: IntervalData) {
+        mProvider.moveIntervalGroupAboveGroup(interval, intervalData)
     }
 }

@@ -3,11 +3,11 @@ package io.github.crr0004.intervalme
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.ClipData
 import android.content.Context
 import android.support.v7.widget.AppCompatImageButton
 import android.util.Log
 import android.util.SparseBooleanArray
+import android.view.DragEvent
 import android.view.DragEvent.*
 import android.view.LayoutInflater
 import android.view.View
@@ -75,11 +75,100 @@ class IntervalListAdapter
 
         this.notifyDataSetChanged()
     }
+    private val intervalOnDragListener = { v: View, event: DragEvent ->
+        val eventType = event.action
+        val interval = event.localState as IntervalData
+        v.pivotX = 0f
+        v.pivotY = v.height.toFloat()
+
+        when(eventType){
+            ACTION_DRAG_ENTERED -> {
+                val set = AnimatorSet()
+                set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                        1f, 0.8f))
+                set.duration = v.resources.getInteger(
+                        android.R.integer.config_mediumAnimTime).toLong()
+                set.interpolator = DecelerateInterpolator()
+                set.start()
+
+                // Invalidate the view to force a redraw in the new tint
+                v.invalidate()
+
+            }
+            ACTION_DRAG_EXITED -> {
+                val set = AnimatorSet()
+                set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                        0.8f, 1f))
+                set.duration = v.resources.getInteger(
+                        android.R.integer.config_mediumAnimTime).toLong()
+                set.interpolator = DecelerateInterpolator()
+                set.start()
+            }
+            ACTION_DROP -> {
+                /**
+                 * First we remove interval from it's current group
+                 * by shuffling everything up from it's current groupPosition
+                 *
+                 * Then we want to drop it into a new position.
+                 * So we need to move everything bellow the new position down
+                 */
+                val set = AnimatorSet()
+                set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                        0.8f, 1f))
+                set.duration = v.resources.getInteger(
+                        android.R.integer.config_mediumAnimTime).toLong()
+                set.interpolator = DecelerateInterpolator()
+                set.start()
+
+                val packedPos = mHost.getExpandableListPosition(mHost.getPositionForView(v))
+                val intervalData = if(v.id == R.id.interval_group){
+                    val groupPos = ExpandableListView.getPackedPositionGroup(packedPos)
+                    getGroup(groupPos)
+                }else{
+                    val childPos = ExpandableListView.getPackedPositionChild(packedPos)
+                    val groupPos = ExpandableListView.getPackedPositionGroup(packedPos)
+                    getChild(groupPos, childPos)
+                }
+
+                if(intervalData.ownerOfGroup){
+                    val groupUUID = intervalData.group
+                    if(interval.group != groupUUID && !interval.ownerOfGroup) {
+                        mHostActivity.moveIntervalToGroup(interval, groupUUID)
+                        mHost.expandGroup(intervalData.groupPosition.toInt())
+                    }else if(interval.ownerOfGroup && intervalData.ownerOfGroup){
+                        // We've dropped one group on top of another
+                        mHostActivity.moveIntervalGroupAboveGroup(interval, intervalData)
+                    }
+                }else{
+                    mHostActivity.moveChildIntervalAboveChild(interval, intervalData)
+                }
+                // this.notifyDataSetChanged()
+                //swapItems(interval, intervalData)
+            }
+            ACTION_DRAG_ENDED -> {
+                if(v.scaleY < 1f){
+                    val set = AnimatorSet()
+                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                            0.8f, 1f))
+                    set.duration = v.resources.getInteger(
+                            android.R.integer.config_mediumAnimTime).toLong()
+                    set.interpolator = DecelerateInterpolator()
+                    set.start()
+                }
+                v.invalidate()
+            }
+            else -> {
+
+            }
+
+        }
+        true
+    }
 
     override fun getGroup(groupPosition: Int): IntervalData {
         var group = mIntervalsList!![groupPosition.toLong()]?.get(0)
         if(group == null){
-//            group = mIntervalsList!!.values.toList()[groupPosition][0]
+            //group = mIntervalsList!!.values.toList()[0][0]
             group = IntervalData.generate(1)[0]!!
             group.label = ""
             //group.groupPosition = groupPosition.toLong()
@@ -147,44 +236,24 @@ class IntervalListAdapter
             // We need to remove the last group because this is going to shuffle them all up
             mIntervalsList!!.remove(mIntervalsList!!.size.toLong()-1)
         }
+        toReturn.setOnDragListener(intervalOnDragListener)
 
-        toReturn.setOnDragListener { v, event ->
-            val eventType = event.action
-            val interval: IntervalData = event.localState as IntervalData
-
-            when(eventType){
-                ACTION_DRAG_ENTERED -> {
-                    true
+        val group = mIntervalsList?.get(groupPosition.toLong())
+        if(group != null) {
+            val groupChildren = group.drop(1).reversed()
+            groupChildren.forEachIndexed { index, childInterval ->
+                var childAboveController: IntervalController? = null
+                if (index > 0) {
+                    val childAbove = groupChildren[index - 1]
+                    childAboveController = mCachedControllers[childAbove.id]
                 }
-                ACTION_DROP -> {
-                    val groupUUID = intervalData.group
-                    if(interval.group != groupUUID) {
-                        mHostActivity.moveIntervalToGroup(interval, groupUUID)
-                        mHost.expandGroup(groupPosition)
-                    }
-                    true
-                }else -> {
-
-                true
+                val childController = if (mCachedControllers[childInterval.id] == null) {
+                    IntervalController(null, childInterval, childAboveController, applicationContext = this.mHostActivity.applicationContext)
+                } else {
+                    mCachedControllers[childInterval.id]
                 }
+                mCachedControllers[childInterval.id] = childController!!
             }
-        }
-
-        //toReturn.setOnLongClickListener(intervalLongClickListener)
-
-        val groupChildren = mIntervalDao!!.getAllOfGroupWithoutOwner(intervalData.group).reversed()
-        groupChildren.forEachIndexed{ index, childInterval ->
-            var childAboveController: IntervalController? = null
-            if(index > 0) {
-                val childAbove = groupChildren[index-1]
-                childAboveController =  mCachedControllers[childAbove.id]
-            }
-            val childController = if(mCachedControllers[childInterval.id] == null) {
-                IntervalController(null, childInterval, childAboveController, applicationContext = this.mHostActivity.applicationContext)
-            }else{
-                mCachedControllers[childInterval.id]
-            }
-            mCachedControllers[childInterval.id] = childController!!
         }
 
         return toReturn
@@ -213,8 +282,6 @@ class IntervalListAdapter
         super.notifyDataSetChanged()
         //Log.d("ILA", "notifyDataSetChanged Called")
     }
-
-
 
     @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
@@ -261,85 +328,8 @@ class IntervalListAdapter
             toReturn.findViewById<View>(R.id.clockSingleDeleteButton).visibility = View.INVISIBLE
         }
 
-        toReturn.setOnLongClickListener {
-            //mInEditMode = !mInEditMode
-            //this.notifyDataSetChanged()
-            toReturn.startDrag(ClipData.newPlainText("",""), View.DragShadowBuilder(toReturn), childOfInterval, View.DRAG_FLAG_GLOBAL)
-            true
-        }
 
-        toReturn.setOnDragListener { v, event ->
-            val eventType = event.action
-            val interval = event.localState as IntervalData
-            v.pivotX = 0f
-            v.pivotY = v.height.toFloat()
-
-            when(eventType){
-                ACTION_DRAG_ENTERED -> {
-                    val set = AnimatorSet()
-                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
-                                    1f, 0.8f))
-                    set.duration = v.resources.getInteger(
-                            android.R.integer.config_mediumAnimTime).toLong()
-                    set.interpolator = DecelerateInterpolator()
-                    set.start()
-
-                    // Invalidate the view to force a redraw in the new tint
-                    v.invalidate()
-
-                }
-                ACTION_DRAG_EXITED -> {
-                    val set = AnimatorSet()
-                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
-                            0.8f, 1f))
-                    set.duration = v.resources.getInteger(
-                            android.R.integer.config_mediumAnimTime).toLong()
-                    set.interpolator = DecelerateInterpolator()
-                    set.start()
-                }
-                ACTION_DROP -> {
-                    /**
-                     * First we remove interval from it's current group
-                     * by shuffling everything up from it's current groupPosition
-                     *
-                     * Then we want to drop it into a new position.
-                     * So we need to move everything bellow the new position down
-                     */
-                    val set = AnimatorSet()
-                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
-                            0.8f, 1f))
-                    set.duration = v.resources.getInteger(
-                            android.R.integer.config_mediumAnimTime).toLong()
-                    set.interpolator = DecelerateInterpolator()
-                    set.start()
-                    val packedPos = mHost.getExpandableListPosition(mHost.getPositionForView(v))
-                    val childPos = ExpandableListView.getPackedPositionChild(packedPos)
-                    val groupPos = ExpandableListView.getPackedPositionGroup(packedPos)
-                    val intervalData = getChild(groupPos, childPos)
-
-
-                    mHostActivity.moveIntervalAbove(interval, intervalData)
-                   // this.notifyDataSetChanged()
-                    //swapItems(interval, intervalData)
-                }
-                ACTION_DRAG_ENDED -> {
-                    if(v.scaleY < 1f){
-                        val set = AnimatorSet()
-                        set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
-                                0.8f, 1f))
-                        set.duration = v.resources.getInteger(
-                                android.R.integer.config_mediumAnimTime).toLong()
-                        set.interpolator = DecelerateInterpolator()
-                        set.start()
-                    }
-                }
-                else -> {
-
-                }
-
-            }
-            true
-        }
+        toReturn.setOnDragListener(intervalOnDragListener)
 
         // Controller hasn't been forward cached so create it
         if(controller == null) {

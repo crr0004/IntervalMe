@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme"
     tools:context=".IntervalClockSampleActivity"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:id="@+id/interval_single_clock">
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/clockSingleEditButton"

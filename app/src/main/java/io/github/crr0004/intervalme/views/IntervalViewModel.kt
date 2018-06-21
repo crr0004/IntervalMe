@@ -58,8 +58,8 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
         mRepo.shuffleChildrenDownFrom(pos, group)
     }
 
-    fun moveIntervalAbove(interval: IntervalData, intervalData: IntervalData) {
-        mRepo.moveIntervalAbove(interval, intervalData)
+    fun moveChildIntervalAboveChild(interval: IntervalData, intervalData: IntervalData) {
+        mRepo.moveChildIntervalAboveChild(interval, intervalData)
     }
 
     fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
@@ -80,5 +80,9 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
 
     fun moveOrphanedChildrenToGroup(group: UUID) {
         mRepo.moveOrphanedChildrenToGroup(group)
+    }
+
+    fun moveIntervalGroupAboveGroup(interval: IntervalData, intervalData: IntervalData) {
+        mRepo.moveIntervalGroupAboveGroup(interval, intervalData)
     }
 }

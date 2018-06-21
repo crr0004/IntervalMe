@@ -111,4 +111,7 @@ interface IntervalDataDOA {
 
     @Query("UPDATE Interval set `group` = :to where `group` = :from AND NOT ownerOfGroup")
     fun forceMoveChildrenFromTo(from: UUID, to: UUID)
+
+    @Query("update Interval set groupPosition = groupPosition + 1 WHERE groupPosition > :from AND ownerOfGroup")
+    fun shuffleGroupsDownFrom(from: Long)
 }
