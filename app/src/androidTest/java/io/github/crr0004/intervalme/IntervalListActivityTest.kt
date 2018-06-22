@@ -2,6 +2,7 @@ package io.github.crr0004.intervalme
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.os.Handler
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onData
 import android.support.test.espresso.Espresso.onView
@@ -178,8 +179,27 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
          */
     }
 
+    fun waitForInterval(thread: Thread, interval: IntervalData){
+
+    }
+
     @Test
     fun editItemsToNewGroup(){
+
+        val thread = Thread.currentThread()
+        val model = ViewModelProviders.of(this.activity).get(IntervalViewModel::class.java)
+        // We do this so we can wait until all the data is done loadingv
+        val groups = model.getGroups()
+        groups.observe(this.activity, Observer {
+            if(it != null && it.isNotEmpty()) {
+                model.getAllOfGroup(it[it.size - 1].group).observe(this.activity, Observer {
+                    if(it != null)
+                        synchronized(thread) {(thread as java.lang.Object).notify()}
+                })
+            }
+        })
+        synchronized(thread) {(thread as java.lang.Object).wait()}
+
         // Check the two parent groups
         onData(allOf(instanceOf(IntervalData::class.java), equalTo(mIntervalParent)))
                 .inAdapterView(withId(R.id.intervalsExpList))
@@ -228,6 +248,8 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 instanceOf(IntervalData::class.java)), withIntervalData(intervalToEdit)))
                 .inAdapterView(withId(R.id.intervalsExpList))
                 .check(matches(isDisplayed()))
+
+        Handler(this.activity.mainLooper).post {groups.removeObservers(this.activity)}
     }
 
 

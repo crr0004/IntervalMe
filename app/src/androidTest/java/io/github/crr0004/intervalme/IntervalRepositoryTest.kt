@@ -115,7 +115,7 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
         }
         val observer = Observer<Array<IntervalData>> {
             observerAssertFunction(it)
-            synchronized(thread, { (thread as java.lang.Object).notify() })
+            synchronized(thread) { (thread as java.lang.Object).notify() }
         }
 
         val intervals = IntervalData.generate(10)
@@ -125,7 +125,9 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
         val retrievedInterval = mRepo!!.getAllOfGroup(intervals[0]!!.group)
 
         observerAssertFunction = { it: Array<IntervalData>? ->
-            if(it != null) {
+            if(it != null && it.isNotEmpty()) {
+                Assert.assertNotNull(intervals)
+                Assert.assertTrue("intervals is empty", intervals.isNotEmpty())
                 Assert.assertTrue(intervals[0] == it[0])
                 val childIntervalsIterator = it.iterator().withIndex()
                 childIntervalsIterator.next() //skip the first
@@ -139,7 +141,7 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
         retrievedInterval.observe(this.activity, observer)
         // wait for the observation to fire by blocking this thread and having the observer notify it
         // I KNOW IT'S WEIRD BUT TRUST ME IT WORKS
-        synchronized(thread, {(thread as java.lang.Object).wait()})
+        synchronized(thread) {(thread as java.lang.Object).wait()}
 
         val moreChildren = IntervalData.generate(10, intervals[0], startGroupPosition = (children.last()!!.groupPosition+1).toInt())
         val evenMoreChildren = IntervalData.generate(10, intervals[1], startGroupPosition = (moreChildren.last()!!.groupPosition+1).toInt())
@@ -154,8 +156,8 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
         }
         mRepo!!.insert(moreChildren)
         mRepo!!.insert(evenMoreChildren)
-        synchronized(thread, {(thread as java.lang.Object).wait()})
-        Handler(this.activity.mainLooper).post({retrievedInterval.removeObservers(this.activity)})
+        synchronized(thread) {(thread as java.lang.Object).wait()}
+        Handler(this.activity.mainLooper).post {retrievedInterval.removeObservers(this.activity)}
 
 
     }
