@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.github.crr0004.intervalme.IntervalAddActivity">
+    tools:context="io.github.crr0004.intervalme.IntervalAddFragment">
 
 
 
@@ -60,20 +60,21 @@
         android:id="@+id/goToListBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:text="@string/go_to_list"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/intervalAddGroupSelectionFrag" />
 
     <Button
         android:id="@+id/intervalAddBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="@string/add"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/goToListBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/intervalAddGroupSelectionFrag" />
 
     <EditText
         android:id="@+id/intervalNameTxt"
@@ -89,42 +90,31 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor" />
 
-    <TextView
-        android:id="@+id/intervalChildDurationTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:labelFor="@+id/intervalParentTxt"
-        android:text="@string/parent_id"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/increaseDurationBtn" />
-
     <Button
         android:id="@+id/goToClockSampleBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Go To Clock Sample"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/goToListBtn"
-        app:layout_constraintStart_toEndOf="@+id/intervalAddBtn" />
+        app:layout_constraintStart_toEndOf="@+id/intervalAddBtn"
+        app:layout_constraintTop_toBottomOf="@+id/intervalAddGroupSelectionFrag" />
 
     <fragment
         android:id="@+id/intervalAddGroupSelectionFrag"
         android:name="io.github.crr0004.intervalme.IntervalSimpleGroupListFragement"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/goToClockSampleBtn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="256dp"
+        app:layout_constraintHeight_min="200dp"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/intervalChildDurationTxt" />
+        app:layout_constraintTop_toBottomOf="@+id/increaseDurationBtn" />
 
 </android.support.constraint.ConstraintLayout>

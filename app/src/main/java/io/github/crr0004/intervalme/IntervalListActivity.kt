@@ -17,7 +17,7 @@ import android.view.View
 import android.widget.AbsListView.CHOICE_MODE_MULTIPLE
 import android.widget.ExpandableListView
 import android.widget.Toast
-import io.github.crr0004.intervalme.IntervalAddActivity.Companion.EDIT_MODE_FLAG_INTERVAL_ID
+import io.github.crr0004.intervalme.IntervalAddFragment.Companion.EDIT_MODE_FLAG_INTERVAL_ID
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalViewModel
@@ -130,7 +130,7 @@ class IntervalListActivity : AppCompatActivity() {
         return when (item!!.itemId) {
             R.id.action_goto_add -> {
                 // User chose the "Settings" item, show the app settings UI...
-                val intent = Intent(this, IntervalAddActivity::class.java)
+                val intent = Intent(this, IntervalPropertiesEditActivity::class.java)
                 ActivityCompat.startActivityForResult(this, intent, INTENT_ADD_REQUEST_CODE, null)
                 true
             }
@@ -297,9 +297,9 @@ class IntervalListActivity : AppCompatActivity() {
     }
 
     fun launchAddInEditMode(childOfInterval: IntervalData) {
-        val intent = Intent(this, IntervalAddActivity::class.java)
-        intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_ID, true) //We're going into edit mode
-        intent.putExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
+        val intent = Intent(this, IntervalPropertiesEditActivity::class.java)
+        intent.putExtra(IntervalAddFragment.EDIT_MODE_FLAG_ID, true) //We're going into edit mode
+        intent.putExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
         //startActivity(mContext,intent,null)
         ActivityCompat.startActivityForResult(this, intent, INTENT_EDIT_REQUEST_CODE, null)
     }

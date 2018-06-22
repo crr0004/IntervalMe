@@ -118,7 +118,7 @@ class IntervalSimpleGroupListFragement : Fragment() {
             listener = context
             listener?.attachedTo(this)
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException(context.toString() + " must implement IntervalPropertiesEditFragmentInteractionI")
         }
     }
 
@@ -145,7 +145,7 @@ class IntervalSimpleGroupListFragement : Fragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnFragmentInteractionListener {
+    public interface OnFragmentInteractionListener {
         fun onItemSelected(interval: IntervalData, isSelected: Boolean)
         fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement)
         fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement)

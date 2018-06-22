@@ -13,8 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <activity android:name=".IntervalListActivity"
+        <activity
+            android:name=".IntervalListActivity"
             android:launchMode="singleTop"
             android:noHistory="false">
             <intent-filter>
@@ -23,13 +23,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".IntervalAddActivity"
-            android:noHistory="false"/>
-        <activity android:name=".IntervalClockSampleActivity" >
-
-        </activity>
-
+        <activity
+            android:name=".IntervalPropertiesEditActivity"
+            android:label="@string/title_activity_interval_properties"
+            android:theme="@style/AppTheme"/>
     </application>
-
 
 </manifest>
