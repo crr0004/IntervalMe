@@ -48,6 +48,14 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
 
             return returnValue
         }
+
+        // This copies the interval completely, including fields not normally modified. E.G ID
+        fun forceCopy(intervalData: IntervalData): IntervalData{
+            val copy = IntervalData(intervalData)
+            copy.id = intervalData.id
+            copy.lastModified = intervalData.lastModified
+            return copy
+        }
     }
 
     /**

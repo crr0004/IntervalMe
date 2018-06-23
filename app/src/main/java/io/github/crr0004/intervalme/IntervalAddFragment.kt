@@ -1,7 +1,6 @@
 package io.github.crr0004.intervalme
 
-import android.app.Activity.RESULT_OK
-import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
@@ -9,6 +8,8 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.support.v4.app.Fragment
 import android.support.v4.view.GestureDetectorCompat
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -16,28 +17,22 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import io.github.crr0004.intervalme.database.IntervalData
+import io.github.crr0004.intervalme.views.IntervalAddSharedModel
 import io.github.crr0004.intervalme.views.IntervalViewModel
-import java.util.*
+import kotlinx.android.synthetic.main.fragment_interveraledit.*
 
 class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragmentInteractionListener {
 
-    private var mDuration: Int = 0
     private var mDurationTextView: EditText? = null
-    private val DEBUG_TAG = "IntervalAdd"
     private var mGestureDetector: GestureDetectorCompat? = null
-    private val mDurationGestureDetector: DurationGestureDetector = DurationGestureDetector()
-    private var mIntervalToEditID: Long = -1
-    private var mIntervalToEdit: LiveData<IntervalData>? = null
-    private var mSelectedIntervalGroup: IntervalData? = null
-    private var mSelectedGroupChildSize: Long = 0
+
+    private var mIntervalToEdit: MutableLiveData<IntervalData>? = null
     private lateinit var mModelProvider: IntervalViewModel
-    private var mGroupOwnersSize: LiveData<Long>? = null
     private var mGroupSelectionFragment: IntervalSimpleGroupListFragement? = null
     private lateinit var mListener: IntervalAddFragmentInteractionI
-    private var intent: Intent? = null
-        get() {return mListener.getCreationIntent()}
+    private lateinit var mModel: IntervalAddSharedModel
+    private lateinit var mDurationGestureDetector: DurationGestureDetector
 
     companion object {
         const val EDIT_MODE_FLAG_ID = "edit_mode"
@@ -52,17 +47,11 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
 
     }
 
-
-    private var mUpdatedInterval: Boolean = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mModelProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
-
-        mGroupOwnersSize = mModelProvider.getGroupsSize()
-        mGroupOwnersSize!!.observe(this, android.arch.lifecycle.Observer {
-            Log.d(DEBUG_TAG, "Group owners size: $it")
-        })
+        mModel = ViewModelProviders.of(activity!!).get(IntervalAddSharedModel::class.java)
+        mModelProvider = ViewModelProviders.of(activity!!).get(IntervalViewModel::class.java)
+        mDurationGestureDetector = DurationGestureDetector(mModel)
 
         //mGroupSelectionFrag = findViewById<Frag>(R.id.intervalAddGroupSelectionFrag)
 
@@ -87,19 +76,24 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        (view.findViewById<View>(R.id.goToListBtn)).setOnClickListener {
-            val intent = Intent()
-            if(mIntervalToEdit?.value != null && mUpdatedInterval) {
-                intent.putExtra(EDIT_MODE_FLAG_INTERVAL_ID, mIntervalToEdit!!.value!!.id)
-            }
-            mListener.setResult(RESULT_OK, intent)
-            mUpdatedInterval = false
-            mListener.wantToFinish()
-        }
-
         mDurationTextView = view.findViewById(R.id.intervalDurationTxt)
         mGestureDetector = GestureDetectorCompat(view.context.applicationContext, mDurationGestureDetector)
+        this.intervalNameTxt.setOnEditorActionListener { textView, actionId, keyEvent ->
+            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT)
+                mModel.intervalToEdit.label = textView.text.toString()
+            true
+        }
+        this.intervalNameTxt.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                mModel.intervalToEdit.label = p0.toString()
+            }
+        })
 
         onCreateSetListeners(view)
 
@@ -108,9 +102,6 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
     }
 
     private fun onCreateSetListeners(view: View) {
-        view.findViewById<Button>(R.id.intervalAddBtn).setOnClickListener(addIntervalListener)
-        view.findViewById<Button>(R.id.goToClockSampleBtn).setOnClickListener(clockSampleBtnListener)
-
 
         mDurationGestureDetector.mDurationTextView = mDurationTextView
         view.findViewById<View>(R.id.increaseDurationBtn).setOnTouchListener { v, event ->
@@ -144,15 +135,12 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
     }
 
     private fun createInEditMode(view: View) {
-        val isEditMode = intent!!.getBooleanExtra(EDIT_MODE_FLAG_ID, false)
-        if (isEditMode) {
-            mIntervalToEditID = intent!!.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
-            mIntervalToEdit = mModelProvider.get(mIntervalToEditID)
+        if (mModel.isInEditMode) {
+            mIntervalToEdit = mModel.getIntervalToEdit()
             mIntervalToEdit?.observe(this, android.arch.lifecycle.Observer {
                 if (it != null) {
                     mDurationTextView?.setText(it.duration.toString())
                     view.findViewById<TextView>(R.id.intervalNameTxt).text = it.label
-                    view.findViewById<Button>(R.id.intervalAddBtn).setOnClickListener(addIntervalEditModeListener)
                     view.findViewById<Button>(R.id.intervalAddBtn).text = resources.getString(R.string.update)
                     mDurationGestureDetector.mDuration = it.duration
                     mDurationGestureDetector.updateDurationText(0) // Ensures text is formatted correctly
@@ -169,76 +157,11 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         }
     }
 
-    private val addIntervalEditModeListener = fun(v: View){
-        if(mIntervalToEdit?.value != null) {
-            val text = (this.activity!!.findViewById<TextView>(R.id.intervalNameTxt)).text
-            val durationText = (this.activity!!.findViewById<TextView>(R.id.intervalDurationTxt)).text
-
-            mIntervalToEdit?.value!!.duration = durationText.toString().toLong()
-            mIntervalToEdit?.value!!.label = text.toString()
-            val groupUUID = mSelectedIntervalGroup?.group
-            if(mIntervalToEdit?.value!!.group != groupUUID && groupUUID != null) {
-                mModelProvider.shuffleChildrenInGroupUpFrom(mIntervalToEdit?.value!!.groupPosition, mIntervalToEdit?.value!!.group)
-                mIntervalToEdit?.value!!.group = groupUUID
-                mIntervalToEdit?.value!!.groupPosition = mSelectedGroupChildSize+1
-                mIntervalToEdit?.value!!.ownerOfGroup = false
-            }else if(mSelectedIntervalGroup == null){
-                mIntervalToEdit?.value!!.ownerOfGroup = true
-                mIntervalToEdit?.value!!.group = UUID.randomUUID()
-            }
-
-
-            mIntervalToEdit?.value!!.lastModified = Date()
-            mModelProvider.update(mIntervalToEdit?.value!!)
-
-            Toast.makeText(this.context, "Updated interval", Toast.LENGTH_SHORT).show()
-            mUpdatedInterval = true
-        }
-    }
-
-    private val clockSampleBtnListener = fun(v: View){
-        val intent = Intent(this.context, IntervalPropertiesEditActivity::class.java)
-        startActivity(intent)
-    }
-
-
-    private val addIntervalListener = fun(v: View){
-        val text = (this.activity!!.findViewById<TextView>(R.id.intervalNameTxt)).text
-        val durationText = (this.activity!!.findViewById<TextView>(R.id.intervalDurationTxt)).text
-
-        val groupUUID = mSelectedIntervalGroup?.group
-        val interval = if(groupUUID != null){
-            val childCount = mSelectedGroupChildSize
-            IntervalData(
-                    label=text.toString(),
-                    duration = durationText.toString().toLong(),
-                    group = groupUUID,
-                    ownerOfGroup = false,
-                    groupPosition = childCount)
-        }else{
-            //Toast.makeText(this, "Invalid UUID. Setting to random", Toast.LENGTH_SHORT).show()
-            IntervalData(label=text.toString(), duration = durationText.toString().toLong(),groupPosition = mGroupOwnersSize!!.value!!)
-        }
-
-        mModelProvider.insert(interval)
-        mUpdatedInterval = true
-        Toast.makeText(this.context, "Added interval", Toast.LENGTH_SHORT).show()
-    }
-
-
-
     override fun onItemSelected(interval: IntervalData, isSelected: Boolean) {
         if(isSelected) {
-            if(mSelectedIntervalGroup != null){
-                mModelProvider.getChildSizeOfGroup(interval.group).removeObservers(this)
-            }
-            mSelectedIntervalGroup = interval
-            mModelProvider.getChildSizeOfGroup(interval.group).observe(this, android.arch.lifecycle.Observer {
-                mSelectedGroupChildSize = it ?: 0
-            })
+            mModel.setIntervalToEditGroup(interval)
         }else{
-            mSelectedIntervalGroup =  null
-            mSelectedGroupChildSize = 0
+            mModel.setIntervalToEditGroup(null)
         }
     }
 
@@ -252,7 +175,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         mGroupSelectionFragment = null
     }
 
-    private class DurationGestureDetector : GestureDetector.SimpleOnGestureListener() {
+    private class DurationGestureDetector(val mModel: IntervalAddSharedModel) : GestureDetector.SimpleOnGestureListener() {
         var direction: Int = 1
         var mDurationTextView: TextView? = null
         var mDuration = 0L
@@ -268,6 +191,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
                 mDuration = 0
             }
             mDurationTextView?.text = String.format("%03d", mDuration)
+            mModel.intervalToEdit.duration = mDuration
         }
 
         fun onUp(e: MotionEvent?){

@@ -63,6 +63,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/go_to_list"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/intervalAddGroupSelectionFrag" />
 
@@ -73,6 +74,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/add"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/intervalAddGroupSelectionFrag" />
 
@@ -84,11 +86,11 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/name"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="LabelFor" />
+        tools:ignore="LabelFor"
+        tools:text="@string/name" />
 
     <Button
         android:id="@+id/goToClockSampleBtn"
@@ -98,6 +100,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Go To Clock Sample"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/goToListBtn"
         app:layout_constraintStart_toEndOf="@+id/intervalAddBtn"
         app:layout_constraintTop_toBottomOf="@+id/intervalAddGroupSelectionFrag" />
@@ -106,13 +109,11 @@
         android:id="@+id/intervalAddGroupSelectionFrag"
         android:name="io.github.crr0004.intervalme.IntervalSimpleGroupListFragement"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="256dp"
-        app:layout_constraintHeight_min="200dp"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/increaseDurationBtn" />

@@ -1,5 +1,8 @@
 package io.github.crr0004.intervalme
 
+import android.app.Activity
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,11 +14,17 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import io.github.crr0004.intervalme.database.IntervalData
+import io.github.crr0004.intervalme.views.IntervalAddSharedModel
+import io.github.crr0004.intervalme.views.IntervalViewModel
+import kotlinx.android.synthetic.main.activity_interval_properties.*
 
 class IntervalPropertiesEditActivity : AppCompatActivity(),
         IntervalAddFragment.IntervalAddFragmentInteractionI,
         IntervalPropertiesEditFragment.IntervalPropertiesEditFragmentInteractionI,
         IntervalSimpleGroupListFragement.OnFragmentInteractionListener{
+
+    private var mIntervalToEdit: MutableLiveData<IntervalData>? = null
+
     override fun onItemSelected(interval: IntervalData, isSelected: Boolean) {
         (mSectionsPagerAdapter?.addFragment)?.onItemSelected(interval, isSelected)
     }
@@ -54,11 +63,20 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
      */
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
+    private lateinit var mModel: IntervalAddSharedModel
+    private lateinit var mModelProvider: IntervalViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_properties)
 
-        setSupportActionBar(toolbar)
+        mModel = ViewModelProviders.of(this).get(IntervalAddSharedModel::class.java)
+        mModelProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
+        mModel.setIntervalToEdit(intent!!.getLongExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL_ID, -1), this)
+        mIntervalToEdit = mModel.getIntervalToEdit()
+        mModel.isInEditMode = intent!!.getBooleanExtra(IntervalAddFragment.EDIT_MODE_FLAG_ID, false)
+
+        setSupportActionBar(this.toolbar)
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
@@ -69,8 +87,57 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
 
+        (intervalPropertiesFAB).setOnClickListener {
+            mModel.commit()
+            val intent = Intent()
+            if(mIntervalToEdit?.value != null) {
+                intent.putExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL_ID, mIntervalToEdit!!.value!!.id)
+            }
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+        }
+
     }
 
+    /*
+    private fun commitEditedInterval(){
+        if(mIntervalToEdit?.value != null) {
+            if(!mIntervalToEdit?.value!!.ownerOfGroup) {
+                mModelProvider.insertIntervalIntoGroup(mIntervalToEdit!!.value!!, mModel.intervalToEditGroup!!.group)
+            }else{
+                mIntervalToEdit?.value!!.ownerOfGroup = true
+                mIntervalToEdit?.value!!.group = UUID.randomUUID()
+            }
+
+
+            mIntervalToEdit?.value!!.lastModified = Date()
+            mModelProvider.update(mIntervalToEdit?.value!!)
+
+            Toast.makeText(this, "Updated interval", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun commitInterval(){
+
+        val groupUUID = mModel.intervalToEditGroup?.group
+        val interval = if(groupUUID != null){
+            val childCount = mSelectedGroupChildSize
+            IntervalData(
+                    label=text.toString(),
+                    duration = durationText.toString().toLong(),
+                    group = groupUUID,
+                    ownerOfGroup = false,
+                    groupPosition = childCount)
+        }else{
+            //Toast.makeText(this, "Invalid UUID. Setting to random", Toast.LENGTH_SHORT).show()
+            IntervalData(label=text.toString(), duration = durationText.toString().toLong(),groupPosition = mGroupOwnersSize!!.value!!)
+        }
+
+        mModelProvider.insert(interval)
+        Toast.makeText(this, "Added interval", Toast.LENGTH_SHORT).show()
+    }
+    */
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -84,10 +151,15 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
-        if (id == R.id.action_settings) {
-            return true
+        when(id){
+            R.id.action_reset_changes -> {
+                mModel.resetChanges()
+                return true
+            }
+            R.id.action_settings -> {
+                return false
+            }
         }
-
         return super.onOptionsItemSelected(item)
     }
 

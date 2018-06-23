@@ -87,7 +87,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
     @Test
     public fun addButtonGoesToAddActivity(){
         onView(withId(R.id.action_goto_add)).perform(click())
-        intended(hasComponent(IntervalAddActivity::class.java.name))
+        intended(hasComponent(IntervalAddFragment::class.java.name))
     }
 
     @Test
@@ -123,9 +123,9 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
                 .check(matches(isDisplayed()))
                 .perform(click())
         intended(allOf(
-                hasComponent(IntervalAddActivity::class.java.name),
-                hasExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, mIds[0]),
-                hasExtra(IntervalAddActivity.EDIT_MODE_FLAG_ID, true)
+                hasComponent(IntervalAddFragment::class.java.name),
+                hasExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL_ID, mIds[0]),
+                hasExtra(IntervalAddFragment.EDIT_MODE_FLAG_ID, true)
         ))
 
     }
@@ -230,7 +230,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
 
         // Check intent has come back correctly
         intending(allOf(
-                hasExtra(IntervalAddActivity.EDIT_MODE_FLAG_INTERVAL_ID, intervalToEdit.id)
+                hasExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL_ID, intervalToEdit.id)
         ))
 
         // close the first group

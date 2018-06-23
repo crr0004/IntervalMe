@@ -53,4 +53,13 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/intervalPropertiesFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_done_white_24dp"
+        app:backgroundTint="@android:color/holo_green_light"
+        app:layout_anchorGravity="bottom|right|end"
+        app:layout_anchor="@id/container"/>
+
 </android.support.design.widget.CoordinatorLayout>

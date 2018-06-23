@@ -80,6 +80,9 @@ class IntervalRepository {
 
     fun insert(intervalInput: IntervalData) {
         mExecutor.execute {
+            if(intervalInput.ownerOfGroup){
+                intervalInput.groupPosition = mIntervalDao!!.getGroupOwnersCount()
+            }
            val id = mIntervalDao!!.insert(intervalInput)
             @Synchronized
             intervalInput.id = id

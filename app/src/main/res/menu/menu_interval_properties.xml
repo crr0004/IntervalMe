@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="io.github.crr0004.intervalme.IntervalPropertiesEditActivity">
     <item
+        android:id="@+id/action_reset_changes"
+        android:title="Reset Changes"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_delete_white_24dp"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
