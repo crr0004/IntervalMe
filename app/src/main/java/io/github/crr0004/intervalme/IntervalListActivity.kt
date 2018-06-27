@@ -196,9 +196,10 @@ class IntervalListActivity : AppCompatActivity() {
             R.id.action_create_sample_groups -> {
                 val groups = IntervalData.generate(10)
                 val groupSize = mGroupsSize
+                mProvider.startExecuteQueue()
                 groups.forEachIndexed { index, intervalData ->
-                    intervalData!!.groupPosition = groupSize+index
-                    intervalData.label = intervalData.groupPosition.toString()
+                    //intervalData!!.groupPosition = groupSize+index
+                    intervalData!!.label = index.toString()
                     val children = IntervalData.generate(3, intervalData)
                     children.forEachIndexed { childIndex, child ->
                         child!!.label = "Child $childIndex"
@@ -206,6 +207,8 @@ class IntervalListActivity : AppCompatActivity() {
                     mProvider.insert(intervalData)
                     mProvider.insertIntervalIntoGroup(children, intervalData.group)
                 }
+                mProvider.runQueue()
+
 
                 true
             }

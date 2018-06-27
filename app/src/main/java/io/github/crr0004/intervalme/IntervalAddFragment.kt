@@ -71,6 +71,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         } else {
             throw RuntimeException(context.toString() + " must implement IntervalPropertiesEditFragmentInteractionI")
         }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,8 +80,10 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         mDurationTextView = view.findViewById(R.id.intervalDurationTxt)
         mGestureDetector = GestureDetectorCompat(view.context.applicationContext, mDurationGestureDetector)
         this.intervalNameTxt.setOnEditorActionListener { textView, actionId, keyEvent ->
-            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT)
+            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
+                this.intervalDurationTxt.requestFocus()
                 mModel.intervalToEdit.label = textView.text.toString()
+            }
             true
         }
         this.intervalNameTxt.addTextChangedListener(object : TextWatcher{
@@ -94,6 +97,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
                 mModel.intervalToEdit.label = p0.toString()
             }
         })
+
 
         onCreateSetListeners(view)
 

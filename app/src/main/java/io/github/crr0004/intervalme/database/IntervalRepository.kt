@@ -38,6 +38,8 @@ class IntervalRepository {
             }
         }
     }
+    val intervalDao: IntervalDataDOA
+    get() {return mIntervalDao!!}
 
     fun setExecutorToSync(){
         mExecutor = SynchronousExecutor()
@@ -245,6 +247,38 @@ class IntervalRepository {
 
     fun getAllIntervalProperties(): LiveData<Array<IntervalRunProperties>> {
         return mPropertiesDoa!!.getAll()
+    }
+
+    fun execute(function: () -> Unit) {
+        executor.execute(function)
+    }
+
+    fun startExecuteQueue() {
+        executor = QueueExecutor()
+    }
+
+    fun runQueue() {
+        (executor as QueueExecutor).runQueue()
+        executor = ThreadPerTaskExecutor()
+    }
+
+    internal inner class QueueExecutor : Executor{
+        private val queue = ArrayList<Runnable>()
+        private var running = false
+        override fun execute(p0: Runnable?) {
+            if(running)
+                throw RuntimeException("Trying to add runnable when queue is running")
+            queue.add(p0!!)
+        }
+
+        fun runQueue(){
+            Thread({
+                queue.forEachIndexed { index, runnable ->
+                    runnable.run()
+                }
+            }).run()
+            running = true
+        }
     }
 
 

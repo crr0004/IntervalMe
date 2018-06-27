@@ -90,7 +90,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor"
-        tools:text="@string/name" />
+        tools:text="@string/name"
+        android:imeOptions="actionNext"
+        android:nextFocusRight="@id/intervalDurationTxt"
+        >
+    <requestFocus />
+    </EditText>
 
     <Button
         android:id="@+id/goToClockSampleBtn"
