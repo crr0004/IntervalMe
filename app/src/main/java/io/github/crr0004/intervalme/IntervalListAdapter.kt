@@ -79,7 +79,7 @@ class IntervalListAdapter
     }
     private val intervalOnDragListener = { v: View, event: DragEvent ->
         val eventType = event.action
-        val interval = event.localState as IntervalData
+        val intervalBeingDragged = event.localState as IntervalData
         v.pivotX = 0f
         v.pivotY = v.height.toFloat()
 
@@ -107,13 +107,6 @@ class IntervalListAdapter
                 set.start()
             }
             ACTION_DROP -> {
-                /**
-                 * First we remove interval from it's current group
-                 * by shuffling everything up from it's current groupPosition
-                 *
-                 * Then we want to drop it into a new position.
-                 * So we need to move everything bellow the new position down
-                 */
                 val set = AnimatorSet()
                 set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
                         0.8f, 1f))
@@ -123,7 +116,7 @@ class IntervalListAdapter
                 set.start()
 
                 val packedPos = mHost.getExpandableListPosition(mHost.getPositionForView(v))
-                val intervalData = if(v.id == R.id.interval_group){
+                val intervalDroppedOn = if(v.id == R.id.interval_group){
                     val groupPos = ExpandableListView.getPackedPositionGroup(packedPos)
                     getGroup(groupPos)
                 }else{
@@ -132,17 +125,26 @@ class IntervalListAdapter
                     getChild(groupPos, childPos)
                 }
 
-                if(intervalData.ownerOfGroup){
-                    val groupUUID = intervalData.group
-                    if(interval.group != groupUUID && !interval.ownerOfGroup) {
-                        mHostActivity.moveIntervalToGroup(interval, groupUUID)
-                        mHost.expandGroup(intervalData.groupPosition.toInt())
-                    }else if(interval.ownerOfGroup && intervalData.ownerOfGroup){
+                /**
+                 * If the interval being dropped on is a group then we need
+                 * to change the behaviour if the interval being dragged is itself a group
+                 */
+                if(intervalDroppedOn.ownerOfGroup){
+                    val groupUUID = intervalDroppedOn.group
+                    if(intervalBeingDragged.group != groupUUID && !intervalBeingDragged.ownerOfGroup) {
+                        mHostActivity.moveIntervalToGroup(intervalBeingDragged, groupUUID)
+                        mHost.expandGroup(intervalDroppedOn.groupPosition.toInt())
+                    }else if(intervalBeingDragged.ownerOfGroup && intervalDroppedOn.ownerOfGroup){
                         // We've dropped one group on top of another
-                        mHostActivity.moveIntervalGroupAboveGroup(interval, intervalData)
+                        mHostActivity.moveIntervalGroupAboveGroup(intervalBeingDragged, intervalDroppedOn)
                     }
+                    // We don't want to be able to move a group onto a child
+                }else if(!intervalBeingDragged.ownerOfGroup){
+                    mHostActivity.moveChildIntervalAboveChild(intervalBeingDragged, intervalDroppedOn)
                 }else{
-                    mHostActivity.moveChildIntervalAboveChild(interval, intervalData)
+                    if(BuildConfig.DEBUG){
+                        Toast.makeText(mHostActivity, "Undefined behaviour", Toast.LENGTH_SHORT).show()
+                    }
                 }
                 // this.notifyDataSetChanged()
                 //swapItems(interval, intervalData)

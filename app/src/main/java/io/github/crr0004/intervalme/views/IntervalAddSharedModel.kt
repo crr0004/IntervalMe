@@ -52,12 +52,20 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
         mIntervalToEditGroup = interval
     }
 
+    /**
+     * Commits the interval being edited to the database
+     * If no group has been selected then the interval will become a group
+     */
     fun commit() {
         if(mIntervalToEditGroup == null){
             mIntervalToEdit.value?.ownerOfGroup = true
             if(!isInEditMode) {
-                mIntervalToEdit.value?.group = UUID.randomUUID()
-                mRepo.insert(intervalToEdit)
+                // Don't want to insert a blank interval
+                if(mIntervalToEdit.value != null) {
+                    mIntervalToEdit.value?.group = UUID.randomUUID()
+                    // If the interval is null, this will cause one to be generated through the getter
+                    mRepo.insert(intervalToEdit)
+                }
             }else{
                 mRepo.update(intervalToEdit)
             }
