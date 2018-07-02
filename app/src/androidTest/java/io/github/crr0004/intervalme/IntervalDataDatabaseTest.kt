@@ -3,7 +3,7 @@ package io.github.crr0004.intervalme
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.database.IntervalDataDOA
+import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import org.junit.After
 import org.junit.Assert
@@ -18,7 +18,7 @@ import java.io.IOException
  */
 @RunWith(AndroidJUnit4::class)
 class IntervalDataDatabaseTest {
-    private var mIntervalDao: IntervalDataDOA? = null
+    private var mIntervalDao: IntervalDataDAO? = null
     private var mDb: IntervalMeDatabase? = null
 
     @Before

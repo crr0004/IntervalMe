@@ -1,19 +1,26 @@
 package io.github.crr0004.intervalme
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import io.github.crr0004.intervalme.views.IntervalAddSharedModel
 
 
 class IntervalPropertiesEditFragment : Fragment() {
     private var listener: IntervalPropertiesEditFragmentInteractionI? = null
+    private lateinit var mModel: IntervalAddSharedModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mModel = ViewModelProviders.of(this.activity!!).get(IntervalAddSharedModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -24,6 +31,20 @@ class IntervalPropertiesEditFragment : Fragment() {
 
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.findViewById<EditText>(R.id.intervalPropertiesLoopsTxt).addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+                mModel.intervalToEditProperties.loops = p0.toString().toInt()
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        })
     }
 
     override fun onAttach(context: Context) {

@@ -14,7 +14,7 @@ import android.content.Context
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
-    abstract fun intervalDataDao(): IntervalDataDOA
+    abstract fun intervalDataDao(): IntervalDataDAO
     abstract fun propertiesDao(): IntervalRunPropertiesDOA
 
     companion object {

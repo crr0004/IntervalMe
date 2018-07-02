@@ -4,7 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.database.IntervalDataDOA
+import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalRepository
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import java.util.*
@@ -96,7 +96,7 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
         mRepo.execute(function)
     }
 
-    fun getRepoIntervalDao(): IntervalDataDOA {
+    fun getRepoIntervalDao(): IntervalDataDAO {
         return mRepo.intervalDao
     }
 

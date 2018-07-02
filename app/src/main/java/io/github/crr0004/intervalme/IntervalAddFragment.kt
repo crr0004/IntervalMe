@@ -130,12 +130,28 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val seconds = v.text.toString().toLong()
                 mDurationGestureDetector.mDuration = seconds
+                mModel.intervalToEdit.duration = mDurationGestureDetector.mDuration
                 v.clearFocus()
                 val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(v.windowToken, 0)
             }
             true
         }
+        mDurationTextView?.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+                try {
+                    mDurationGestureDetector.mDuration = p0.toString().toLong()
+                    mModel.intervalToEdit.duration = mDurationGestureDetector.mDuration
+                }catch(e: NumberFormatException){
+
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        })
     }
 
     private fun createInEditMode(view: View) {

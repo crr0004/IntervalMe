@@ -45,5 +45,10 @@
         android:title="@string/duplicate_selected"
         app:showAsAction="withText"
         />
+    <item
+        android:id="@+id/action_clear_db"
+        android:title="@string/clear_database"
+        app:showAsAction="withText"
+        />
 
 </menu>

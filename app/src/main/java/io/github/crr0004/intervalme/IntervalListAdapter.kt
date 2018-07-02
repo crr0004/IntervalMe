@@ -16,7 +16,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import android.widget.ExpandableListView.getPackedPositionForChild
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.database.IntervalDataDOA
+import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
@@ -30,7 +30,7 @@ class IntervalListAdapter
         BaseExpandableListAdapter(), DragDropAnimationController.DragDropViewSource<IntervalData> {
 
     private var mdb: IntervalMeDatabase? = null
-    private var mIntervalDao: IntervalDataDOA? = null
+    private var mIntervalDao: IntervalDataDAO? = null
     val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
     public val mChecked = SparseBooleanArray()
     public var mInEditMode: Boolean = false
@@ -182,7 +182,7 @@ class IntervalListAdapter
             //group.groupPosition = groupPosition.toLong()
             //group.label = group.label + " " + group.groupPosition
             if(BuildConfig.DEBUG) {
-                val errorInfo = StringBuilder(30)
+                val errorInfo = StringBuilder(65)
                 errorInfo
                         .append("getGroup hit a null at ")
                         .append(groupPosition)
@@ -195,6 +195,10 @@ class IntervalListAdapter
             }
         }
         return group
+    }
+
+    fun getGroupProperties(id: Long): IntervalRunProperties?{
+        return mIntervalProperties[id]
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
@@ -227,6 +231,13 @@ class IntervalListAdapter
         toReturn.setTag(R.id.id_interval_view_interval, intervalData)
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupEditButton)
         val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupDeleteButton)
+        val properties = getGroupProperties(intervalData.id)
+        if(properties != null){
+            toReturn.findViewById<TextView>(R.id.intervalGroupLoops).text = getGroupProperties(intervalData.id)?.loops.toString()
+        }else{
+            toReturn.findViewById<TextView>(R.id.intervalGroupLoopsLbl).visibility = View.GONE
+            toReturn.findViewById<TextView>(R.id.intervalGroupLoops).visibility = View.GONE
+        }
 
         if(mInEditMode){
             editButton.visibility = View.VISIBLE

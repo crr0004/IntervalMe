@@ -18,6 +18,12 @@ interface IntervalRunPropertiesDOA {
     @Query("select * from IntervalRunProperties")
     fun getAll(): LiveData<Array<IntervalRunProperties>>
 
+    @Query("select * from IntervalRunProperties")
+    fun getAllSync(): Array<IntervalRunProperties>
+
     @Query("select * from IntervalRunProperties where id = :id")
     fun get(id: Long): LiveData<IntervalRunProperties>
+
+    @Query("select * from IntervalRunProperties where intervalId = :id")
+    fun getForInterval(id: Long): LiveData<IntervalRunProperties>
 }

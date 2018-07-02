@@ -10,8 +10,8 @@ import kotlin.collections.HashMap
 class IntervalRepository {
 
     private var mdb: IntervalMeDatabase? = null
-    private var mIntervalDao: IntervalDataDOA? = null
-    private var mPropertiesDoa: IntervalRunPropertiesDOA? = null
+    private var mIntervalDao: IntervalDataDAO? = null
+    private var mPropertiesDao: IntervalRunPropertiesDOA? = null
     private val mIntervalChildrenCache: HashMap<UUID, ArrayList<IntervalData>> = HashMap()
     private val mIntervalGroupsCache: HashMap<Long, IntervalData> = HashMap()
     private var mExecutor: Executor = ThreadPerTaskExecutor()
@@ -23,7 +23,7 @@ class IntervalRepository {
     constructor(mContext: Context){
         mdb = IntervalMeDatabase.getInstance(mContext)
         mIntervalDao = mdb!!.intervalDataDao()
-        mPropertiesDoa = mdb!!.propertiesDao()
+        mPropertiesDao = mdb!!.propertiesDao()
     }
 
     private val buildGroupAndChildOffsetCacheRunnable = {
@@ -38,7 +38,7 @@ class IntervalRepository {
             }
         }
     }
-    val intervalDao: IntervalDataDOA
+    val intervalDao: IntervalDataDAO
     get() {return mIntervalDao!!}
 
     fun setExecutorToSync(){
@@ -175,6 +175,7 @@ class IntervalRepository {
             // Fixes the group positions in the old group
             // This will have a net affect of nothing if it's the same group
             mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+            interval.ownerOfGroup = false
             interval.group = group
             interval.groupPosition = mIntervalDao!!.getChildSizeOfGroup(group)
             mIntervalDao!!.insert(interval)
@@ -187,6 +188,7 @@ class IntervalRepository {
                 // Fixes the group positions in the old group
                 // This will have a net affect of nothing if it's the same group or they're new
                 mIntervalDao!!.shuffleChildrenInGroupUpFrom(intervalData!!.groupPosition, intervalData.group)
+                intervalData.ownerOfGroup = false
                 intervalData.groupPosition = groupPosStart+index
                 intervalData.group = group
                 mIntervalDao!!.insert(intervalData)
@@ -202,6 +204,7 @@ class IntervalRepository {
             mIntervalDao!!.delete(intervalData)
             mIntervalDao!!.shuffleGroupsUpFrom(intervalData.groupPosition)
             childrenToMove.forEachIndexed { index, child ->
+                child.ownerOfGroup = false // probably don't need it but eh
                 child.groupPosition = groupPosStart+index
                 child.group = group
                 mIntervalDao!!.update(child)
@@ -224,6 +227,7 @@ class IntervalRepository {
             }
             val intervalsWithoutGroup = mIntervalDao!!.getIntervalsWithoutGroups()
             intervalsWithoutGroup.forEachIndexed { index, intervalData ->
+                intervalData.ownerOfGroup = false
                 intervalData.group = group
                 intervalData.groupPosition = startingGroupPos+index
                 mIntervalDao!!.update(intervalData)
@@ -246,7 +250,7 @@ class IntervalRepository {
     }
 
     fun getAllIntervalProperties(): LiveData<Array<IntervalRunProperties>> {
-        return mPropertiesDoa!!.getAll()
+        return mPropertiesDao!!.getAll()
     }
 
     fun execute(function: () -> Unit) {
@@ -260,6 +264,27 @@ class IntervalRepository {
     fun runQueue() {
         (executor as QueueExecutor).runQueue()
         executor = ThreadPerTaskExecutor()
+    }
+
+    fun getPropertiesOfInterval(id: Long): LiveData<IntervalRunProperties> {
+        return mPropertiesDao!!.getForInterval(id)
+    }
+
+    fun update(intervalProperty: IntervalRunProperties) {
+        executor.execute {mPropertiesDao!!.update(intervalProperty)}
+    }
+
+    fun insert(intervalInput: IntervalData, intervalRunProperties: IntervalRunProperties) {
+        mExecutor.execute {
+            if(intervalInput.ownerOfGroup){
+                intervalInput.groupPosition = mIntervalDao!!.getGroupOwnersCount()
+            }
+            val id = mIntervalDao!!.insert(intervalInput)
+            @Synchronized
+            intervalInput.id = id
+            intervalRunProperties.intervalId = id
+            mPropertiesDao!!.insert(intervalRunProperties)
+        }
     }
 
     internal inner class QueueExecutor : Executor{

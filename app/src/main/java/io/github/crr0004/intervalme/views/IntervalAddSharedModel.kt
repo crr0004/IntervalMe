@@ -7,17 +7,24 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRepository
+import io.github.crr0004.intervalme.database.IntervalRunProperties
 import java.util.*
 
 class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mApplication){
 
     private val mIntervalToEdit: MutableLiveData<IntervalData> = MutableLiveData()
+    var mIntervalToEditProperties: MutableLiveData<IntervalRunProperties> = MutableLiveData()
     private var mStartingInterval: IntervalData? = null
     private val mRepo = IntervalRepository(mApplication.applicationContext)
     var isInEditMode: Boolean = false
     private var mIntervalToEditGroup: IntervalData? = null
-    val intervalToEditGroup: IntervalData?
-        get() {return mIntervalToEditGroup}
+    val intervalToEditProperties: IntervalRunProperties
+    get() {
+        if(mIntervalToEditProperties.value == null){
+            mIntervalToEditProperties.value = IntervalRunProperties(intervalId = intervalToEdit.id)
+        }
+        return mIntervalToEditProperties.value!!
+    }
     val intervalToEdit: IntervalData
     get() {
         if(mIntervalToEdit.value == null){
@@ -25,6 +32,7 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
         }
         return mIntervalToEdit.value!!
     }
+
 
     fun resetChanges(){
         mIntervalToEdit.postValue(mStartingInterval)
@@ -46,6 +54,11 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
                 this.isInEditMode = true
             }
         })
+        mRepo.getPropertiesOfInterval(id).observe(lifecycleOwner, Observer<IntervalRunProperties> {
+            if(it != null && mIntervalToEditProperties.value == null){
+                mIntervalToEditProperties.value = it
+            }
+        })
     }
 
     fun setIntervalToEditGroup(interval: IntervalData?) {
@@ -57,17 +70,19 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
      * If no group has been selected then the interval will become a group
      */
     fun commit() {
+        // TODO: Take care of case with runproperties where we edit an interval with a property that doesn't exist
         if(mIntervalToEditGroup == null){
             mIntervalToEdit.value?.ownerOfGroup = true
             if(!isInEditMode) {
+                // If the interval is null, insert will cause one to be generated through the getter
                 // Don't want to insert a blank interval
                 if(mIntervalToEdit.value != null) {
                     mIntervalToEdit.value?.group = UUID.randomUUID()
-                    // If the interval is null, this will cause one to be generated through the getter
-                    mRepo.insert(intervalToEdit)
+                    mRepo.insert(intervalToEdit, intervalToEditProperties)
                 }
             }else{
                 mRepo.update(intervalToEdit)
+                mRepo.update(intervalToEditProperties)
             }
         }else{
             if(!isInEditMode){
@@ -75,8 +90,10 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
             }else{
                 if(mIntervalToEdit.value!!.group != mIntervalToEditGroup!!.group){
                     mRepo.moveIntervalToGroup(mIntervalToEdit.value!!, mIntervalToEditGroup!!.group)
+                    mRepo.update(intervalToEditProperties)
                 }else{
                     mRepo.update(mIntervalToEdit.value!!)
+                    mRepo.update(intervalToEditProperties)
                 }
             }
         }

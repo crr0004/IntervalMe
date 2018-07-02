@@ -1,8 +1,9 @@
 package io.github.crr0004.intervalme
 
 import android.content.Context
+import android.content.res.Resources
 import android.media.MediaPlayer
-
+import android.provider.Settings.System.DEFAULT_NOTIFICATION_URI
 
 
 class IntervalSoundController {
@@ -32,7 +33,11 @@ class IntervalSoundController {
 
     constructor(context: Context, id: Int){
         mId = id
-        mMediaPlayer = MediaPlayer.create(context, id)
+        mMediaPlayer = try {
+            MediaPlayer.create(context, id)
+        }catch(e: Resources.NotFoundException){
+            MediaPlayer.create(context, DEFAULT_NOTIFICATION_URI)
+        }
     }
 
     fun playDone() {

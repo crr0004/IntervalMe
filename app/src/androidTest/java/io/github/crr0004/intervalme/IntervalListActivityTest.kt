@@ -20,7 +20,7 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withIntervalData
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.database.IntervalDataDOA
+import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalViewModel
 import junit.framework.Assert.assertEquals
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(IntervalListActivity::class.java) {
-    private var mIntervalDao: IntervalDataDOA? = null
+    private var mIntervalDao: IntervalDataDAO? = null
     private var mDb: IntervalMeDatabase? = null
     private val mTestIntervalSize = 11
     private val mIntervalParent = IntervalData.generate(1)[0]

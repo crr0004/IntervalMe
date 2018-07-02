@@ -227,6 +227,10 @@ class IntervalListActivity : AppCompatActivity() {
                 }
                 return true
             }
+            R.id.action_clear_db -> {
+                IntervalMeDatabase.getInstance(this)?.clearAllTables()
+                return true
+            }
             else ->
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
