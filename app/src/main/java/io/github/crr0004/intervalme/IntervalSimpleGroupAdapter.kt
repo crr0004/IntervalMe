@@ -24,7 +24,9 @@ class IntervalSimpleGroupAdapter(private val mContext: Context): RecyclerView.Ad
         fun bind(groupData: IntervalData){
             mBoundData = groupData
             itemView.intervalGroupNameTxt.text = groupData.label
-            itemView.intervalGroupPos.visibility = View.INVISIBLE
+            itemView.intervalGroupPos.visibility = View.GONE
+            itemView.intervalGroupLoopsLbl.visibility = View.GONE
+            itemView.intervalGroupLoops.visibility = View.GONE
         }
 
     }
