@@ -201,6 +201,7 @@ class IntervalRepository {
             val childrenToMove = mIntervalDao!!.getAllOfGroupWithoutOwner(intervalData.group)
             var groupPosStart = mIntervalDao!!.getChildSizeOfGroup(group)
             if(groupPosStart < 1) groupPosStart = 0
+            mPropertiesDao!!.deleteByIntervalId(intervalData.id)
             mIntervalDao!!.delete(intervalData)
             mIntervalDao!!.shuffleGroupsUpFrom(intervalData.groupPosition)
             childrenToMove.forEachIndexed { index, child ->
@@ -285,6 +286,10 @@ class IntervalRepository {
             intervalRunProperties.intervalId = id
             mPropertiesDao!!.insert(intervalRunProperties)
         }
+    }
+
+    fun insert(intervalToEditProperties: IntervalRunProperties) {
+        mPropertiesDao!!.insert(intervalToEditProperties)
     }
 
     internal inner class QueueExecutor : Executor{

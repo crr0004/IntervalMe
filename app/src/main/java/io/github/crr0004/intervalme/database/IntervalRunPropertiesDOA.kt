@@ -26,4 +26,7 @@ interface IntervalRunPropertiesDOA {
 
     @Query("select * from IntervalRunProperties where intervalId = :id")
     fun getForInterval(id: Long): LiveData<IntervalRunProperties>
+
+    @Query("delete from IntervalRunProperties where intervalId = :id")
+    fun deleteByIntervalId(id: Long)
 }

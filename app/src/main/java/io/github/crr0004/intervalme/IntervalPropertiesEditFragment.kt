@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import io.github.crr0004.intervalme.views.IntervalAddSharedModel
+import kotlinx.android.synthetic.main.fragment_interval_properties_edit.view.*
 
 
 class IntervalPropertiesEditFragment : Fragment() {
@@ -21,6 +23,7 @@ class IntervalPropertiesEditFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mModel = ViewModelProviders.of(this.activity!!).get(IntervalAddSharedModel::class.java)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -35,9 +38,14 @@ class IntervalPropertiesEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mModel.mIntervalToEditProperties.observe(this, Observer {
+            view.intervalPropertiesLoopsTxt.setText(it?.loops.toString())
+        })
         view.findViewById<EditText>(R.id.intervalPropertiesLoopsTxt).addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(p0: Editable?) {
-                mModel.intervalToEditProperties.loops = p0.toString().toInt()
+                try {
+                    mModel.intervalToEditProperties.loops = p0.toString().toInt()
+                }catch (e: NumberFormatException){}
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}

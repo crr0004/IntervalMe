@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import io.github.crr0004.intervalme.database.IntervalData
+import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.concurrent.TimeUnit
 
@@ -23,6 +24,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     private lateinit var mClockTickRunnable: TickClockRunnable
     private var mClockView: IntervalClockView? = null
     lateinit var mChildOfInterval: IntervalData
+    var mIntervalProperties: IntervalRunProperties? = null
     private var mNextInterval: IntervalController? = null
     private var mSoundController: IntervalSoundController? = null
     private var mThread: Thread? = null
@@ -36,15 +38,22 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     constructor(mClockView: IntervalClockView? = null,
                 mChildOfInterval: IntervalData,
                 mNextInterval: IntervalController? = null,
-                applicationContext: Context? = null) {
-        init(mClockView, mChildOfInterval, mNextInterval, applicationContext = applicationContext)
+                applicationContext: Context? = null,
+                runProperties: IntervalRunProperties? = null) {
+        init(mClockView, mChildOfInterval, mNextInterval, applicationContext = applicationContext, runProperties = runProperties)
     }
 
-    fun init(clockView: IntervalClockView?, childOfInterval: IntervalData, nextInterval: IntervalController? = null, applicationContext: Context? = null) {
+    fun init(
+            clockView: IntervalClockView?,
+            childOfInterval: IntervalData,
+            nextInterval: IntervalController? = null,
+            applicationContext: Context? = null,
+            runProperties: IntervalRunProperties? = null) {
         mClockView = clockView
         mChildOfInterval = childOfInterval
         mNextInterval = nextInterval
         mDetector = GestureDetectorCompat(mClockView?.context, this)
+        mIntervalProperties = runProperties
 
         mClockView?.setOnTouchListener { _, event ->
             mDetector.onTouchEvent(event)

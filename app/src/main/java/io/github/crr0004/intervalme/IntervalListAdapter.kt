@@ -197,7 +197,7 @@ class IntervalListAdapter
         return group
     }
 
-    fun getGroupProperties(id: Long): IntervalRunProperties?{
+    fun getProperties(id: Long): IntervalRunProperties?{
         return mIntervalProperties[id]
     }
 
@@ -231,9 +231,9 @@ class IntervalListAdapter
         toReturn.setTag(R.id.id_interval_view_interval, intervalData)
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupEditButton)
         val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockGroupDeleteButton)
-        val properties = getGroupProperties(intervalData.id)
+        val properties = getProperties(intervalData.id)
         if(properties != null){
-            toReturn.findViewById<TextView>(R.id.intervalGroupLoops).text = getGroupProperties(intervalData.id)?.loops.toString()
+            toReturn.findViewById<TextView>(R.id.intervalGroupLoops).text = properties.loops.toString()
         }else{
             toReturn.findViewById<TextView>(R.id.intervalGroupLoopsLbl).visibility = View.GONE
             toReturn.findViewById<TextView>(R.id.intervalGroupLoops).visibility = View.GONE
@@ -267,7 +267,7 @@ class IntervalListAdapter
                     childAboveController = mCachedControllers[childAbove.id]
                 }
                 val childController = if (mCachedControllers[childInterval.id] == null) {
-                    IntervalController(null, childInterval, childAboveController, applicationContext = this.mHostActivity.applicationContext)
+                    IntervalController(null, childInterval, childAboveController, applicationContext = this.mHostActivity.applicationContext, runProperties = getProperties(childInterval.id))
                 } else {
                     mCachedControllers[childInterval.id]
                 }
@@ -332,7 +332,13 @@ class IntervalListAdapter
         val editButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
         val deleteButton = toReturn.findViewById<AppCompatImageButton>(R.id.clockSingleDeleteButton)
         val checkBox = toReturn.findViewById<CheckBox>(R.id.clockEditCheckbox)
-        //checkBox.isChecked = mChecked.
+        val properties = getProperties(childOfInterval.id)
+        if(properties != null){
+            toReturn.findViewById<TextView>(R.id.clockLoopsTxt).text = properties .loops.toString()
+        }else{
+            toReturn.findViewById<TextView>(R.id.clockLoopsTxt).visibility = View.GONE
+            toReturn.findViewById<TextView>(R.id.clockLabelLoops).visibility = View.GONE
+        }
 
         toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
         toReturn.findViewById<TextView>(R.id.clockLabelPos)?.text = childOfInterval.groupPosition.toString()
@@ -352,7 +358,7 @@ class IntervalListAdapter
 
         // Controller hasn't been forward cached so create it
         if(controller == null) {
-            controller = IntervalController(clockView, childOfInterval, applicationContext = this.mHostActivity.applicationContext)
+            controller = IntervalController(clockView, childOfInterval, applicationContext = this.mHostActivity.applicationContext, runProperties = properties)
         }else {
             // We need to tell the other mController to disconnect from the clock
             clockView.mController?.disconnectFromViews()
