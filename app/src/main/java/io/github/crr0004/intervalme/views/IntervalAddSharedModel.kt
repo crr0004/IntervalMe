@@ -82,7 +82,11 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
                 }
             }else{
                 mRepo.update(intervalToEdit)
-                mRepo.update(intervalToEditProperties)
+                if(intervalToEditProperties.id < 1) {
+                    mRepo.insert(intervalToEditProperties)
+                }else{
+                    mRepo.update(intervalToEditProperties)
+                }
             }
         }else{
             if(!isInEditMode){
@@ -93,7 +97,11 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
                     mRepo.update(intervalToEditProperties)
                 }else{
                     mRepo.update(mIntervalToEdit.value!!)
-                    mRepo.update(intervalToEditProperties)
+                    if(intervalToEditProperties.id < 1) {
+                        mRepo.insert(intervalToEditProperties)
+                    }else{
+                        mRepo.update(intervalToEditProperties)
+                    }
                 }
             }
         }
