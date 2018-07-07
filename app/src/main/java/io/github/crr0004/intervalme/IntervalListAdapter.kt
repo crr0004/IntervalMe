@@ -20,6 +20,7 @@ import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
+import java.util.*
 
 
 /**
@@ -27,7 +28,25 @@ import io.github.crr0004.intervalme.views.IntervalClockView
  */
 class IntervalListAdapter
         constructor(private val mHostActivity: IntervalListActivity, private val mHost: ExpandableListView):
-        BaseExpandableListAdapter(), DragDropAnimationController.DragDropViewSource<IntervalData> {
+        BaseExpandableListAdapter(), DragDropAnimationController.DragDropViewSource<IntervalData>, IntervalControllerFacade.IntervalControllerDataSourceI {
+    // BEGIN IntervalControllerDataSourceI implementation
+    override fun facadeGetIDFromPosition(groupPosition: Int): UUID {
+        return getGroup(groupPosition).group
+    }
+
+    override fun facadeGetGroup(groupPosition: Int): IntervalData {
+        return getGroup(groupPosition)
+    }
+
+    override fun facadeGetGroupSize(groupPosition: Int): Int {
+        return getChildrenCount(groupPosition)
+    }
+
+    override fun facadeGetChild(groupPosition: Int, index: Int): IntervalData {
+        return getChild(groupPosition, index)
+    }
+
+    // END IntervalControllerDataSourceI implementation
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDAO? = null
@@ -46,6 +65,7 @@ class IntervalListAdapter
         mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
         mIntervalDao = mdb!!.intervalDataDao()
         mNotFoundGroupLabel = mHostActivity.getString(R.string.group_not_found_label).toString()
+        IntervalControllerFacade.instance.setDataSource(this)
     }
 
     override fun getAdapter(): ExpandableListAdapter {
@@ -58,6 +78,7 @@ class IntervalListAdapter
         val aGroup = item1.group
         val bGroup = item2.group
 
+        // This is unlikely to happen but ensures one follows the other
         if(aPos == bPos){
             bPos++
         }
@@ -435,6 +456,5 @@ class IntervalListAdapter
 
     fun setGroup(groupPosition: Long, it: Array<IntervalData>) {
         mIntervalsList!![groupPosition] = it
-        IntervalControllerFacade.instance.setGroup(groupPosition, it)
     }
 }

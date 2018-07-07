@@ -9,7 +9,8 @@ import io.github.crr0004.intervalme.database.IntervalRepository
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import java.util.*
 
-class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplication) {
+class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplication){
+
     private val mRepo: IntervalRepository = IntervalRepository(mApplication.applicationContext)
 
     fun getGroups(): LiveData<Array<IntervalData>> {

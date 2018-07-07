@@ -22,6 +22,18 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     private val DEBUG_TAG = "ICGestures"
     private lateinit var mDetector: GestureDetectorCompat
     private lateinit var mClockTickRunnable: TickClockRunnable
+    private lateinit var mCallBackHost: IntervalControllerCallBackI
+
+    interface IntervalControllerCallBackI {
+        fun clockStartedAsNew(intervalController: IntervalController)
+        fun clockResumedFromPause(intervalController: IntervalController)
+        fun clockPaused(intervalController: IntervalController)
+        fun clockFinished(intervalController: IntervalController, mSoundController: IntervalSoundController?)
+        fun clockStopped(intervalController: IntervalController)
+        fun clockTimeUpdatedTo(intervalController: IntervalController, mTimeToRun: Long)
+
+    }
+
     private var mClockView: IntervalClockView? = null
     lateinit var mChildOfInterval: IntervalData
     var mIntervalProperties: IntervalRunProperties? = null
@@ -36,16 +48,15 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
      */
     constructor(mClockView: IntervalClockView? = null,
                 mChildOfInterval: IntervalData,
-                mNextInterval: IntervalController? = null,
-                applicationContext: Context? = null,
-                runProperties: IntervalRunProperties? = null) {
-        init(mClockView, mChildOfInterval, mNextInterval, applicationContext = applicationContext, runProperties = runProperties)
+                runProperties: IntervalRunProperties? = null,
+                callBackHost: IntervalController.IntervalControllerCallBackI) {
+        init(mClockView, mChildOfInterval, runProperties = runProperties)
+        mCallBackHost = callBackHost
     }
 
     fun init(
             clockView: IntervalClockView?,
             childOfInterval: IntervalData,
-            nextInterval: IntervalController? = null,
             applicationContext: Context? = null,
             runProperties: IntervalRunProperties? = null) {
         mClockView = clockView
@@ -85,8 +96,10 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
                 // We also move the clock ahead to the current time minus however much time has passed
                 mClockTickRunnable.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable.mElapsedTime
                // mClockView!!.post(mClockTickRunnable)
+                mCallBackHost.clockResumedFromPause(this)
             }else{
                 mThread?.interrupt()
+                mCallBackHost.clockPaused(this)
             }
             startClockThread()
         }
@@ -108,6 +121,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         mClockTickRunnable.mRunning = true
         startClockThread()
         mClockRunning = true
+        mCallBackHost.clockStartedAsNew(this)
     }
 
     override fun onDoubleTap(e: MotionEvent?): Boolean {
@@ -126,6 +140,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         mThread?.interrupt()
 
         mClockTickRunnable.mTimeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)
+        mCallBackHost.clockStopped(this)
 
         //mClockView?.setClockTime(mClockTickRunnable.mTimeToRun)
     }
@@ -136,6 +151,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         if(mClockRunning) {
             mClockTickRunnable.updatePercentComplete()
         }
+        mCallBackHost.clockTimeUpdatedTo(this, mClockTickRunnable.mTimeToRun)
         return true
     }
 
@@ -154,11 +170,8 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         mClockRunning = false
 
         //Log.d(DEBUG_TAG, "IntervalController $mChildOfInterval done")
-        if(true) {
-            mSoundController?.playDone()
-        }else{
-            mSoundController?.playLoop(2)
-        }
+
+        mCallBackHost.clockFinished(this, mSoundController)
     }
 
     private fun previousTimerFinished(previousIntervalController: IntervalController){
