@@ -25,10 +25,9 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     private var mClockView: IntervalClockView? = null
     lateinit var mChildOfInterval: IntervalData
     var mIntervalProperties: IntervalRunProperties? = null
-    private var mNextInterval: IntervalController? = null
+    //private var mNextInterval: IntervalController? = null
     private var mSoundController: IntervalSoundController? = null
     private var mThread: Thread? = null
-
 
     /**
      * @param mNextInterval the interval to start after this one is done
@@ -51,7 +50,6 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             runProperties: IntervalRunProperties? = null) {
         mClockView = clockView
         mChildOfInterval = childOfInterval
-        mNextInterval = nextInterval
         mDetector = GestureDetectorCompat(mClockView?.context, this)
         mIntervalProperties = runProperties
 
@@ -154,11 +152,9 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
      */
     private fun finishedTimer() {
         mClockRunning = false
-        if(mNextInterval != null) {
-            mNextInterval!!.previousTimerFinished(this)
-        }
+
         //Log.d(DEBUG_TAG, "IntervalController $mChildOfInterval done")
-        if(mNextInterval != null) {
+        if(true) {
             mSoundController?.playDone()
         }else{
             mSoundController?.playLoop(2)
@@ -182,10 +178,6 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     open fun onStop() {
 
-    }
-
-    open fun setNextInterval(intervalController: IntervalController?) {
-        mNextInterval = intervalController
     }
 
     open fun refreshInterval(updatedInterval: IntervalData) {

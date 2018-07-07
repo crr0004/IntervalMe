@@ -31,7 +31,7 @@ class IntervalListAdapter
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDAO? = null
-    val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
+   // val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
     public val mChecked = SparseBooleanArray()
     public var mInEditMode: Boolean = false
     private var mIntervalsList: HashMap<Long, Array<IntervalData>>? = HashMap(10)
@@ -69,7 +69,8 @@ class IntervalListAdapter
         item1.group = bGroup
 
         if(aGroup == bGroup) {
-            mCachedControllers[item2.id]!!.setNextInterval(mCachedControllers[item1.id])
+            IntervalControllerFacade.instance.intervalsSwapped(item1.id, item2.id)
+            //mCachedControllers[item2.id]!!.setNextInterval(mCachedControllers[item1.id])
         }
 
         mHostActivity.update(item1)
@@ -257,6 +258,9 @@ class IntervalListAdapter
         }
         toReturn.setOnDragListener(intervalOnDragListener)
 
+        IntervalControllerFacade.instance.setUpGroupOrder(groupPosition)
+        IntervalControllerFacade.instance.groupView(groupPosition, toReturn)
+        /*
         val group = mIntervalsList?.get(groupPosition.toLong())
         if(group != null) {
             val groupChildren = group.drop(1).reversed()
@@ -274,6 +278,7 @@ class IntervalListAdapter
                 mCachedControllers[childInterval.id] = childController!!
             }
         }
+        */
 
         return toReturn
     }
@@ -318,7 +323,7 @@ class IntervalListAdapter
         if(convertView?.id == R.layout.interval_single_clock)
             toReturn = convertView
         // Look for our mController that may have been forward init
-        var controller: IntervalController? = mCachedControllers[childOfInterval.id]
+        //var controller: IntervalGroupController? = mGroupControlls[groupPosition.toLong()]!!
         // If we're using an existing mController we must make sure to release properly before re-init
 
         // second null check for using a converted view
@@ -356,24 +361,24 @@ class IntervalListAdapter
 
         toReturn.setOnDragListener(intervalOnDragListener)
 
+        IntervalControllerFacade.instance.connectClockView(clockView, groupPosition, childOfInterval)
         // Controller hasn't been forward cached so create it
-        if(controller == null) {
-            controller = IntervalController(clockView, childOfInterval, applicationContext = this.mHostActivity.applicationContext, runProperties = properties)
-        }else {
+        //if(controller == null) {
+            //controller = IntervalController(clockView, childOfInterval, applicationContext = this.mHostActivity.applicationContext, runProperties = properties)
+        //}else {
             // We need to tell the other mController to disconnect from the clock
-            clockView.mController?.disconnectFromViews()
-            controller.disconnectFromViews()
-            controller.connectNewClockView(clockView)
-            clockView.mController = controller
-        }
+            //clockView.mController?.disconnectFromViews()
+            //controller?.disconnectFromViews(childPosition)
+            //controller?.connectNewClockView(clockView, childPosition)
+            //clockView.mController = controller
+        //}
         // Ensure controller is up to date
-        controller.mChildOfInterval = childOfInterval
+        //controller.mChildOfInterval = childOfInterval
 
-        if(childPosition > 0)
-            mCachedControllers[previousInterval!!.id]!!.setNextInterval(controller)
+        //if(childPosition > 0)
+            //mCachedControllers[previousInterval!!.id]!!.setNextInterval(controller)
 
-        //mCachedViews[childOfInterval.id] = toReturn
-        mCachedControllers[childOfInterval.id] = controller
+        //mCachedControllers[childOfInterval.id] = controller
         val flatListPosition = mHost.getFlatListPosition(getPackedPositionForChild(groupPosition, childPosition))
         checkBox.setOnClickListener {
             setItemChecked(flatListPosition, checkBox.isChecked)
@@ -387,13 +392,15 @@ class IntervalListAdapter
             mHostActivity.launchAddInEditMode(childOfInterval)
         }
         deleteButton.setOnClickListener {
-            mCachedControllers.remove(childOfInterval.id)
+            IntervalControllerFacade.instance.delete(childOfInterval)
+            //mCachedControllers.remove(childOfInterval.id)
             mIntervalDao!!.delete(childOfInterval)
             notifyDataSetChanged()
         }
         // Ensures when we move items around, the next intervals are getting updated
         if(isLastChild){
-            controller.setNextInterval(null)
+            //controller.setNextInterval(null)
+            IntervalControllerFacade.instance.setIntervalAsLast(groupPosition, childOfInterval)
         }
 
         return toReturn
@@ -409,18 +416,11 @@ class IntervalListAdapter
         return size
     }
 
-    fun updateInterval(id: Long) {
-        val updatedInterval = mIntervalDao?.get(id)
-        if(updatedInterval != null) {
-            mCachedControllers[id]?.refreshInterval(updatedInterval)
-            mCachedControllers[id]?.stopAndRefreshClock()
-        }
-    }
-
     fun startAllIntervals() {
-        mCachedControllers.forEach { _, controller ->
-            controller.startClockAsNew()
-        }
+        IntervalControllerFacade.instance.startAllIntervals()
+        //mCachedControllers.forEach { _, controller ->
+            //controller.startClockAsNew()
+        //}
     }
 
     fun setItemChecked(keyAt: Int, b: Boolean) {
@@ -431,15 +431,10 @@ class IntervalListAdapter
         }
     }
 
-    fun removeGroup(intervalData: IntervalData) {
-        mIntervalsList?.remove(intervalData.groupPosition)
-    }
+    //private var mGroupControlls: HashMap<Long, IntervalGroupController?> = HashMap(1)
 
     fun setGroup(groupPosition: Long, it: Array<IntervalData>) {
         mIntervalsList!![groupPosition] = it
-    }
-
-    fun setCacheSize(size: Int?) {
-        mIntervalsList = HashMap(size?: 1)
+        IntervalControllerFacade.instance.setGroup(groupPosition, it)
     }
 }

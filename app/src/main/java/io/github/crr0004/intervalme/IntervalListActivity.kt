@@ -17,7 +17,6 @@ import android.view.View
 import android.widget.AbsListView.CHOICE_MODE_MULTIPLE
 import android.widget.ExpandableListView
 import android.widget.Toast
-import io.github.crr0004.intervalme.IntervalAddFragment.Companion.EDIT_MODE_FLAG_INTERVAL_ID
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalViewModel
@@ -243,6 +242,8 @@ class IntervalListActivity : AppCompatActivity() {
      */
     override fun onPause() {
         super.onPause()
+        IntervalControllerFacade.instance.onPauseCalled(this)
+        /*
         Thread(Runnable {
             val cachedControllers = mAdapter!!.mCachedControllers
             cachedControllers.forEach { key, controller ->
@@ -251,6 +252,7 @@ class IntervalListActivity : AppCompatActivity() {
                 mProvider.update(intervalData)
             }
         }).start()
+        */
 
     }
 
@@ -263,8 +265,7 @@ class IntervalListActivity : AppCompatActivity() {
 
         Log.d("ila", "IntervalListActivity onActivityResult")
         if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
-            val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
-            mAdapter?.updateInterval(id)
+            //val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
             mAdapter?.notifyDataSetChanged()
         }else if(requestCode == INTENT_ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK){
             mAdapter?.notifyDataSetChanged()
@@ -274,11 +275,16 @@ class IntervalListActivity : AppCompatActivity() {
     override fun onResume() {
 
         super.onResume()
+        IntervalControllerFacade.instance.onResumeCalled(this)
+        /*
         val cachedControllers = mAdapter!!.mCachedControllers
         cachedControllers.forEach { key, controller ->
             controller.onResume(this.applicationContext)
         }
+        */
     }
+
+
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
 
@@ -293,14 +299,18 @@ class IntervalListActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        IntervalControllerFacade.instance.onStopCalled(this)
+        /*
         val cachedControllers = mAdapter!!.mCachedControllers
         cachedControllers.forEach { key, controller ->
             controller.onStop()
         }
+        */
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        IntervalControllerFacade.instance.destory()
     }
 
     fun launchAddInEditMode(childOfInterval: IntervalData) {
