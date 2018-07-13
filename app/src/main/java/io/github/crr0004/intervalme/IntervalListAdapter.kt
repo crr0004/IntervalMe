@@ -279,7 +279,7 @@ class IntervalListAdapter
         }
         toReturn.setOnDragListener(intervalOnDragListener)
 
-        IntervalControllerFacade.instance.setUpGroupOrder(groupPosition)
+
         IntervalControllerFacade.instance.groupView(groupPosition, toReturn)
         /*
         val group = mIntervalsList?.get(groupPosition.toLong())
@@ -456,5 +456,6 @@ class IntervalListAdapter
 
     fun setGroup(groupPosition: Long, it: Array<IntervalData>) {
         mIntervalsList!![groupPosition] = it
+        IntervalControllerFacade.instance.setUpGroupOrder(it[0].groupPosition.toInt())
     }
 }

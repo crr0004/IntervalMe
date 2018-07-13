@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.util.Log
 import android.view.View
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.views.IntervalClockView
@@ -12,6 +13,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     fun intervalsSwapped(id: Long, id1: Long) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("ICF", "IntervalSwapped called")
     }
 
     fun groupView(groupPosition: Int, toReturn: View) {
@@ -53,7 +55,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     }
 
     fun isIntervalLast(interval: IntervalData): Boolean{
-        return mControllers[interval.group]!!.size == (interval.groupPosition+1).toInt()
+        return mControllers[interval.group]!!.last().mChildOfInterval == interval
     }
 
     // BEGIN IntervalControllerCallBackI
@@ -71,7 +73,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     override fun clockFinished(intervalController: IntervalController, mSoundController: IntervalSoundController?) {
         val interval = intervalController.mChildOfInterval
-        if(isIntervalLast(interval)) {
+         if(isIntervalLast(interval)) {
             mSoundController?.playLoop(2)
         }else{
             mSoundController?.playDone()
