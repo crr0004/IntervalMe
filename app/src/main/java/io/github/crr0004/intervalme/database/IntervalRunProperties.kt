@@ -13,4 +13,9 @@ data class IntervalRunProperties(@PrimaryKey(autoGenerate = true) var id: Long=0
                                  @ColumnInfo(name = "loops") var loops: Int = 0
 ){
     constructor() : this(loops = 0){}
+    constructor(copy: IntervalRunProperties) : this(){
+        this.id = copy.id
+        this.intervalId = copy.intervalId
+        this.loops = copy.loops
+    }
 }

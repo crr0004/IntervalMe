@@ -46,6 +46,10 @@ class IntervalListAdapter
         return getChild(groupPosition, index)
     }
 
+    override fun getGroupProperties(groupPosition: Long): IntervalRunProperties? {
+        return mIntervalProperties[groupPosition]
+    }
+
     // END IntervalControllerDataSourceI implementation
 
     private var mdb: IntervalMeDatabase? = null

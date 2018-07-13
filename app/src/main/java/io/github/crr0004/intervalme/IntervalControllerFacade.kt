@@ -3,12 +3,15 @@ package io.github.crr0004.intervalme
 import android.util.Log
 import android.view.View
 import io.github.crr0004.intervalme.database.IntervalData
+import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.*
+import kotlin.collections.HashMap
 
 class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI {
 
     private val mControllers: HashMap<UUID, Array<IntervalController>> = HashMap(1)
+    private val mRunningProperties: HashMap<UUID, IntervalRunProperties> = HashMap(1)
     private lateinit var mDataSource: IntervalControllerFacade.IntervalControllerDataSourceI
 
     fun intervalsSwapped(id: Long, id1: Long) {
@@ -21,13 +24,18 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     }
 
     fun setUpGroupOrder(groupPosition: Int) {
-        mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)] = Array(mDataSource.facadeGetGroupSize(groupPosition)){index: Int ->
-            IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index), callBackHost = this)
+        // We add one to the size as the first one is the group itself
+        mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)] = Array(mDataSource.facadeGetGroupSize(groupPosition)+1){index: Int ->
+            if(index == 0){
+                IntervalController(mChildOfInterval = mDataSource.facadeGetGroup(groupPosition), callBackHost = this)
+            }else {
+                IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index-1), callBackHost = this)
+            }
         }
     }
 
     fun connectClockView(clockView: IntervalClockView, groupPosition: Int, childOfInterval: IntervalData) {
-        mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)]!![childOfInterval.groupPosition.toInt()].connectNewClockView(clockView)
+        mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)]!![childOfInterval.groupPosition.toInt()+1].connectNewClockView(clockView)
     }
 
     fun delete(childOfInterval: IntervalData) {
@@ -71,13 +79,46 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    /**
+     * This creates a copy of properties for the group and stores it
+     * This will not create a copy if the properites doesn't exist in the data source
+     * @param the properties of the group
+     * @return a copy of the properties
+     */
+    fun getRunningProperties(group: UUID): IntervalRunProperties?{
+        var properties = mRunningProperties[group]
+        if(properties == null) {
+            properties = mDataSource.getGroupProperties(mControllers[group]!![0].mChildOfInterval.id)
+            if(properties != null) {
+                properties = IntervalRunProperties(properties)
+                mRunningProperties[group] = properties
+            }
+        }
+        return properties
+    }
+
+    fun clearRunningPropertie(group: UUID){
+        mRunningProperties.remove(group)
+    }
+
     override fun clockFinished(intervalController: IntervalController, mSoundController: IntervalSoundController?) {
         val interval = intervalController.mChildOfInterval
-         if(isIntervalLast(interval)) {
+        if(isIntervalLast(interval)) {
             mSoundController?.playLoop(2)
+            val properties = getRunningProperties(interval.group)
+            if(properties != null){
+                if(properties.loops > 0){
+                    properties.loops--
+                    // 1 because we want to start the first child again. 0 is the group itself
+                    mControllers[interval.group]!![1].startClockAsNew()
+                }else{
+                    clearRunningPropertie(interval.group)
+                }
+            }
         }else{
             mSoundController?.playDone()
-            mControllers[interval.group]!![(interval.groupPosition+1).toInt()].startClockAsNew()
+            // +2 because we want the interval following this one and the first element of the controllers is the group itself
+            mControllers[interval.group]!![(interval.groupPosition+2).toInt()].startClockAsNew()
         }
     }
 
@@ -118,5 +159,6 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         fun facadeGetGroupSize(groupPosition: Int): Int
         fun facadeGetChild(groupPosition: Int, index: Int): IntervalData
         fun facadeGetIDFromPosition(groupPosition: Int): UUID
+        fun getGroupProperties(groupPosition: Long): IntervalRunProperties?
     }
 }
