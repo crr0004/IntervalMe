@@ -26,6 +26,7 @@ android {
     }
     productFlavors {
     }
+    buildToolsVersion '28.0.1'
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -69,5 +70,4 @@ dependencies {
     implementation 'com.android.support:support-vector-drawable:28.0.0-alpha3'
     implementation 'com.android.support:recyclerview-v7:28.0.0-alpha3'
     implementation 'com.android.support:recyclerview-selection:28.0.0-alpha3'
-
 }

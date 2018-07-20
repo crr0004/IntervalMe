@@ -162,10 +162,12 @@ class IntervalListAdapter
                         mHost.expandGroup(intervalDroppedOn.groupPosition.toInt())
                     }else if(intervalBeingDragged.ownerOfGroup && intervalDroppedOn.ownerOfGroup){
                         // We've dropped one group on top of another
+                        mIntervalsList?.clear()
                         mHostActivity.moveIntervalGroupAboveGroup(intervalBeingDragged, intervalDroppedOn)
                     }
                     // We don't want to be able to move a group onto a child
                 }else if(!intervalBeingDragged.ownerOfGroup){
+
                     mHostActivity.moveChildIntervalAboveChild(intervalBeingDragged, intervalDroppedOn)
                 }else{
                     if(BuildConfig.DEBUG){
@@ -371,7 +373,7 @@ class IntervalListAdapter
         }
 
         toReturn.findViewById<TextView>(R.id.clockLabelTxt)?.text = childOfInterval.label
-        toReturn.findViewById<TextView>(R.id.clockLabelPos)?.text = childOfInterval.groupPosition.toString()
+        //toReturn.findViewById<TextView>(R.id.clockLabelPos)?.text = childOfInterval.groupPosition.toString()
 
         if(mInEditMode){
             toReturn.findViewById<View>(R.id.clockEditCheckbox).visibility = View.VISIBLE

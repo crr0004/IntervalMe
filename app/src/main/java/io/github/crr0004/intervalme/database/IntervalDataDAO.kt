@@ -67,7 +67,7 @@ interface IntervalDataDAO {
     @Query("select * from Interval where (NOT ownerOfGroup) AND `group` = :group order by groupPosition limit 1 offset :offset-1")
     fun getChildOfGroupByOffset(offset: Long, group: UUID): IntervalData
 
-    @Query("update Interval set groupPosition = groupPosition - 1 where `group` = :group AND groupPosition > :from AND NOT ownerOfGroup")
+    @Query("update Interval set groupPosition = groupPosition - 1 where `group` = :group AND groupPosition > :from AND groupPosition > 0 AND NOT ownerOfGroup")
     fun shuffleChildrenInGroupUpFrom(from: Long, group: UUID)
 
     @Query("select COUNT(id) from Interval WHERE (NOT ownerOfGroup) AND `group` = :group")

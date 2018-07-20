@@ -49,18 +49,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/clockLabelPos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/frameLayout"
-        app:layout_constraintTop_toBottomOf="@+id/clockLabelTxt"
-        tools:text="0" />
-
-    <TextView
         android:id="@+id/clockLabelLoops"
         android:layout_width="44dp"
         android:layout_height="wrap_content"
@@ -71,7 +59,7 @@
         android:text="@string/loops"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/frameLayout"
-        app:layout_constraintTop_toBottomOf="@+id/clockLabelPos" />
+        app:layout_constraintTop_toBottomOf="@+id/clockLabelTxt" />
 
     <TextView
         android:id="@+id/clockLoopsTxt"
@@ -82,7 +70,7 @@
         android:ems="10"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/clockLabelLoops"
-        app:layout_constraintTop_toBottomOf="@+id/clockLabelPos"
+        app:layout_constraintTop_toBottomOf="@+id/clockLabelTxt"
         tools:text="999" />
 
     <CheckBox
