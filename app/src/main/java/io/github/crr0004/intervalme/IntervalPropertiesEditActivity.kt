@@ -87,6 +87,7 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
 
+
         (intervalPropertiesFAB).setOnClickListener {
             mModel.commit()
             val intent = Intent()
@@ -99,49 +100,12 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
 
     }
 
-    /*
-    private fun commitEditedInterval(){
-        if(mIntervalToEdit?.value != null) {
-            if(!mIntervalToEdit?.value!!.ownerOfGroup) {
-                mModelProvider.insertIntervalIntoGroup(mIntervalToEdit!!.value!!, mModel.intervalToEditGroup!!.group)
-            }else{
-                mIntervalToEdit?.value!!.ownerOfGroup = true
-                mIntervalToEdit?.value!!.group = UUID.randomUUID()
-            }
-
-
-            mIntervalToEdit?.value!!.lastModified = Date()
-            mModelProvider.update(mIntervalToEdit?.value!!)
-
-            Toast.makeText(this, "Updated interval", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    private fun commitInterval(){
-
-        val groupUUID = mModel.intervalToEditGroup?.group
-        val interval = if(groupUUID != null){
-            val childCount = mSelectedGroupChildSize
-            IntervalData(
-                    label=text.toString(),
-                    duration = durationText.toString().toLong(),
-                    group = groupUUID,
-                    ownerOfGroup = false,
-                    groupPosition = childCount)
-        }else{
-            //Toast.makeText(this, "Invalid UUID. Setting to random", Toast.LENGTH_SHORT).show()
-            IntervalData(label=text.toString(), duration = durationText.toString().toLong(),groupPosition = mGroupOwnersSize!!.value!!)
-        }
-
-        mModelProvider.insert(interval)
-        Toast.makeText(this, "Added interval", Toast.LENGTH_SHORT).show()
-    }
-    */
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_interval_properties, menu)
+        if(!mModel.isInEditMode){
+            menu.findItem(R.id.action_reset_changes).isVisible = false
+        }
         return true
     }
 

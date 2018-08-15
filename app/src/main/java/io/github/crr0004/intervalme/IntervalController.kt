@@ -49,8 +49,9 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     constructor(mClockView: IntervalClockView? = null,
                 mChildOfInterval: IntervalData,
                 runProperties: IntervalRunProperties? = null,
+                applicationContext: Context? = null,
                 callBackHost: IntervalController.IntervalControllerCallBackI) {
-        init(mClockView, mChildOfInterval, runProperties = runProperties)
+        init(mClockView, mChildOfInterval, runProperties = runProperties, applicationContext = applicationContext)
         mCallBackHost = callBackHost
     }
 
@@ -146,13 +147,15 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
     }
 
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+        /*
         mClockTickRunnable.mTimeToRun -= distanceX.toLong() * 100
         mClockView!!.setClockTime(mClockTickRunnable.mTimeToRun)
         if(mClockRunning) {
             mClockTickRunnable.updatePercentComplete()
         }
         mCallBackHost.clockTimeUpdatedTo(this, mClockTickRunnable.mTimeToRun)
-        return true
+        */
+        return false
     }
 
     override fun onLongPress(e: MotionEvent?) {

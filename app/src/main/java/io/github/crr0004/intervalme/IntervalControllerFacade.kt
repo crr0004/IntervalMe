@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.content.Context
 import android.util.Log
 import android.view.View
 import io.github.crr0004.intervalme.database.IntervalData
@@ -23,13 +24,13 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun setUpGroupOrder(groupPosition: Int) {
+    fun setUpGroupOrder(groupPosition: Int, context: Context) {
         // We add one to the size as the first one is the group itself
         mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)] = Array(mDataSource.facadeGetGroupSize(groupPosition)+1){index: Int ->
             if(index == 0){
-                IntervalController(mChildOfInterval = mDataSource.facadeGetGroup(groupPosition), callBackHost = this)
+                IntervalController(mChildOfInterval = mDataSource.facadeGetGroup(groupPosition), callBackHost = this, applicationContext = context)
             }else {
-                IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index-1), callBackHost = this)
+                IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index-1), callBackHost = this, applicationContext = context)
             }
         }
     }

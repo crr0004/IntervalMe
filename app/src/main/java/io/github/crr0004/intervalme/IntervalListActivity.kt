@@ -86,6 +86,7 @@ class IntervalListActivity : AppCompatActivity() {
         val groupObserver = GroupObserver()
         val liveGroups = mProvider.getGroups()
                 liveGroups.observe(this, android.arch.lifecycle.Observer { groups: Array<IntervalData>? ->
+                    mAdapter?.clear()
                     groups?.forEachIndexed { index, intervalData ->
                         mProvider.getAllOfGroup(intervalData.group).observe(this, groupObserver)
                     }
@@ -193,7 +194,7 @@ class IntervalListActivity : AppCompatActivity() {
                 true
             }
             R.id.action_create_sample_groups -> {
-                val groups = IntervalData.generate(10)
+                val groups = IntervalData.generate(3)
                 val groupSize = mGroupsSize
                 mProvider.startExecuteQueue()
                 groups.forEachIndexed { index, intervalData ->

@@ -239,6 +239,10 @@ class IntervalListAdapter
         return true
     }
 
+    fun clear(){
+        mIntervalsList?.clear()
+    }
+
     @SuppressLint("InflateParams")
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View? = null
@@ -282,6 +286,9 @@ class IntervalListAdapter
             mHostActivity.deleteGroupMoveChildrenToETC(intervalData)
             // We need to remove the last group because this is going to shuffle them all up
             mIntervalsList!!.remove(mIntervalsList!!.size.toLong()-1)
+            if(mIntervalsList!!.size == 0){
+                notifyDataSetChanged()
+            }
         }
         toReturn.setOnDragListener(intervalOnDragListener)
 
@@ -462,6 +469,6 @@ class IntervalListAdapter
 
     fun setGroup(groupPosition: Long, it: Array<IntervalData>) {
         mIntervalsList!![groupPosition] = it
-        IntervalControllerFacade.instance.setUpGroupOrder(it[0].groupPosition.toInt())
+        IntervalControllerFacade.instance.setUpGroupOrder(it[0].groupPosition.toInt(), mHostActivity)
     }
 }

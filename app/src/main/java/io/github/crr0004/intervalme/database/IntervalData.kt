@@ -14,9 +14,9 @@ data class IntervalData(@PrimaryKey(autoGenerate = true) var id: Long=0,
                         @ColumnInfo(name = "group") var group: UUID = UUID.randomUUID(),
                         var ownerOfGroup: Boolean = true,
                         var lastModified: Date = Date(),
-                        var duration: Long = -1,
+                        var duration: Long = 0,
                         var runningDuration: Long = 0,
-                        var groupPosition: Long = -1
+                        var groupPosition: Long = 0
 ) {
     constructor():this(label="")
     constructor(intervalToCopy: IntervalData) : this(){

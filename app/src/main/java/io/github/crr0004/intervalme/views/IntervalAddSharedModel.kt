@@ -35,7 +35,10 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
 
 
     fun resetChanges(){
-        mIntervalToEdit.postValue(mStartingInterval)
+        if(mStartingInterval != null)
+            mIntervalToEdit.postValue(IntervalData.forceCopy(mStartingInterval!!))
+        else
+            mIntervalToEdit.postValue(IntervalData())
     }
 
     fun getIntervalToEdit(): MutableLiveData<IntervalData> {
@@ -70,9 +73,8 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
      * If no group has been selected then the interval will become a group
      */
     fun commit() {
-        // TODO: Take care of case with runproperties where we edit an interval with a property that doesn't exist
         if(mIntervalToEditGroup == null){
-            mIntervalToEdit.value?.ownerOfGroup = true
+
             if(!isInEditMode) {
                 // If the interval is null, insert will cause one to be generated through the getter
                 // Don't want to insert a blank interval
@@ -81,7 +83,13 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
                     mRepo.insert(intervalToEdit, intervalToEditProperties)
                 }
             }else{
-                mRepo.update(intervalToEdit)
+                // An interval is going to become a group
+                if(!mIntervalToEdit.value!!.ownerOfGroup){
+                    mRepo.updateIntervalToGroup(mIntervalToEdit.value!!)
+                }else{
+                    // Values are just being updated
+                    mRepo.update(intervalToEdit)
+                }
                 if(intervalToEditProperties.id < 1) {
                     mRepo.insert(intervalToEditProperties)
                 }else{

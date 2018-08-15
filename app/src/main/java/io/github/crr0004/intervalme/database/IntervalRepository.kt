@@ -146,6 +146,17 @@ class IntervalRepository {
         executor.execute { mIntervalDao!!.shuffleChildrenDownFrom(pos, group) }
     }
 
+    fun updateIntervalToGroup(interval: IntervalData) {
+        mExecutor.execute {
+            // Move all the children in the current group up
+            mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+            interval.ownerOfGroup = true
+            interval.group = UUID.randomUUID()
+            interval.groupPosition = mIntervalDao!!.getGroupOwnersCount()
+            mIntervalDao!!.update(interval)
+        }
+    }
+
     fun moveChildIntervalAboveChild(interval: IntervalData, intervalData: IntervalData) {
         executor.execute {
             mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
@@ -163,8 +174,13 @@ class IntervalRepository {
 
     fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
         executor.execute {
-            mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+            if(interval.ownerOfGroup) {
+                mIntervalDao!!.shuffleGroupsUpFrom(interval.groupPosition)
+            }else{
+                mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
+            }
             interval.group = groupUUID
+            interval.ownerOfGroup = false
             interval.groupPosition = mIntervalDao!!.getChildSizeOfGroup(groupUUID)
             mIntervalDao!!.update(interval)
         }
@@ -291,6 +307,8 @@ class IntervalRepository {
     fun insert(intervalToEditProperties: IntervalRunProperties) {
         mPropertiesDao!!.insert(intervalToEditProperties)
     }
+
+
 
     internal inner class QueueExecutor : Executor{
         private val queue = ArrayList<Runnable>()
