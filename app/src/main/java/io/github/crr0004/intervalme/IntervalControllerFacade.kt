@@ -70,14 +70,17 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     // BEGIN IntervalControllerCallBackI
     override fun clockStartedAsNew(intervalController: IntervalController) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("ICF", "clockStartedAsNew called")
     }
 
     override fun clockResumedFromPause(intervalController: IntervalController) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("ICF", "clockResumedFromPause called")
     }
 
     override fun clockPaused(intervalController: IntervalController) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("ICF", "clockPaused called")
     }
 
     /**
