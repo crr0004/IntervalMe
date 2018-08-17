@@ -33,4 +33,5 @@
     <string name="clear_database">Clear Database</string>
     <string name="properties">Properties</string>
     <string name="extra_properties">Extra Properties</string>
+    <string name="reset_changes">Reset Changes</string>
 </resources>
