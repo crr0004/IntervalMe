@@ -62,7 +62,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             runProperties: IntervalRunProperties? = null) {
         mClockView = clockView
         mChildOfInterval = childOfInterval
-        mDetector = GestureDetectorCompat(mClockView?.context, this)
+        mDetector = GestureDetectorCompat(applicationContext, this)
         mIntervalProperties = runProperties
 
         mClockView?.setOnTouchListener { _, event ->
