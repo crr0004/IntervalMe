@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.github.crr0004.intervalme.IntervalListActivity">
+    tools:context="io.github.crr0004.intervalme.IntervalListActivity"
+    android:keepScreenOn="true">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/interval_list_actionbar"
@@ -15,7 +16,8 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:ignore="UnusedAttribute" />
 
     <ExpandableListView
         android:id="@+id/intervalsExpList"
