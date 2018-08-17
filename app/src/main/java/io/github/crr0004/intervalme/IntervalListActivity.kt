@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -47,7 +48,7 @@ class IntervalListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_list)
-
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         mExpandableListView = findViewById(R.id.intervalsExpList)
         mAdapter = IntervalListAdapter(this, mExpandableListView!!)

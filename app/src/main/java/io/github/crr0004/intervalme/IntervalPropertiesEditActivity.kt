@@ -120,9 +120,6 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
                 mModel.resetChanges()
                 return true
             }
-            R.id.action_settings -> {
-                return false
-            }
         }
         return super.onOptionsItemSelected(item)
     }
