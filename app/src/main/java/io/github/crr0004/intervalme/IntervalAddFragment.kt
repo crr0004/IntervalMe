@@ -99,6 +99,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         })
 
 
+
         onCreateSetListeners(view)
 
         createInEditMode(view)
