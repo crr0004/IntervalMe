@@ -123,12 +123,13 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         return properties
     }
 
-    fun clearRunningPropertie(group: UUID){
+    fun clearRunningProperties(group: UUID){
         mRunningProperties.remove(group)
     }
 
     override fun clockFinished(intervalController: IntervalController, mSoundController: IntervalSoundController?) {
         val interval = intervalController.mChildOfInterval
+        mAnalyticsDataSource.intevalFinish(interval)
         if(isIntervalLast(interval)) {
             mSoundController?.playLoop(2)
             val properties = getRunningProperties(interval.group)
@@ -138,7 +139,10 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
                     // 1 because we want to start the first child again. 0 is the group itself
                     mControllers[interval.group]!![1].startClockAsNew()
                 }else{
-                    clearRunningPropertie(interval.group)
+                    // Register the group has done a full run
+                    mAnalyticsDataSource.intevalFinishWithProperties(mControllers[interval.group]!![0].mChildOfInterval,
+                            mDataSource.getGroupProperties(mControllers[interval.group]!![0].mChildOfInterval.id)!!)
+                    clearRunningProperties(interval.group)
                 }
             }
         }else{

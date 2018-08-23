@@ -202,7 +202,7 @@ class IntervalListActivity : AppCompatActivity() {
                 groups.forEachIndexed { index, intervalData ->
                     //intervalData!!.groupPosition = groupSize+index
                     intervalData!!.label = index.toString()
-                    val children = IntervalData.generate(3, intervalData)
+                    val children = IntervalData.generate(3, intervalData, durationMod = 3L)
                     children.forEachIndexed { childIndex, child ->
                         child!!.label = "Child $childIndex"
                     }
