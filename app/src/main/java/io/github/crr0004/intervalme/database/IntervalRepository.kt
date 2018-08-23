@@ -320,11 +320,11 @@ class IntervalRepository {
         }
 
         fun runQueue(){
-            Thread({
-                queue.forEachIndexed { index, runnable ->
+            Thread {
+                queue.forEachIndexed { _, runnable ->
                     runnable.run()
                 }
-            }).run()
+            }.run()
             running = true
         }
     }

@@ -82,6 +82,9 @@ class IntervalListActivity : AppCompatActivity() {
 
 
         mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
+
+        IntervalControllerFacade.instance.setAnalyticsDataSource(mProvider.mAnalyticsRepository)
+
         val groupObserver = GroupObserver()
         val liveGroups = mProvider.getGroups()
                 liveGroups.observe(this, android.arch.lifecycle.Observer { groups: Array<IntervalData>? ->
@@ -310,7 +313,7 @@ class IntervalListActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        IntervalControllerFacade.instance.destory()
+        IntervalControllerFacade.instance.destroy()
     }
 
     fun launchAddInEditMode(childOfInterval: IntervalData) {

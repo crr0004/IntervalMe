@@ -7,11 +7,13 @@ import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalRepository
 import io.github.crr0004.intervalme.database.IntervalRunProperties
+import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsRepository
 import java.util.*
 
 class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplication){
 
     private val mRepo: IntervalRepository = IntervalRepository(mApplication.applicationContext)
+    val mAnalyticsRepository: IntervalAnalyticsRepository = IntervalAnalyticsRepository(mApplication.applicationContext)
 
     fun getGroups(): LiveData<Array<IntervalData>> {
         return mRepo.getGroups()
