@@ -21,7 +21,7 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
         @BeforeClass
         @JvmStatic
         fun setupDB(){
-            IntervalMeDatabase.USING_TEMP_DATABSE = true
+            IntervalMeDatabase.USING_TEMP_DATABASE = true
             //IntervalMeDatabase.getTemporaryInstance()?.intervalDataDao()?.insert(IntervalData.generate(5))
         }
         @AfterClass
