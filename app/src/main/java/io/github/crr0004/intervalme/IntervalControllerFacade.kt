@@ -5,15 +5,27 @@ import android.util.Log
 import android.view.View
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
+import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDataSourceI
+import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsRepository
 import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.*
 import kotlin.collections.HashMap
 
+/**
+ * A singleton facade that has an easy to use API for controller and managing the interval controllers.
+ * This facade connects the interval controllers, the interval properties and data sources together
+ * for controlling behaviour of the intervals.
+ *
+ * When using this facade you just need to connect the data sources with an appropriate implementation
+ * @see IntervalControllerFacade.setDataSource
+ * @see IntervalControllerFacade.setAnalyticsDataSource
+ */
 class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI {
 
     private val mControllers: HashMap<UUID, Array<IntervalController>> = HashMap(1)
     private val mRunningProperties: HashMap<UUID, IntervalRunProperties> = HashMap(1)
     private lateinit var mDataSource: IntervalControllerFacade.IntervalControllerDataSourceI
+    private lateinit var mAnalyticsDataSource: IntervalAnalyticsDataSourceI
 
     fun intervalsSwapped(id: Long, id1: Long) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -24,6 +36,9 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    /**
+     * Sets up an intervals group controllers. This is a heavy call so be careful to only cal when needed
+     */
     fun setUpGroupOrder(groupPosition: Int, context: Context) {
         // We add one to the size as the first one is the group itself
         mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)] = Array(mDataSource.facadeGetGroupSize(groupPosition)+1){index: Int ->
@@ -36,6 +51,8 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     }
 
     fun connectClockView(clockView: IntervalClockView, groupPosition: Int, childOfInterval: IntervalData) {
+        // Gets the id (uuid) of a group from its position, then the child by the position within the group
+        // then connects a new view to the controller
         mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)]!![childOfInterval.groupPosition.toInt()+1].connectNewClockView(clockView)
     }
 
@@ -63,6 +80,11 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    /**
+     * Compares the last interval controller in the parameter interval group to see if it is last
+     * in the group
+     * @param interval the interval to check to see if it is last in its group
+     */
     fun isIntervalLast(interval: IntervalData): Boolean{
         return mControllers[interval.group]!!.last().mChildOfInterval == interval
     }
@@ -136,12 +158,22 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     //END IntervalControllerCallBackI
 
+    /**
+     * This needs to be set before you can use this facade
+     */
     fun setDataSource(source: IntervalControllerDataSourceI){
         mDataSource = source
     }
 
-    fun destory(){
+    fun destroy(){
         IntervalControllerFacade.mInstance = null
+    }
+
+    /**
+     * This needs to be set before you can use this facade
+     */
+    fun setAnalyticsDataSource(analyticsRepository: IntervalAnalyticsRepository) {
+        this.mAnalyticsDataSource = analyticsRepository
     }
 
     companion object {
@@ -159,10 +191,29 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     }
 
     interface IntervalControllerDataSourceI{
+        /**
+         * Get a interval group by its position
+         */
         fun facadeGetGroup(groupPosition: Int): IntervalData
+
+        /**
+         * Get a size of a group by its position
+         */
         fun facadeGetGroupSize(groupPosition: Int): Int
+
+        /**
+         * Get a interval by its group position and index within the group
+         */
         fun facadeGetChild(groupPosition: Int, index: Int): IntervalData
+
+        /**
+         * Get a group id (UUID) by its position
+         */
         fun facadeGetIDFromPosition(groupPosition: Int): UUID
+
+        /**
+         * Get a group's properties by its position
+         */
         fun getGroupProperties(groupPosition: Long): IntervalRunProperties?
     }
 }
