@@ -33,7 +33,8 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     }
 
     fun groupView(groupPosition: Int, toReturn: View) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)]?.get(0)?.
+                connectNewClockView(toReturn)
     }
 
     /**
@@ -43,7 +44,8 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         // We add one to the size as the first one is the group itself
         mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)] = Array(mDataSource.facadeGetGroupSize(groupPosition)+1){index: Int ->
             if(index == 0){
-                IntervalController(mChildOfInterval = mDataSource.facadeGetGroup(groupPosition), callBackHost = this, applicationContext = context)
+                IntervalGroupController(mChildOfInterval = mDataSource.facadeGetGroup
+                (groupPosition), callBackHost = this, applicationContext = context)
             }else {
                 IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index-1), callBackHost = this, applicationContext = context)
             }
@@ -91,8 +93,16 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     // BEGIN IntervalControllerCallBackI
     override fun clockStartedAsNew(intervalController: IntervalController) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        Log.d("ICF", "clockStartedAsNew called")
+        updateProperties(intervalController.mChildOfInterval.group)
+    }
+
+    /**
+     * Causes a view update to match the groups properties
+     */
+    private fun updateProperties(group: UUID){
+        val properties = getRunningProperties(group)
+        if(properties != null)
+            mControllers[group]!![0].updateViewToProperties(properties)
     }
 
     override fun clockResumedFromPause(intervalController: IntervalController) {
@@ -134,6 +144,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
             mSoundController?.playLoop(2)
             val properties = getRunningProperties(interval.group)
             if(properties != null){
+
                 if(properties.loops > 0){
                     properties.loops--
                     // 1 because we want to start the first child again. 0 is the group itself
@@ -144,6 +155,10 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
                             mDataSource.getGroupProperties(mControllers[interval.group]!![0].mChildOfInterval.id)!!)
                     clearRunningProperties(interval.group)
                 }
+                // We call another getRunningProperties because the properties may have been cleared
+                // and this will cause it to return to the original value
+                mControllers[interval.group]!![0].
+                        updateViewToProperties(properties)
             }
         }else{
             mSoundController?.playDone()
@@ -178,6 +193,10 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
      */
     fun setAnalyticsDataSource(analyticsRepository: IntervalAnalyticsRepository) {
         this.mAnalyticsDataSource = analyticsRepository
+    }
+
+    fun groupExpanded(pos: Int) {
+        updateProperties(mDataSource.facadeGetIDFromPosition(pos))
     }
 
     companion object {

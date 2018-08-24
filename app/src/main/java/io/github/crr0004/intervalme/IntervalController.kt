@@ -7,6 +7,7 @@ import android.support.v4.view.GestureDetectorCompat
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.View
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
@@ -201,15 +202,21 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     }
 
-    open fun connectNewClockView(clockView: IntervalClockView) {
-        mClockView = clockView
+    open fun connectNewClockView(view: View) {
+        if(view.id == R.id.intervalClockView) {
+            mClockView = view as IntervalClockView
 
-        mClockTickRunnable.connectNewClock(clockView)
-        mClockView!!.setOnTouchListener { _, event ->
-            mDetector.onTouchEvent(event)
+            mClockTickRunnable.connectNewClock(view)
+            mClockView!!.setOnTouchListener { _, event ->
+                mDetector.onTouchEvent(event)
+            }
         }
 
 
+    }
+
+    open fun updateViewToProperties(properties: IntervalRunProperties) {
+        // this currently doesn't do anything for child view
     }
 
     private class TickClockRunnable(

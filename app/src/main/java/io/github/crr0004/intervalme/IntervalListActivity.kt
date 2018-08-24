@@ -79,6 +79,9 @@ class IntervalListActivity : AppCompatActivity() {
             v.startDrag(ClipData.newPlainText("",""), View.DragShadowBuilder(v), intervalData, View.DRAG_FLAG_GLOBAL)
             true
         }
+        mExpandableListView?.setOnGroupExpandListener {
+            IntervalControllerFacade.instance.groupExpanded(it)
+        }
 
 
         mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
