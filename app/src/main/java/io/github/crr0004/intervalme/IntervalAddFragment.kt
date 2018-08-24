@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v4.view.GestureDetectorCompat
 import android.text.Editable
@@ -76,6 +77,16 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val invertAddMinus = PreferenceManager.getDefaultSharedPreferences(this.context)
+                .getBoolean("ui_invert_add_minus", false)
+
+        if(invertAddMinus){
+            val increaseParams = view.findViewById<View>(R.id.increaseDurationBtn).layoutParams
+            val decreaseParams = view.findViewById<View>(R.id.decreaseDurationBtn).layoutParams
+            view.findViewById<View>(R.id.increaseDurationBtn).layoutParams = decreaseParams
+            view.findViewById<View>(R.id.decreaseDurationBtn).layoutParams = increaseParams
+        }
 
         mDurationTextView = view.findViewById(R.id.intervalDurationTxt)
         mGestureDetector = GestureDetectorCompat(view.context.applicationContext, mDurationGestureDetector)
