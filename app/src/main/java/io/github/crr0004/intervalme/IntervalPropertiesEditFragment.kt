@@ -39,7 +39,8 @@ class IntervalPropertiesEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mModel.mIntervalToEditProperties.observe(this, Observer {
-            view.intervalPropertiesLoopsTxt.setText(it?.loops.toString())
+            if(!view.intervalPropertiesLoopsTxt.isFocused)
+                view.intervalPropertiesLoopsTxt.setText(it?.loops.toString())
         })
         view.findViewById<EditText>(R.id.intervalPropertiesLoopsTxt).addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(p0: Editable?) {
