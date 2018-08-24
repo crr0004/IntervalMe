@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="io.github.crr0004.intervalme.IntervalSimpleGroupListFragement"
+        android:name="io.github.crr0004.intervalme.IntervalSimpleGroupListFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </android.support.constraint.ConstraintLayout>
