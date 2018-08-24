@@ -233,6 +233,10 @@ class IntervalListActivity : AppCompatActivity() {
                 IntervalMeDatabase.getInstance(this)?.clearAllTables()
                 return true
             }
+            R.id.action_interval_to_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                return true
+            }
             else ->
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
