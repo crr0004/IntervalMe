@@ -23,14 +23,18 @@ import io.github.crr0004.intervalme.views.IntervalAddSharedModel
 import io.github.crr0004.intervalme.views.IntervalViewModel
 import kotlinx.android.synthetic.main.fragment_interveraledit.*
 
-class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragmentInteractionListener {
+/**
+ * This fragment is responsible for the interval properties adding and editing.
+ * It has two modes. Editing and adding.
+ */
+class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragment.OnFragmentInteractionListener {
 
     private var mDurationTextView: EditText? = null
     private var mGestureDetector: GestureDetectorCompat? = null
 
     private var mIntervalToEdit: MutableLiveData<IntervalData>? = null
     private lateinit var mModelProvider: IntervalViewModel
-    private var mGroupSelectionFragment: IntervalSimpleGroupListFragement? = null
+    private var mGroupSelectionFragment: IntervalSimpleGroupListFragment? = null
     private lateinit var mListener: IntervalAddFragmentInteractionI
     private lateinit var mModel: IntervalAddSharedModel
     private lateinit var mDurationGestureDetector: DurationGestureDetector
@@ -42,7 +46,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
 
     interface IntervalAddFragmentInteractionI{
         fun attachedTo(intervalAddActivity: IntervalAddFragment)
-        fun setResult(resulT_OK: Int, intent: Intent)
+        fun setResult(result_OK: Int, intent: Intent)
         fun wantToFinish()
         fun getCreationIntent(): Intent
 
@@ -81,6 +85,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         val invertAddMinus = PreferenceManager.getDefaultSharedPreferences(this.context)
                 .getBoolean("ui_invert_add_minus", false)
 
+        // Invert the add and minus buttons for users who want it
         if(invertAddMinus){
             val increaseParams = view.findViewById<View>(R.id.increaseDurationBtn).layoutParams
             val decreaseParams = view.findViewById<View>(R.id.decreaseDurationBtn).layoutParams
@@ -189,6 +194,11 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         }
     }
 
+    /**
+     * Called when the SimpleGroupListFragment changes selection. It sets the
+     * selected group in the model
+     * @see IntervalSimpleGroupListFragment
+     */
     override fun onItemSelected(interval: IntervalData, isSelected: Boolean) {
         if(isSelected) {
             mModel.setIntervalToEditGroup(interval)
@@ -199,14 +209,18 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
 
 
 
-    override fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+    override fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment) {
         mGroupSelectionFragment = intervalSimpleGroupListFragment
     }
 
-    override fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+    override fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment) {
         mGroupSelectionFragment = null
     }
 
+    /**
+     * Controls the gestures for increasing and decreasing the duration.
+     * Without this, click the buttons can feel clunky
+     */
     private class DurationGestureDetector(val mModel: IntervalAddSharedModel) : GestureDetector.SimpleOnGestureListener() {
         var direction: Int = 1
         var mDurationTextView: TextView? = null
@@ -252,6 +266,9 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragement.OnFragm
         }
     }
 
+    /**
+     * This controls when continuously adding to duration when the buttons are held down
+     */
     private class AddContinuousDurationRunnable(val mDurationGestureDetector: DurationGestureDetector) : Runnable{
 
         var mRunning = false
