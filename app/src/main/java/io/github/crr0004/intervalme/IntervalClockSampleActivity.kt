@@ -6,12 +6,12 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import io.github.crr0004.intervalme.database.IntervalData
 
-class IntervalClockSampleActivity : AppCompatActivity(), IntervalSimpleGroupListFragement.OnFragmentInteractionListener {
-    override fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+class IntervalClockSampleActivity : AppCompatActivity(), IntervalSimpleGroupListFragment.OnFragmentInteractionListener {
+    override fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment) {
 
     }
 
-    override fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+    override fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment) {
 
     }
 

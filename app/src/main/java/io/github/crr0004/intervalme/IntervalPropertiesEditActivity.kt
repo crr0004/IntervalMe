@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.activity_interval_properties.*
 class IntervalPropertiesEditActivity : AppCompatActivity(),
         IntervalAddFragment.IntervalAddFragmentInteractionI,
         IntervalPropertiesEditFragment.IntervalPropertiesEditFragmentInteractionI,
-        IntervalSimpleGroupListFragement.OnFragmentInteractionListener{
+        IntervalSimpleGroupListFragment.OnFragmentInteractionListener{
 
     private var mIntervalToEdit: MutableLiveData<IntervalData>? = null
 
@@ -29,11 +29,11 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
         (mSectionsPagerAdapter?.addFragment)?.onItemSelected(interval, isSelected)
     }
 
-    override fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+    override fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment) {
         (mSectionsPagerAdapter?.addFragment)?.attachedTo(intervalSimpleGroupListFragment)
     }
 
-    override fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement) {
+    override fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment) {
         (mSectionsPagerAdapter?.addFragment)?.detachedFrom(intervalSimpleGroupListFragment)
     }
 

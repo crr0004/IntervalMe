@@ -25,13 +25,13 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [IntervalSimpleGroupListFragement.OnFragmentInteractionListener] interface
+ * [IntervalSimpleGroupListFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [IntervalSimpleGroupListFragement.newInstance] factory method to
+ * Use the [IntervalSimpleGroupListFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class IntervalSimpleGroupListFragement : Fragment() {
+class IntervalSimpleGroupListFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
@@ -147,8 +147,8 @@ class IntervalSimpleGroupListFragement : Fragment() {
      */
     public interface OnFragmentInteractionListener {
         fun onItemSelected(interval: IntervalData, isSelected: Boolean)
-        fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement)
-        fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragement)
+        fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment)
+        fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment)
     }
 
     companion object {
@@ -158,11 +158,11 @@ class IntervalSimpleGroupListFragement : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment IntervalSimpleGroupListFragement.
+         * @return A new instance of fragment IntervalSimpleGroupListFragment.
          */
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                IntervalSimpleGroupListFragement().apply {
+                IntervalSimpleGroupListFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)
