@@ -20,7 +20,7 @@
     <string name="swap_selected_intervals">Swap Selected Intervals</string>
     <string name="debug_fix_group_positions">DEBUG: Fix Group Positions</string>
     <string name="edit">Edit</string>
-    <string name="create_etc_group">Create etc group</string>
+    <string name="create_etc_group">Create missing intervals group</string>
     <string name="group_not_found_label" type="id">Group Not Found</string>
     <string name="create_sample_groups">Create sample groups</string>
     <string name="duplicate_selected">Duplicate Selected</string>
@@ -42,4 +42,6 @@
     <string name="user_interface">User Interface</string>
     <string name="pref_description_ui_invert_add_minus">Swap Add and Minus buttons in interval add screen</string>
     <string name="pref_title_ui_invert_add_minus">Invert Add and Minus</string>
+    <string name="pref_description_ui_debug_menu_items">Show extra menu items for debugging</string>
+    <string name="pref_title_ui_debug_menu_items">Show Debug Menu Items</string>
 </resources>

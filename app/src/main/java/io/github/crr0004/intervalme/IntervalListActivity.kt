@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -8,9 +9,11 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
+import android.support.v7.view.menu.MenuBuilder
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -128,6 +131,14 @@ class IntervalListActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.interval_list_menu, menu)
+        return true
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        (menu as MenuBuilder).setGroupVisible(R.id.action_debug_items_group, PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .getBoolean("ui_debug_menu_items", false))
         return true
     }
 

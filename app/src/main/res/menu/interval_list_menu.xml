@@ -2,27 +2,42 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <group
+        android:id="@+id/action_debug_items_group"
+        android:visible="true"
+        >
+        <item
+            android:id="@+id/action_fix_group_positions"
+            android:title="@string/debug_fix_group_positions"
+            app:showAsAction="withText"
+            />
+        <item
+            android:id="@+id/action_start_all_clocks"
+            android:title="@string/start_all_intervals"
+            app:showAsAction="withText"
+            />
+        <item
+            android:id="@+id/action_swap_intervals"
+            android:title="@string/swap_selected_intervals"
+            app:showAsAction="withText"
+            />
+        <item
+            android:id="@+id/action_clear_db"
+            android:title="@string/clear_database"
+            app:showAsAction="withText"
+            />
+        <item
+            android:id="@+id/action_create_sample_groups"
+            android:title="@string/create_sample_groups"
+            app:showAsAction="withText"
+            />
+    </group>
     <item
         android:id="@+id/action_goto_add"
         android:icon="@drawable/ic_add_white_24dp"
         android:title="@string/add_interval"
         app:showAsAction="ifRoom"/>
 
-    <item
-        android:id="@+id/action_start_all_clocks"
-        android:title="@string/start_all_intervals"
-        app:showAsAction="withText"
-        />
-    <item
-        android:id="@+id/action_swap_intervals"
-        android:title="@string/swap_selected_intervals"
-        app:showAsAction="withText"
-        />
-    <item
-        android:id="@+id/action_fix_group_positions"
-        android:title="@string/debug_fix_group_positions"
-        app:showAsAction="withText"
-        />
     <item
         android:id="@+id/action_edit_items"
         android:title="@string/edit"
@@ -35,25 +50,16 @@
         app:showAsAction="withText"
         />
     <item
-        android:id="@+id/action_create_sample_groups"
-        android:title="@string/create_sample_groups"
-        app:showAsAction="withText"
-        />
-
-    <item
         android:id="@+id/action_duplicate_intervals"
         android:title="@string/duplicate_selected"
         app:showAsAction="withText"
         />
-    <item
-        android:id="@+id/action_clear_db"
-        android:title="@string/clear_database"
-        app:showAsAction="withText"
-        />
+
     <item
         android:id="@+id/action_interval_to_settings"
         android:title="@string/action_settings"
         app:showAsAction="withText"
+
         />
 
 </menu>
