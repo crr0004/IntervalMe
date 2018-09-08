@@ -3,47 +3,41 @@ package io.github.crr0004.intervalme
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import kotlinx.android.synthetic.main.activity_interval_list.*
 
-class AnalyticsActivity : AppCompatActivity() {
+class RoutineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_analytics)
+        setContentView(R.layout.activity_routine)
 
-
-
-        setUpNavigation()
-    }
-
-    private fun setUpNavigation() {
         this.navigation.setOnNavigationItemSelectedListener {
-            when (it.itemId) {
+            when(it.itemId){
                 R.id.nav_bar_intervals -> {
                     val intent = Intent(this, IntervalListActivity::class.java)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         val options = ActivityOptions.makeSceneTransitionAnimation(this,
                                 findViewById<View>(R.id.navigation), "navigation")
 
                         startActivity(intent, options.toBundle())
 
-                    } else {
+                    }else{
                         startActivity(intent)
                     }
                     true
                 }
-                R.id.nav_bar_routines -> {
-                    val intent = Intent(this, RoutineActivity::class.java)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                R.id.nav_bar_analytics -> {
+                    val intent = Intent(this, AnalyticsActivity::class.java)
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         val options = ActivityOptions.makeSceneTransitionAnimation(this,
                                 findViewById<View>(R.id.navigation), "navigation")
 
                         startActivity(intent, options.toBundle())
 
-                    } else {
+                    }else{
                         startActivity(intent)
                     }
                     true
@@ -53,6 +47,6 @@ class AnalyticsActivity : AppCompatActivity() {
                 }
             }
         }
-        this.navigation.menu.findItem(R.id.nav_bar_analytics).isChecked = true
+        this.navigation.menu.findItem(R.id.nav_bar_routines).isChecked = true
     }
 }

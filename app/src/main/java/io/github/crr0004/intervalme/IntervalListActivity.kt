@@ -70,11 +70,26 @@ class IntervalListActivity : AppCompatActivity() {
         this.navigation.setOnNavigationItemSelectedListener {
             when(it.itemId){
                 R.id.nav_bar_analytics -> {
-                    val layout = findViewById<ConstraintLayout>(R.id.activityIntervalListLayout)
                     val intent = Intent(this, AnalyticsActivity::class.java)
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        startActivity(intent,
-                                ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                        val options = ActivityOptions.makeSceneTransitionAnimation(this,
+                                findViewById<View>(R.id.navigation), "navigation")
+
+                        startActivity(intent, options.toBundle())
+
+                    }else{
+                        startActivity(intent)
+                    }
+                    true
+                }
+                R.id.nav_bar_routines -> {
+                    val intent = Intent(this, RoutineActivity::class.java)
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        val options = ActivityOptions.makeSceneTransitionAnimation(this,
+                                findViewById<View>(R.id.navigation), "navigation")
+
+                        startActivity(intent, options.toBundle())
+
                     }else{
                         startActivity(intent)
                     }

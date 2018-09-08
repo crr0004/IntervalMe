@@ -6,7 +6,7 @@
     <item android:id="@+id/nav_bar_intervals"
         android:title="@string/intervals"
         android:icon="@drawable/ic_alarm_black" />
-    <item android:id="@+id/action_navigation"
-        android:title="test3"
-        android:icon="@drawable/ic_done_white_24dp" />
+    <item android:id="@+id/nav_bar_routines"
+        android:title="@string/routines"
+        android:icon="@drawable/ic_fitness_center_black_24dp" />
 </menu>
