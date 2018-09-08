@@ -7,6 +7,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.arch.persistence.room.migration.Migration
 import android.content.Context
+import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDao
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
 
@@ -33,6 +34,16 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             }else{
                 getSavedInstance(context)
             }
+        }
+
+        /**
+         * A debug function that only works in debug mode. Returns the instance directly without a context
+         */
+        fun debugGetInstance(): IntervalMeDatabase?{
+            return if(BuildConfig.DEBUG)
+                INSTANCE!!
+            else
+                null
         }
 
         fun getSavedInstance(context: Context): IntervalMeDatabase? {
