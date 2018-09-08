@@ -2,6 +2,7 @@ package io.github.crr0004.intervalme
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ActivityOptions
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ClipData
@@ -10,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.preference.PreferenceManager
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
@@ -56,6 +58,7 @@ class IntervalListActivity : AppCompatActivity() {
         mExpandableListView!!.setAdapter(mAdapter)
         mExpandableListView!!.choiceMode = CHOICE_MODE_MULTIPLE
         setSupportActionBar(findViewById(R.id.interval_list_actionbar))
+
         if(savedInstanceState != null){
             val expandedState = savedInstanceState.getBooleanArray(INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID)
 
@@ -67,7 +70,14 @@ class IntervalListActivity : AppCompatActivity() {
         this.navigation.setOnNavigationItemSelectedListener {
             when(it.itemId){
                 R.id.nav_bar_analytics -> {
-                    startActivity(Intent(this, AnalyticsActivity::class.java))
+                    val layout = findViewById<ConstraintLayout>(R.id.activityIntervalListLayout)
+                    val intent = Intent(this, AnalyticsActivity::class.java)
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startActivity(intent,
+                                ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    }else{
+                        startActivity(intent)
+                    }
                     true
                 }
                 else -> {
@@ -104,16 +114,20 @@ class IntervalListActivity : AppCompatActivity() {
 
         IntervalControllerFacade.instance.setAnalyticsDataSource(mProvider.mAnalyticsRepository)
 
+        setUpAdapterDataObservers()
+    }
+
+    private fun setUpAdapterDataObservers() {
         val groupObserver = GroupObserver()
         val liveGroups = mProvider.getGroups()
-                liveGroups.observe(this, android.arch.lifecycle.Observer { groups: Array<IntervalData>? ->
-                    //mAdapter?.clear()
-                    groups?.forEachIndexed { index, intervalData ->
-                        mProvider.getAllOfGroup(intervalData.group).observe(this, groupObserver)
-                    }
-                })
+        liveGroups.observe(this, Observer { groups: Array<IntervalData>? ->
+            //mAdapter?.clear()
+            groups?.forEachIndexed { index, intervalData ->
+                mProvider.getAllOfGroup(intervalData.group).observe(this, groupObserver)
+            }
+        })
 
-        mProvider.getGroupsSize().observe(this, android.arch.lifecycle.Observer {
+        mProvider.getGroupsSize().observe(this, Observer {
             mAdapter?.groupSize = it?.toInt() ?: 0
             mGroupsSize = it ?: 0L
         })
@@ -160,7 +174,12 @@ class IntervalListActivity : AppCompatActivity() {
             R.id.action_goto_add -> {
                 // User chose the "Settings" item, show the app settings UI...
                 val intent = Intent(this, IntervalPropertiesEditActivity::class.java)
-                ActivityCompat.startActivityForResult(this, intent, INTENT_ADD_REQUEST_CODE, null)
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivityForResult(intent, INTENT_ADD_REQUEST_CODE,
+                            ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }else{
+                    startActivityForResult(intent, INTENT_ADD_REQUEST_CODE)
+                }
                 true
             }
             R.id.action_start_all_clocks ->{
@@ -261,7 +280,13 @@ class IntervalListActivity : AppCompatActivity() {
                 return true
             }
             R.id.action_interval_to_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+               val intent = Intent(this, SettingsActivity::class.java)
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }else{
+                    startActivity(intent)
+                }
                 return true
             }
             else ->
@@ -352,7 +377,12 @@ class IntervalListActivity : AppCompatActivity() {
         intent.putExtra(IntervalAddFragment.EDIT_MODE_FLAG_ID, true) //We're going into edit mode
         intent.putExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL_ID, childOfInterval.id)
         //startActivity(mContext,intent,null)
-        ActivityCompat.startActivityForResult(this, intent, INTENT_EDIT_REQUEST_CODE, null)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startActivityForResult(intent, INTENT_EDIT_REQUEST_CODE,
+                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }else{
+            startActivityForResult(intent, INTENT_EDIT_REQUEST_CODE)
+        }
     }
 
     fun update(item: IntervalData) {
