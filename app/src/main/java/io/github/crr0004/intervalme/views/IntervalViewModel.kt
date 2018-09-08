@@ -110,4 +110,8 @@ class IntervalViewModel(val mApplication: Application): AndroidViewModel(mApplic
     fun runQueue() {
         mRepo.runQueue()
     }
+
+    fun deleteChild(childOfInterval: IntervalData) {
+        mRepo.deleteChild(childOfInterval)
+    }
 }

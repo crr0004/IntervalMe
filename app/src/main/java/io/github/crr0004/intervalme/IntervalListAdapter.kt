@@ -286,9 +286,9 @@ class IntervalListAdapter
             mHostActivity.deleteGroupMoveChildrenToETC(intervalData)
             // We need to remove the last group because this is going to shuffle them all up
             mIntervalsList!!.remove(mIntervalsList!!.size.toLong()-1)
-            if(mIntervalsList!!.size == 0){
+            //if(mIntervalsList!!.size == 0){
                 notifyDataSetChanged()
-            }
+            //}
         }
         toReturn.setOnDragListener(intervalOnDragListener)
 
@@ -426,9 +426,7 @@ class IntervalListAdapter
             mHostActivity.launchAddInEditMode(childOfInterval)
         }
         deleteButton.setOnClickListener {
-            IntervalControllerFacade.instance.delete(childOfInterval)
-            //mCachedControllers.remove(childOfInterval.id)
-            mIntervalDao!!.delete(childOfInterval)
+            mHostActivity.deleteChild(childOfInterval)
             notifyDataSetChanged()
         }
         // Ensures when we move items around, the next intervals are getting updated

@@ -308,6 +308,13 @@ class IntervalRepository {
         mPropertiesDao!!.insert(intervalToEditProperties)
     }
 
+    fun deleteChild(childOfInterval: IntervalData) {
+        mExecutor.execute {
+            mIntervalDao!!.shuffleChildrenInGroupUpFrom(childOfInterval.groupPosition, childOfInterval.group)
+            mPropertiesDao!!.deleteByIntervalId(childOfInterval.id)
+            mIntervalDao!!.delete(childOfInterval)
+        }
+    }
 
 
     internal inner class QueueExecutor : Executor{

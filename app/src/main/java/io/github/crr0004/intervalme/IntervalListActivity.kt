@@ -51,7 +51,7 @@ class IntervalListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_interval_list)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        mExpandableListView = findViewById(R.id.intervalsExpList)
+        mExpandableListView = findViewById<ExpandableListView>(R.id.intervalsExpList)
         mAdapter = IntervalListAdapter(this, mExpandableListView!!)
         mExpandableListView!!.setAdapter(mAdapter)
         mExpandableListView!!.choiceMode = CHOICE_MODE_MULTIPLE
@@ -107,7 +107,7 @@ class IntervalListActivity : AppCompatActivity() {
         val groupObserver = GroupObserver()
         val liveGroups = mProvider.getGroups()
                 liveGroups.observe(this, android.arch.lifecycle.Observer { groups: Array<IntervalData>? ->
-                    mAdapter?.clear()
+                    //mAdapter?.clear()
                     groups?.forEachIndexed { index, intervalData ->
                         mProvider.getAllOfGroup(intervalData.group).observe(this, groupObserver)
                     }
@@ -372,5 +372,9 @@ class IntervalListActivity : AppCompatActivity() {
 
     fun moveIntervalGroupAboveGroup(interval: IntervalData, intervalData: IntervalData) {
         mProvider.moveIntervalGroupAboveGroup(interval, intervalData)
+    }
+
+    fun deleteChild(childOfInterval: IntervalData) {
+        mProvider.deleteChild(childOfInterval)
     }
 }

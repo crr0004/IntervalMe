@@ -79,7 +79,7 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
                 // If the interval is null, insert will cause one to be generated through the getter
                 // Don't want to insert a blank interval
                 if(mIntervalToEdit.value != null) {
-                    mIntervalToEdit.value?.group = UUID.randomUUID()
+                    mIntervalToEdit.value!!.group = UUID.randomUUID()
                     mRepo.insert(intervalToEdit, intervalToEditProperties)
                 }
             }else{
