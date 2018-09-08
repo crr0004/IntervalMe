@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_bar_analytics"
+        android:title="@string/analytics"
+        android:icon="@drawable/ic_timeline_black_24dp" />
+    <item android:id="@+id/nav_bar_intervals"
+        android:title="@string/intervals"
+        android:icon="@drawable/ic_alarm_black" />
+    <item android:id="@+id/action_navigation"
+        android:title="test3"
+        android:icon="@drawable/ic_done_white_24dp" />
+</menu>

@@ -24,6 +24,7 @@ import android.widget.Toast
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.views.IntervalViewModel
+import kotlinx.android.synthetic.main.activity_interval_list.*
 import java.util.*
 
 class IntervalListActivity : AppCompatActivity() {
@@ -45,9 +46,6 @@ class IntervalListActivity : AppCompatActivity() {
 
     }
 
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_list)
@@ -65,6 +63,21 @@ class IntervalListActivity : AppCompatActivity() {
                 mExpandableListView!!.expandGroup(index+1)
             }
         }
+
+        this.navigation.setOnNavigationItemSelectedListener {
+            when(it.itemId){
+                R.id.nav_bar_analytics -> {
+                    startActivity(Intent(this, AnalyticsActivity::class.java))
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
+        this.navigation.menu.findItem(R.id.nav_bar_intervals).isChecked = true
+
+
         if(mAdapter !is DragDropAnimationController.DragDropViewSource<IntervalData>){
             throw ClassCastException("Cannot cast mAdapter to DragDropViewSource<IntervalData>")
         }

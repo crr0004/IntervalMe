@@ -44,4 +44,6 @@
     <string name="pref_title_ui_invert_add_minus">Invert Add and Minus</string>
     <string name="pref_description_ui_debug_menu_items">Show extra menu items for debugging</string>
     <string name="pref_title_ui_debug_menu_items">Show Debug Menu Items</string>
+    <string name="intervals">Intervals</string>
+    <string name="analytics">Analytics</string>
 </resources>
