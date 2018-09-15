@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModelProviders
@@ -18,9 +18,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.views.IntervalAddSharedModel
-import io.github.crr0004.intervalme.views.IntervalViewModel
 import kotlinx.android.synthetic.main.fragment_interveraledit.*
 
 /**

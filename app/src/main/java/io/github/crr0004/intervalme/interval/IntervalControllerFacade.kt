@@ -1,8 +1,9 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.content.Context
 import android.util.Log
 import android.view.View
+import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDataSourceI
@@ -24,7 +25,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     private val mControllers: HashMap<UUID, Array<IntervalController>> = HashMap(1)
     private val mRunningProperties: HashMap<UUID, IntervalRunProperties> = HashMap(1)
-    private lateinit var mDataSource: IntervalControllerFacade.IntervalControllerDataSourceI
+    private lateinit var mDataSource: IntervalControllerDataSourceI
     private lateinit var mAnalyticsDataSource: IntervalAnalyticsDataSourceI
 
     fun intervalsSwapped(id: Long, id1: Long) {
@@ -47,7 +48,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
                 IntervalGroupController(mChildOfInterval = mDataSource.facadeGetGroup
                 (groupPosition), callBackHost = this, applicationContext = context)
             }else {
-                IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index-1), callBackHost = this, applicationContext = context)
+                IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index - 1), callBackHost = this, applicationContext = context)
             }
         }
     }
@@ -189,7 +190,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     }
 
     fun destroy(){
-        IntervalControllerFacade.mInstance = null
+        mInstance = null
     }
 
     /**

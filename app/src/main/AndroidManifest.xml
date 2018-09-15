@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".IntervalListActivity"
+            android:name=".interval.IntervalListActivity"
             android:launchMode="singleTop"
             android:noHistory="false">
             <intent-filter>
@@ -24,16 +24,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".IntervalPropertiesEditActivity"
+            android:name=".interval.IntervalPropertiesEditActivity"
             android:label="@string/title_activity_interval_properties"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".AnalyticsActivity" />
-        <activity android:name=".RoutineListActivity" />
+        <activity android:name=".analytics.AnalyticsActivity" />
+        <activity android:name=".routine.RoutineListActivity" />
         <activity
-            android:name=".RoutineManageActivity"
+            android:name=".routine.RoutineManageActivity"
             android:label="@string/title_activity_routine_manage"
             android:theme="@style/AppTheme"></activity>
     </application>

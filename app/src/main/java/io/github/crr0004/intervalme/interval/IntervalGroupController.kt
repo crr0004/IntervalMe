@@ -1,8 +1,9 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.content.Context
 import android.view.View
 import android.widget.TextView
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView

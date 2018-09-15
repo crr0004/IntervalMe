@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
@@ -15,6 +15,9 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.*
 import android.widget.ExpandableListView.getPackedPositionForChild
+import io.github.crr0004.intervalme.BuildConfig
+import io.github.crr0004.intervalme.DragDropAnimationController
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalMeDatabase

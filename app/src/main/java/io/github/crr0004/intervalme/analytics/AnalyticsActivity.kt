@@ -1,37 +1,35 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.analytics
 
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.os.Bundle
+import android.view.Menu
 import android.view.View
+import io.github.crr0004.intervalme.R
+import io.github.crr0004.intervalme.routine.RoutineListActivity
+import io.github.crr0004.intervalme.interval.IntervalListActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
 
-class RoutineListActivity : AppCompatActivity() {
-
-    private var mRoutineAdapter: RoutineRecyclerAdapter = RoutineRecyclerAdapter(this)
-    private val mLayoutManager: RecyclerView.LayoutManager? = LinearLayoutManager(this)
+class AnalyticsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_routine)
+        setContentView(R.layout.activity_analytics)
 
-        setSupportActionBar(findViewById(R.id.routine_actionbar))
-        supportActionBar?.title = getString(R.string.app_name)
 
-        with(findViewById<RecyclerView>(R.id.routineRecyclerView)){
-            setHasFixedSize(false)
-            adapter = mRoutineAdapter
-            layoutManager = mLayoutManager
-        }
 
-        setupNavigation()
+
+        setUpNavigation()
     }
 
-    private fun setupNavigation() {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.interval_list_menu, menu)
+        return true
+    }
+
+    private fun setUpNavigation() {
         this.navigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_bar_intervals -> {
@@ -47,8 +45,8 @@ class RoutineListActivity : AppCompatActivity() {
                     }
                     true
                 }
-                R.id.nav_bar_analytics -> {
-                    val intent = Intent(this, AnalyticsActivity::class.java)
+                R.id.nav_bar_routines -> {
+                    val intent = Intent(this, RoutineListActivity::class.java)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         val options = ActivityOptions.makeSceneTransitionAnimation(this,
                                 findViewById<View>(R.id.navigation), "navigation")
@@ -65,6 +63,6 @@ class RoutineListActivity : AppCompatActivity() {
                 }
             }
         }
-        this.navigation.menu.findItem(R.id.nav_bar_routines).isChecked = true
+        this.navigation.menu.findItem(R.id.nav_bar_analytics).isChecked = true
     }
 }

@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IntervalClockSampleActivity">
+    tools:context=".interval.IntervalClockSampleActivity">
 
 
     <fragment
         android:id="@+id/fragment"
-        android:name="io.github.crr0004.intervalme.IntervalSimpleGroupListFragment"
+        android:name="io.github.crr0004.intervalme.interval.IntervalSimpleGroupListFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </android.support.constraint.ConstraintLayout>

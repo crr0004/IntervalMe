@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.app.Activity
 import android.arch.lifecycle.MutableLiveData
@@ -13,15 +13,14 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.views.IntervalAddSharedModel
-import io.github.crr0004.intervalme.views.IntervalViewModel
 import kotlinx.android.synthetic.main.activity_interval_properties.*
 
 class IntervalPropertiesEditActivity : AppCompatActivity(),
         IntervalAddFragment.IntervalAddFragmentInteractionI,
         IntervalPropertiesEditFragment.IntervalPropertiesEditFragmentInteractionI,
-        IntervalSimpleGroupListFragment.OnFragmentInteractionListener{
+        IntervalSimpleGroupListFragment.OnFragmentInteractionListener {
 
     private var mIntervalToEdit: MutableLiveData<IntervalData>? = null
 

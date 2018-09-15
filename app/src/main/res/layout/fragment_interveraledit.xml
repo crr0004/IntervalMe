@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.github.crr0004.intervalme.IntervalAddFragment">
+    tools:context="io.github.crr0004.intervalme.interval.IntervalAddFragment">
 
 
 
@@ -112,7 +112,7 @@
 
     <fragment
         android:id="@+id/intervalAddGroupSelectionFrag"
-        android:name="io.github.crr0004.intervalme.IntervalSimpleGroupListFragment"
+        android:name="io.github.crr0004.intervalme.interval.IntervalSimpleGroupListFragment"
         android:layout_width="0dp"
         android:layout_height="344dp"
         android:layout_marginEnd="8dp"

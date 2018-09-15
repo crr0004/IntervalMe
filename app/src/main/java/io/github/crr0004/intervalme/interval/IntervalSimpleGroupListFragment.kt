@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -14,8 +14,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.*
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.views.IntervalViewModel
 
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

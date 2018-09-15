@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.content.Context
 import android.content.res.Resources
@@ -12,7 +12,7 @@ class IntervalSoundController {
 
     companion object {
         private val mSoundsControllerInstances: HashMap<Int, IntervalSoundController> = HashMap(2)
-        fun instanceWith(context: Context, id: Int): IntervalSoundController{
+        fun instanceWith(context: Context, id: Int): IntervalSoundController {
             var instance: IntervalSoundController? = mSoundsControllerInstances[id]
             if(instance == null){
                 instance = IntervalSoundController(context, id)
@@ -60,7 +60,7 @@ class IntervalSoundController {
     fun release() {
         mMediaPlayer.stop()
         mMediaPlayer.release()
-        IntervalSoundController.mSoundsControllerInstances.remove(mId)
+        mSoundsControllerInstances.remove(mId)
     }
 
 }

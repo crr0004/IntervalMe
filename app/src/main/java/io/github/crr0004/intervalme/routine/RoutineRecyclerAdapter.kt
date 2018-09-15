@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.routine
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import java.util.*
 

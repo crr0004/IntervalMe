@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme.views
+package io.github.crr0004.intervalme.interval
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel

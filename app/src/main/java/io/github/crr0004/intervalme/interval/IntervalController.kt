@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.content.Context
 import android.os.Handler
@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
@@ -51,7 +52,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
                 mChildOfInterval: IntervalData,
                 runProperties: IntervalRunProperties? = null,
                 applicationContext: Context? = null,
-                callBackHost: IntervalController.IntervalControllerCallBackI) {
+                callBackHost: IntervalControllerCallBackI) {
         init(mClockView, mChildOfInterval, runProperties = runProperties, applicationContext = applicationContext)
         mCallBackHost = callBackHost
     }
@@ -78,7 +79,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         }
         //Only create new sound mController if it's been previously released
         if(mSoundController == null && applicationContext != null)
-            mSoundController = IntervalSoundController.instanceWith(applicationContext.applicationContext,R.raw.digital_watch_alarm_1)
+            mSoundController = IntervalSoundController.instanceWith(applicationContext.applicationContext, R.raw.digital_watch_alarm_1)
     }
 
     open fun disconnectFromViews(){

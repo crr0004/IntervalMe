@@ -1,9 +1,10 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 
 class IntervalClockSampleActivity : AppCompatActivity(), IntervalSimpleGroupListFragment.OnFragmentInteractionListener {

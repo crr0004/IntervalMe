@@ -9,7 +9,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import io.github.crr0004.intervalme.IntervalController
+import io.github.crr0004.intervalme.interval.IntervalController
 import io.github.crr0004.intervalme.R
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.TimeUnit

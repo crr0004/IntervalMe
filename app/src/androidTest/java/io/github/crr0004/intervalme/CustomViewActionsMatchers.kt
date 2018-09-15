@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ExpandableListView
 import android.widget.TextView
 import io.github.crr0004.intervalme.database.IntervalData
+import io.github.crr0004.intervalme.interval.IntervalListAdapter
 import junit.framework.AssertionFailedError
 import org.hamcrest.Description
 import org.hamcrest.Matcher

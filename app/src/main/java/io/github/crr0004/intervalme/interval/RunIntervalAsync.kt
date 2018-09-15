@@ -1,6 +1,7 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.widget.TextView
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 
 class RunIntervalAsync(private val interval: IntervalData, private val durationText: TextView) : Runnable{

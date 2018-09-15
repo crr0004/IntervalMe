@@ -22,7 +22,10 @@ import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.withInte
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalDataDAO
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
-import io.github.crr0004.intervalme.views.IntervalViewModel
+import io.github.crr0004.intervalme.interval.IntervalAddFragment
+import io.github.crr0004.intervalme.interval.IntervalListActivity
+import io.github.crr0004.intervalme.interval.IntervalSimpleGroupAdapter
+import io.github.crr0004.intervalme.interval.IntervalViewModel
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.hamcrest.Matchers.*

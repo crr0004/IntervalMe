@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -21,9 +21,11 @@ import android.view.View
 import android.widget.AbsListView.CHOICE_MODE_MULTIPLE
 import android.widget.ExpandableListView
 import android.widget.Toast
+import io.github.crr0004.intervalme.*
+import io.github.crr0004.intervalme.routine.RoutineListActivity
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
-import io.github.crr0004.intervalme.views.IntervalViewModel
+import io.github.crr0004.intervalme.analytics.AnalyticsActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
 import java.util.*
 

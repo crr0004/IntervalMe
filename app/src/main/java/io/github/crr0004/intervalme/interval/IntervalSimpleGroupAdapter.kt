@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.content.Context
 import android.graphics.Color
@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
+import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 import kotlinx.android.synthetic.main.interval_group.view.*
 

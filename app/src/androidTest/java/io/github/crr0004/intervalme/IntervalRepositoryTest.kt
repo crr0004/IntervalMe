@@ -8,6 +8,7 @@ import android.support.test.runner.AndroidJUnit4
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.database.IntervalRepository
+import io.github.crr0004.intervalme.interval.IntervalListActivity
 import org.junit.*
 import org.junit.runner.RunWith
 import java.io.IOException

@@ -10,6 +10,7 @@ import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDao
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
+import io.github.crr0004.intervalme.interval.IntervalListActivity
 import org.junit.*
 import org.junit.runner.RunWith
 

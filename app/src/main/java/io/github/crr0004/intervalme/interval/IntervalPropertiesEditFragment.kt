@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme
+package io.github.crr0004.intervalme.interval
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import io.github.crr0004.intervalme.views.IntervalAddSharedModel
+import io.github.crr0004.intervalme.R
 import kotlinx.android.synthetic.main.fragment_interval_properties_edit.view.*
 
 
