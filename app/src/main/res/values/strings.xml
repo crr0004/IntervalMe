@@ -47,4 +47,6 @@
     <string name="intervals">Intervals</string>
     <string name="analytics">Analytics</string>
     <string name="routines">Routines</string>
+    <string name="title_activity_routine_manage">RoutineManageActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

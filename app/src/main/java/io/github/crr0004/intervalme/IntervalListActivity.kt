@@ -11,8 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.preference.PreferenceManager
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.view.menu.MenuBuilder
@@ -83,7 +81,7 @@ class IntervalListActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_bar_routines -> {
-                    val intent = Intent(this, RoutineActivity::class.java)
+                    val intent = Intent(this, RoutineListActivity::class.java)
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         val options = ActivityOptions.makeSceneTransitionAnimation(this,
                                 findViewById<View>(R.id.navigation), "navigation")
@@ -156,7 +154,7 @@ class IntervalListActivity : AppCompatActivity() {
     inner class GroupObserver : Observer<Array<IntervalData>>{
         override fun onChanged(it: Array<IntervalData>?) {
             if(it != null && it.isNotEmpty()){
-                if(!it[0].ownerOfGroup){
+                if(BuildConfig.DEBUG && !it[0].ownerOfGroup){
                     // This happens when the ETC group hasn't been created
                     // With no ETC group children are moved to it without an owner
                     //mProvider.moveOrphanedChildrenToGroup(ETC_GROUP_UUID)

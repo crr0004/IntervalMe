@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import kotlinx.android.synthetic.main.activity_interval_list.*
 
@@ -16,7 +17,13 @@ class AnalyticsActivity : AppCompatActivity() {
 
 
 
+
         setUpNavigation()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.interval_list_menu, menu)
+        return true
     }
 
     private fun setUpNavigation() {
@@ -36,7 +43,7 @@ class AnalyticsActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_bar_routines -> {
-                    val intent = Intent(this, RoutineActivity::class.java)
+                    val intent = Intent(this, RoutineListActivity::class.java)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         val options = ActivityOptions.makeSceneTransitionAnimation(this,
                                 findViewById<View>(R.id.navigation), "navigation")
