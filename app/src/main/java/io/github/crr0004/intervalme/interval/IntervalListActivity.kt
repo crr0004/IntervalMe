@@ -385,6 +385,7 @@ class IntervalListActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         IntervalControllerFacade.instance.destroy()
+        IntervalMeDatabase.destroyInstance()
     }
 
     fun launchAddInEditMode(childOfInterval: IntervalData) {
