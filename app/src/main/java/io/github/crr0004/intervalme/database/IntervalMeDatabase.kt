@@ -15,7 +15,7 @@ import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
  * Created by crr00 on 24-Apr-18.
  */
 
-@Database(entities = [IntervalData::class, IntervalRunProperties::class, IntervalAnalyticsData::class], version = 13)
+@Database(entities = [IntervalData::class, IntervalRunProperties::class, IntervalAnalyticsData::class], version = 14)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
@@ -51,7 +51,10 @@ abstract class IntervalMeDatabase : RoomDatabase() {
                 synchronized(IntervalMeDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
                             IntervalMeDatabase::class.java, "intervalme.db").allowMainThreadQueries()
-                            .addMigrations(MIGRATION_11_12, MIGRATION_12_13)
+                            .addMigrations(
+                                    MIGRATION_11_12,
+                                    MIGRATION_12_13,
+                                    MIGRATION_13_14)
                             .build()
                 }
             }
@@ -81,6 +84,12 @@ abstract class IntervalMeDatabase : RoomDatabase() {
         val MIGRATION_12_13 = object: Migration(12, 13){
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE `IntervalAnalytics` ADD COLUMN loops INTEGER NOT NULL DEFAULT -1")
+            }
+        }
+        val MIGRATION_13_14 = object: Migration(13, 14){
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE `IntervalAnalytics` ADD COLUMN groupName TEXT DEFAULT ''")
+                database.execSQL("UPDATE IntervalAnalytics set groupName = (select Interval.label from Interval where Interval.`group`=IntervalAnalytics.`group`)")
             }
         }
     }
