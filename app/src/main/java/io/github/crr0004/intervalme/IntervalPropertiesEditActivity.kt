@@ -4,6 +4,7 @@ import android.app.Activity
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -69,6 +70,7 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_properties)
+        volumeControlStream = AudioManager.STREAM_MUSIC
 
         mModel = ViewModelProviders.of(this).get(IntervalAddSharedModel::class.java)
         mModelProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
