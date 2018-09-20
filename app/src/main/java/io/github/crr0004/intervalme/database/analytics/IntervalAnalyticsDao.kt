@@ -17,4 +17,7 @@ interface IntervalAnalyticsDao {
 
     @Query("select * from IntervalAnalytics where id = :id")
     fun syncGet(id: Long): IntervalAnalyticsData
+
+    @Query("select * from IntervalAnalytics ORDER BY lastModified ASC")
+    fun getAll(): LiveData<Array<IntervalAnalyticsData>>
 }
