@@ -1,24 +1,43 @@
 package io.github.crr0004.intervalme.analytics
 
 import android.app.ActivityOptions
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.View
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.routine.RoutineListActivity
 import io.github.crr0004.intervalme.interval.IntervalListActivity
-import kotlinx.android.synthetic.main.activity_interval_list.*
+import kotlinx.android.synthetic.main.activity_analytics.*
 
 class AnalyticsActivity : AppCompatActivity() {
+
+    private lateinit var provider: AnalyticsViewModel
+
+    private val mAnalyticsRecyclerAdapter = AnalyticsRecyclerAdapter(this@AnalyticsActivity)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_analytics)
 
+        with(this.analyticsRecyclerView){
+            setHasFixedSize(false)
+            layoutManager = LinearLayoutManager(this@AnalyticsActivity)
+            adapter = mAnalyticsRecyclerAdapter
+        }
 
+        provider = ViewModelProviders.of(this).get(AnalyticsViewModel::class.java)
+        provider.getAll().observe(this, Observer {
+            if(it != null){
+                mAnalyticsRecyclerAdapter.items = it
+                mAnalyticsRecyclerAdapter.notifyDataSetChanged()
+            }
+        })
 
 
         setUpNavigation()

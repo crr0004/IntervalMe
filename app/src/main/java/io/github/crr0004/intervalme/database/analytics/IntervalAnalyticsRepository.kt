@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme.database.analytics
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
@@ -28,6 +29,10 @@ class IntervalAnalyticsRepository(mContext: Context) : IntervalAnalyticsDataSour
         mExecutor.execute {
             mIntervalAnalyticsDao.insert(IntervalAnalyticsData(interval, groupProperties))
         }
+    }
+
+    fun getAll(): LiveData<Array<IntervalAnalyticsData>>{
+        return mIntervalAnalyticsDao.getAll()
     }
 
     internal inner class ThreadPerTaskExecutor : Executor {
