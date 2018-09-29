@@ -102,13 +102,14 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
             }else{
                 if(mIntervalToEdit.value!!.group != mIntervalToEditGroup!!.group){
                     mRepo.moveIntervalToGroup(mIntervalToEdit.value!!, mIntervalToEditGroup!!.group)
-                    mRepo.update(intervalToEditProperties)
+                    if(mIntervalToEditProperties.value != null)
+                        mRepo.update(mIntervalToEditProperties.value!!)
                 }else{
                     mRepo.update(mIntervalToEdit.value!!)
-                    if(intervalToEditProperties.id < 1) {
-                        mRepo.insert(intervalToEditProperties)
-                    }else{
-                        mRepo.update(intervalToEditProperties)
+                    if(mIntervalToEditProperties.value != null && mIntervalToEditProperties.value!!.id < 1) {
+                        mRepo.insert(mIntervalToEditProperties.value!!)
+                    }else if(mIntervalToEditProperties.value != null){
+                        mRepo.update(mIntervalToEditProperties.value!!)
                     }
                 }
             }
