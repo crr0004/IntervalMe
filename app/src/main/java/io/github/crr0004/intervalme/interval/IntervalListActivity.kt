@@ -7,6 +7,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ClipData
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -58,6 +59,7 @@ class IntervalListActivity : AppCompatActivity() {
         mExpandableListView!!.setAdapter(mAdapter)
         mExpandableListView!!.choiceMode = CHOICE_MODE_MULTIPLE
         setSupportActionBar(findViewById(R.id.interval_list_actionbar))
+        volumeControlStream = AudioManager.STREAM_MUSIC
 
         if(savedInstanceState != null){
             val expandedState = savedInstanceState.getBooleanArray(INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID)

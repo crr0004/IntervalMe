@@ -12,8 +12,9 @@ android {
         applicationId "io.github.crr0004.intervalme"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.0.1b"
+        versionCode 4
+        versionName "1.0.2b"
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         android.defaultConfig.vectorDrawables.useSupportLibrary = true
 
