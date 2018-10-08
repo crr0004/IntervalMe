@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import io.github.crr0004.intervalme.analytics.AnalyticsActivity
 import io.github.crr0004.intervalme.interval.IntervalListActivity
@@ -32,6 +34,23 @@ class RoutineListActivity : AppCompatActivity() {
         }
 
         setupNavigation()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when(item?.itemId){
+            R.id.routine_list_menu_add -> {
+                startActivity(Intent(this, RoutineManageActivity::class.java))
+               true
+            }
+            else ->{
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_routine_list_activity, menu)
+        return true
     }
 
     private fun setupNavigation() {

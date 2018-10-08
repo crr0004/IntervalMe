@@ -115,7 +115,7 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
     /**
      * This is called during layout when the size of this view has changed. If
      * you were just added to the view hierarchy, you're called with the old
-     * values of 0.
+     * value of 0.
      *
      * @param w Current width of this view.
      * @param h Current height of this view.

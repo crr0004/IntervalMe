@@ -78,7 +78,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             setHasOptionsMenu(true)
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
+            // to their value. When their value change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"))
@@ -106,7 +106,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             setHasOptionsMenu(true)
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
+            // to their value. When their value change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
             //bindPreferenceSummaryToValue(findPreference("example_text"))
@@ -149,7 +149,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 // For ringtone preferences, look up the correct display value
                 // using RingtoneManager.
                 if (TextUtils.isEmpty(stringValue)) {
-                    // Empty values correspond to 'silent' (no ringtone).
+                    // Empty value correspond to 'silent' (no ringtone).
                    // preference.setSummary(R.string.pref_ringtone_silent)
 
                 } else {

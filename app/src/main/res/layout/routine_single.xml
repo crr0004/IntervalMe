@@ -68,13 +68,12 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         tools:text="Description" />
 
-    <LinearLayout
+    <EditText
         android:id="@+id/routineValuesLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/routineDescText"
         app:layout_constraintEnd_toStartOf="@+id/routineDoneCheckBox"
         app:layout_constraintStart_toEndOf="@+id/routineDescText"

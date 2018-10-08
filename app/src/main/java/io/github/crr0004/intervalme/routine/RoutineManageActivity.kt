@@ -16,7 +16,6 @@ import android.view.ViewGroup
 
 import io.github.crr0004.intervalme.R
 import kotlinx.android.synthetic.main.activity_routine_manage.*
-import kotlinx.android.synthetic.main.fragment_routine_manage.view.*
 
 class RoutineManageActivity : AppCompatActivity() {
 
@@ -82,45 +81,21 @@ class RoutineManageActivity : AppCompatActivity() {
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1)
+            return when(position){
+                0 -> {
+                    RoutineManageBasicFragment()
+                }
+                else -> {
+                    throw RuntimeException("Trying to create a fragment for an invalid position")
+                }
+            }
+
         }
 
         override fun getCount(): Int {
             // Show 3 total pages.
-            return 3
+            return 1
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    class PlaceholderFragment : Fragment() {
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            val rootView = inflater.inflate(R.layout.fragment_routine_manage, container, false)
-            rootView.section_label.text = getString(R.string.section_format, arguments?.getInt(ARG_SECTION_NUMBER))
-            return rootView
-        }
-
-        companion object {
-            /**
-             * The fragment argument representing the section number for this
-             * fragment.
-             */
-            private val ARG_SECTION_NUMBER = "section_number"
-
-            /**
-             * Returns a new instance of this fragment for the given section
-             * number.
-             */
-            fun newInstance(sectionNumber: Int): PlaceholderFragment {
-                val fragment = PlaceholderFragment()
-                val args = Bundle()
-                args.putInt(ARG_SECTION_NUMBER, sectionNumber)
-                fragment.arguments = args
-                return fragment
-            }
-        }
-    }
 }

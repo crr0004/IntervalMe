@@ -207,7 +207,7 @@ class IntervalListAdapter
     override fun getGroup(groupPosition: Int): IntervalData {
         var group = mIntervalsList!![groupPosition.toLong()]?.get(0)
         if(group == null){
-            //group = mIntervalsList!!.values.toList()[0][0]
+            //group = mIntervalsList!!.value.toList()[0][0]
             group = IntervalData.generate(1)[0]!!
             group.label = ""
             //group.groupPosition = groupPosition.toLong()
