@@ -19,7 +19,7 @@ class AnalyticsActivity : AppCompatActivity() {
 
     private lateinit var provider: AnalyticsViewModel
 
-    private val mAnalyticsRecyclerAdapter = AnalyticsRecyclerAdapter(this@AnalyticsActivity)
+    private val mAnalyticsRecyclerAdapter = AnalyticsRecyclerAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

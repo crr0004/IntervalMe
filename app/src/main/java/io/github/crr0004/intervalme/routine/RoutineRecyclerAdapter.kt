@@ -1,6 +1,5 @@
 package io.github.crr0004.intervalme.routine
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
 import android.view.LayoutInflater
@@ -13,9 +12,9 @@ import io.github.crr0004.intervalme.database.routine.ExerciseData
 import kotlinx.android.synthetic.main.routine_single.view.*
 import java.util.*
 
-class RoutineRecyclerAdapter(val mHost: RoutineListActivity) : Adapter<RoutineRecyclerAdapter.ViewHolder>() {
+class RoutineRecyclerAdapter(private val mHost: RoutineListActivity) : Adapter<RoutineRecyclerAdapter.ViewHolder>() {
 
-    val routineData = arrayOf(ExerciseData(description = "Squat",
+    private val routineData = arrayOf(ExerciseData(description = "Squat",
             value0 = "",
             value1 = "",
             value2 = "",
@@ -24,7 +23,7 @@ class RoutineRecyclerAdapter(val mHost: RoutineListActivity) : Adapter<RoutineRe
     override fun onCreateViewHolder(parent: ViewGroup, pos: Int): ViewHolder {
         val view = LayoutInflater.from(mHost).inflate(R.layout.routine_single, parent, false)
 
-        return ViewHolder(mHost, view)
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -35,7 +34,7 @@ class RoutineRecyclerAdapter(val mHost: RoutineListActivity) : Adapter<RoutineRe
         holder.bind(routineData[pos])
     }
 
-    class ViewHolder(val mContext: Context, private val view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(exerciseData: ExerciseData) {
             this.view.findViewById<TextView>(R.id.routineDescText).text = exerciseData.description
             val value = view.findViewById<EditText>(R.id.value0)

@@ -7,12 +7,10 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.arch.persistence.room.migration.Migration
 import android.content.Context
-import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDao
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineDao
-import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.database.routine.RoutineTableData
 
 /**
@@ -45,17 +43,7 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             }
         }
 
-        /**
-         * A debug function that only works in debug mode. Returns the instance directly without a context
-         */
-        fun debugGetInstance(): IntervalMeDatabase?{
-            return if(BuildConfig.DEBUG)
-                INSTANCE ?: TEMP_INSTANCE!!
-            else
-                null
-        }
-
-        fun getSavedInstance(context: Context): IntervalMeDatabase? {
+        private fun getSavedInstance(context: Context): IntervalMeDatabase? {
             if (INSTANCE == null) {
                 synchronized(IntervalMeDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context,
@@ -85,17 +73,17 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             return TEMP_INSTANCE
         }
 
-        val MIGRATION_11_12 = object: Migration(11, 12){
+        private val MIGRATION_11_12 = object: Migration(11, 12){
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE IF NOT EXISTS `IntervalAnalytics` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `label` TEXT, `group` TEXT NOT NULL, `ownerOfGroup` INTEGER NOT NULL, `lastModified` INTEGER NOT NULL, `duration` INTEGER NOT NULL, `groupPosition` INTEGER NOT NULL)")
             }
         }
-        val MIGRATION_12_13 = object: Migration(12, 13){
+        private val MIGRATION_12_13 = object: Migration(12, 13){
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE `IntervalAnalytics` ADD COLUMN loops INTEGER NOT NULL DEFAULT -1")
             }
         }
-        val MIGRATION_13_14 = object: Migration(13, 14){
+        private val MIGRATION_13_14 = object: Migration(13, 14){
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE `IntervalAnalytics` ADD COLUMN groupName TEXT DEFAULT ''")
                 database.execSQL("UPDATE IntervalAnalytics set groupName = (select Interval.label from Interval where Interval.`group`=IntervalAnalytics.`group`)")

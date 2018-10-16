@@ -8,14 +8,12 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
-import io.github.crr0004.intervalme.interval.IntervalController
 import io.github.crr0004.intervalme.R
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.TimeUnit
 
 
-class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(context, attrs) {
+class IntervalClockView(context: Context?, attrs: AttributeSet?) : android.support.v7.widget.AppCompatImageView(context, attrs) {
 
 
     private var mCirclePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -30,21 +28,13 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
     private val mIntervalPaddingDP = 8.0
     private val mHandler: Handler = Handler()
 
-    // Convenience property so that the reference to IntervalController isn't lost
-    var mController: IntervalController? = null
-
     var mPercentageComplete = 0.0f
-        get() = field
         set(value) {
             field = value
             this.invalidate()
         }
 
-    var mClockText: StringBuilder = StringBuilder(8)
-        get() = field
-        set(value) {
-            field = value
-        }
+    private var mClockText: StringBuilder = StringBuilder(8)
 
     init {
         (context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(mDisplayMetrics)
@@ -84,18 +74,6 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
             a.recycle()
         }
 
-    }
-
-    /**
-     * Call this view's OnClickListener, if it is defined.  Performs all normal
-     * actions associated with clicking: reporting accessibility event, playing
-     * a sound, etc.
-     *
-     * @return True there was an assigned OnClickListener that was called, false
-     * otherwise is returned.
-     */
-    override fun performClick(): Boolean {
-        return super.performClick()
     }
 
     /**
@@ -146,8 +124,6 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(con
         canvas.drawText(mClockText.toString(),mCenter.x,mCenter.y,mTextPaint)
 
     }
-
-
 
     /**
      * @return A handler associated with the thread running the View. This

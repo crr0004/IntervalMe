@@ -173,7 +173,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragment.OnFragme
     private fun createInEditMode(view: View) {
         if (mModel.isInEditMode) {
             mIntervalToEdit = mModel.getIntervalToEdit()
-            mIntervalToEdit?.observe(this, android.arch.lifecycle.Observer {
+            mIntervalToEdit?.observe(this, android.arch.lifecycle.Observer { it ->
                 if (it != null) {
                     mDurationTextView?.setText(it.duration.toString())
                     view.findViewById<TextView>(R.id.intervalNameTxt).text = it.label
@@ -224,7 +224,9 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragment.OnFragme
         var direction: Int = 1
         var mDurationTextView: TextView? = null
         var mDuration = 0L
-        private val DEBUG_TAG = "IADTxtVGesture"
+        companion object {
+            const val DEBUG_TAG = "IADTxtVGesture"    
+        }
         private val mAddDurationRunnable = AddContinuousDurationRunnable(this)
 
         fun updateDurationText(addToDuration: Long = 0L){

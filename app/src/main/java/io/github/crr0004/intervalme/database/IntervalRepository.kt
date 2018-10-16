@@ -7,7 +7,7 @@ import java.util.concurrent.Executor
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class IntervalRepository {
+class IntervalRepository(mContext: Context) {
 
     private var mdb: IntervalMeDatabase? = null
     private var mIntervalDao: IntervalDataDAO? = null
@@ -15,12 +15,12 @@ class IntervalRepository {
     private val mIntervalChildrenCache: HashMap<UUID, ArrayList<IntervalData>> = HashMap()
     private val mIntervalGroupsCache: HashMap<Long, IntervalData> = HashMap()
     private var mExecutor: Executor = ThreadPerTaskExecutor()
-    public var executor: Executor
+    var executor: Executor
         set(value) {mExecutor = value}
         get() {return mExecutor}
     private var mGroupCount: Long = 0L
 
-    constructor(mContext: Context){
+    init {
         mdb = IntervalMeDatabase.getInstance(mContext)
         mIntervalDao = mdb!!.intervalDataDao()
         mPropertiesDao = mdb!!.propertiesDao()
@@ -45,7 +45,7 @@ class IntervalRepository {
         mExecutor = SynchronousExecutor()
     }
 
-    fun buildGroupAndChildOffsetCache(async: Boolean = true){
+    fun buildGroupAndChildOffsetCache() {
         mExecutor.execute(buildGroupAndChildOffsetCacheRunnable)
     }
 
@@ -233,7 +233,7 @@ class IntervalRepository {
     fun moveOrphanedChildrenToGroup(group: UUID) {
         executor.execute {
             var etcGroup = mIntervalDao!!.getGroupByUUID(group)
-            var startingGroupPos: Long
+            val startingGroupPos: Long
             if(etcGroup == null){
                 // Create etcgroup
                 etcGroup = IntervalData(label = "ETC", group = group, ownerOfGroup = true, groupPosition = mIntervalDao!!.getGroupOwnersCount())
@@ -348,5 +348,6 @@ class IntervalRepository {
             r.run()
         }
     }
+
 
 }

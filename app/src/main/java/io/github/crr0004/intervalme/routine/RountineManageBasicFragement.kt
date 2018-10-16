@@ -52,7 +52,7 @@ class RoutineManageBasicFragment : Fragment(){
     }
 
     class RoutineManageBasicItemsAdapter(private val mHost: RoutineManageBasicFragment) : RecyclerView.Adapter<RoutineManageBasicItemViewHolder>() {
-        val routineData = arrayOf(ExerciseData(description = "Squat",
+        private val routineData = arrayOf(ExerciseData(description = "Squat",
                 lastModified = Date(),
                 value0 = "",
                 value1 = "",

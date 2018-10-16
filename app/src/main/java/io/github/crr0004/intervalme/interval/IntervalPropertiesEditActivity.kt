@@ -125,10 +125,6 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
 
-    interface IntervalPropertiesEditI{
-        fun onBind()
-    }
-
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
      * one of the sections/tabs/pages.

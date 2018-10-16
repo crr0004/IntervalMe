@@ -3,7 +3,6 @@ package io.github.crr0004.intervalme.database.routine
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.PrimaryKey
-import io.github.crr0004.intervalme.database.IntervalData
 import java.util.*
 
 /**
@@ -17,6 +16,4 @@ data class ExerciseData(@PrimaryKey(autoGenerate = true) var id: Long = 0,
                         var lastModified: Date = Date(),
                         var value0: String = "",
                         var value1: String = "",
-                        var value2: String = "") {
-
-}
+                        var value2: String = "")

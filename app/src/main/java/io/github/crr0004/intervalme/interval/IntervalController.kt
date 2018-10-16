@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme.interval
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.SystemClock
@@ -18,13 +19,21 @@ import java.util.concurrent.TimeUnit
 /**
  * A mController for dealing with the logic between the IntervalClockView and a data source
  */
-open class IntervalController:GestureDetector.SimpleOnGestureListener {
+// We can suppress this because we ensure click logic is in onClickListener
+@SuppressLint("ClickableViewAccessibility")
+open class IntervalController
+/**
+ * @param mClockView the view that this mController uses
+ * @param mChildOfInterval the interval data from the db
+ */(mClockView: IntervalClockView? = null, mChildOfInterval: IntervalData, runProperties: IntervalRunProperties? = null, applicationContext: Context? = null, callBackHost: IntervalControllerCallBackI) : GestureDetector.SimpleOnGestureListener() {
 
     private var mClockRunning = false
-    private val DEBUG_TAG = "ICGestures"
+    companion object {
+        const val DEBUG_TAG = "ICGestures"
+    }
     private lateinit var mDetector: GestureDetectorCompat
     private lateinit var mClockTickRunnable: TickClockRunnable
-    private lateinit var mCallBackHost: IntervalControllerCallBackI
+    private var mCallBackHost: IntervalControllerCallBackI = callBackHost
 
     interface IntervalControllerCallBackI {
         fun clockStartedAsNew(intervalController: IntervalController)
@@ -38,26 +47,16 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
 
     private var mClockView: IntervalClockView? = null
     lateinit var mChildOfInterval: IntervalData
-    var mIntervalProperties: IntervalRunProperties? = null
+    private var mIntervalProperties: IntervalRunProperties? = null
     //private var mNextInterval: IntervalController? = null
     private var mSoundController: IntervalSoundController? = null
     private var mThread: Thread? = null
 
-    /**
-     * @param mNextInterval the interval to start after this one is done
-     * @param mClockView the view that this mController uses
-     * @param mChildOfInterval the interval data from the db
-     */
-    constructor(mClockView: IntervalClockView? = null,
-                mChildOfInterval: IntervalData,
-                runProperties: IntervalRunProperties? = null,
-                applicationContext: Context? = null,
-                callBackHost: IntervalControllerCallBackI) {
+    init {
         init(mClockView, mChildOfInterval, runProperties = runProperties, applicationContext = applicationContext)
-        mCallBackHost = callBackHost
     }
 
-    fun init(
+    private fun init(
             clockView: IntervalClockView?,
             childOfInterval: IntervalData,
             applicationContext: Context? = null,
@@ -67,8 +66,31 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         mDetector = GestureDetectorCompat(applicationContext, this)
         mIntervalProperties = runProperties
 
+
+
         mClockView?.setOnTouchListener { _, event ->
             mDetector.onTouchEvent(event)
+        }
+
+        // We do this so accessibility has correct logic
+        mClockView?.setOnClickListener {
+            if(!mClockRunning) {
+                startClockAsNew()
+            }else{
+                // The clock has already been started so now we just invert the runnable
+                mClockTickRunnable.mRunning = !mClockTickRunnable.mRunning
+                if(mClockTickRunnable.mRunning){
+                    // The clock was paused so we need to start it again
+                    // We also move the clock ahead to the current time minus however much time has passed
+                    mClockTickRunnable.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable.mElapsedTime
+                    // mClockView!!.post(mClockTickRunnable)
+                    mCallBackHost.clockResumedFromPause(this)
+                }else{
+                    mThread?.interrupt()
+                    mCallBackHost.clockPaused(this)
+                }
+                startClockThread()
+            }
         }
 
         mClockView?.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))
@@ -82,30 +104,16 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             mSoundController = IntervalSoundController.instanceWith(applicationContext.applicationContext, R.raw.digital_watch_alarm_1)
     }
 
+    /* This may still be needed in the future
     open fun disconnectFromViews(){
         mClockView?.setOnTouchListener(null)
         mClockTickRunnable.releaseClockView()
     }
+    */
 
     override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
         // We've started the clock for the first time
-        if(!mClockRunning) {
-            startClockAsNew()
-        }else{
-            // The clock has already been started so now we just invert the runnable
-            mClockTickRunnable.mRunning = !mClockTickRunnable.mRunning
-            if(mClockTickRunnable.mRunning){
-                // The clock was paused so we need to start it again
-                // We also move the clock ahead to the current time minus however much time has passed
-                mClockTickRunnable.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable.mElapsedTime
-               // mClockView!!.post(mClockTickRunnable)
-                mCallBackHost.clockResumedFromPause(this)
-            }else{
-                mThread?.interrupt()
-                mCallBackHost.clockPaused(this)
-            }
-            startClockThread()
-        }
+        mClockView?.performClick()
         return true
     }
 
@@ -119,7 +127,7 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         }
     }
 
-    public fun startClockAsNew() {
+    fun startClockAsNew() {
         stopAndRefreshClock()
         mClockTickRunnable.mRunning = true
         startClockThread()
@@ -160,10 +168,6 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         return false
     }
 
-    override fun onLongPress(e: MotionEvent?) {
-        super.onLongPress(e)
-    }
-
     override fun onDown(e: MotionEvent?): Boolean {
         return true
     }
@@ -177,30 +181,6 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
         //Log.d(DEBUG_TAG, "IntervalController $mChildOfInterval done")
 
         mCallBackHost.clockFinished(this, mSoundController)
-    }
-
-    private fun previousTimerFinished(previousIntervalController: IntervalController){
-        startClockAsNew()
-    }
-
-    open fun onPause() {
-        mChildOfInterval.runningDuration = mClockTickRunnable.mTimeToRun
-        if(mSoundController != null)
-            IntervalSoundController.release(mSoundController!!)
-        mSoundController = null
-    }
-
-    fun onResume(context: Context){
-        mSoundController = IntervalSoundController.instanceWith(context.applicationContext, R.raw.digital_watch_alarm_1)
-    }
-
-    open fun onStop() {
-
-    }
-
-    open fun refreshInterval(updatedInterval: IntervalData) {
-        mChildOfInterval = updatedInterval
-
     }
 
     open fun connectNewClockView(view: View) {
@@ -284,11 +264,6 @@ open class IntervalController:GestureDetector.SimpleOnGestureListener {
             }else{
                 mClockView?.mPercentageComplete = 1f
             }
-        }
-
-        fun releaseClockView(){
-            mClockView =null
-            mUpdateClockHandler = null
         }
     }
 }

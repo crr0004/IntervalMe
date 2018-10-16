@@ -63,10 +63,6 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)]!![childOfInterval.groupPosition.toInt()+1].connectNewClockView(clockView)
     }
 
-    fun delete(childOfInterval: IntervalData) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     fun setIntervalAsLast(groupPosition: Int, childOfInterval: IntervalData) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -92,7 +88,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
      * in the group
      * @param interval the interval to check to see if it is last in its group
      */
-    fun isIntervalLast(interval: IntervalData): Boolean{
+    private fun isIntervalLast(interval: IntervalData): Boolean{
         return mControllers[interval.group]!!.last().mChildOfInterval == interval
     }
 
@@ -123,10 +119,9 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     /**
      * This creates a copy of properties for the group and stores it
      * This will not create a copy if the properites doesn't exist in the data source
-     * @param the properties of the group
      * @return a copy of the properties
      */
-    fun getRunningProperties(group: UUID): IntervalRunProperties?{
+    private fun getRunningProperties(group: UUID): IntervalRunProperties?{
         var properties = mRunningProperties[group]
         if(properties == null) {
             properties = mDataSource.getGroupProperties(mControllers[group]!![0].mChildOfInterval.id)
@@ -138,7 +133,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         return properties
     }
 
-    fun clearRunningProperties(group: UUID){
+    private fun clearRunningProperties(group: UUID){
         mRunningProperties.remove(group)
     }
 

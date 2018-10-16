@@ -15,13 +15,13 @@ import org.junit.*
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-public class IntervalAnalyticsRepoTest : ActivityTestRule<IntervalListActivity>(IntervalListActivity::class.java) {
+class IntervalAnalyticsRepoTest : ActivityTestRule<IntervalListActivity>(IntervalListActivity::class.java) {
 
     //private lateinit var mRepo: IntervalAnalyticsRepository
     private lateinit var mdb: IntervalMeDatabase
     private lateinit var mIntervalAnalyticsDao: IntervalAnalyticsDao
     @get:Rule
-    public var mActivityRule: ActivityTestRule<IntervalListActivity> = this
+    var mActivityRule: ActivityTestRule<IntervalListActivity> = this
 
     companion object {
         @BeforeClass

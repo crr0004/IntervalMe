@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(IntervalListActivity::class.java) {
+class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(IntervalListActivity::class.java) {
     private var mIntervalDao: IntervalDataDAO? = null
     private var mDb: IntervalMeDatabase? = null
     private val mTestIntervalSize = 11
@@ -66,12 +66,6 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
         mIds = mIntervalDao?.insert(mTestIntervals)!!
     }
 
-    override fun afterActivityFinished() {
-        super.afterActivityFinished()
-
-        //IntervalMeDatabase.destroyInstance()
-    }
-
     @Before
     fun setup() {
         Intents.init()
@@ -85,10 +79,10 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
     }
 
     @get:Rule
-    public var mActivityRule: ActivityTestRule<IntervalListActivity> = this
+    var mActivityRule: ActivityTestRule<IntervalListActivity> = this
 
     @Test
-    public fun addButtonGoesToAddActivity(){
+    fun addButtonGoesToAddActivity(){
         onView(withId(R.id.action_goto_add)).perform(click())
         intended(hasComponent(IntervalAddFragment::class.java.name))
     }
@@ -140,7 +134,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
         val thread = Thread.currentThread()
         val model = ViewModelProviders.of(this.activity).get(IntervalViewModel::class.java)
         // We do this so we can wait until all the data is done loading
-        model.getGroups().observe(this.activity, Observer {
+        model.getGroups().observe(this.activity, Observer { it ->
             if(it != null && it.isNotEmpty()) {
                 model.getAllOfGroup(it[it.size - 1].group).observe(this.activity, Observer {
                     if(it != null)
@@ -193,7 +187,7 @@ public class IntervalListActivityTest : ActivityTestRule<IntervalListActivity>(I
         val model = ViewModelProviders.of(this.activity).get(IntervalViewModel::class.java)
         // We do this so we can wait until all the data is done loadingv
         val groups = model.getGroups()
-        groups.observe(this.activity, Observer {
+        groups.observe(this.activity, Observer { it ->
             if(it != null && it.isNotEmpty()) {
                 model.getAllOfGroup(it[it.size - 1].group).observe(this.activity, Observer {
                     if(it != null)

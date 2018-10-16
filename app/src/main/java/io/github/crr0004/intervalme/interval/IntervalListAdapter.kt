@@ -19,8 +19,6 @@ import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.DragDropAnimationController
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
-import io.github.crr0004.intervalme.database.IntervalDataDAO
-import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.*
@@ -55,23 +53,22 @@ class IntervalListAdapter
 
     // END IntervalControllerDataSourceI implementation
 
-    private var mdb: IntervalMeDatabase? = null
-    private var mIntervalDao: IntervalDataDAO? = null
+    //private var mdb: IntervalMeDatabase? = null
+    //private var mIntervalDao: IntervalDataDAO? = null
    // val mCachedControllers: HashMap<Long, IntervalController> = HashMap()
-    public val mChecked = SparseBooleanArray()
-    public var mInEditMode: Boolean = false
+    val mChecked = SparseBooleanArray()
+    var mInEditMode: Boolean = false
     private var mIntervalsList: HashMap<Long, Array<IntervalData>>? = HashMap(10)
     private var mIntervalProperties: HashMap<Long, IntervalRunProperties> = HashMap(1)
-    private val mNotFoundGroupLabel: String
+    private val mNotFoundGroupLabel: String = mHostActivity.getString(R.string.group_not_found_label).toString()
     private var mGroupSize: Int = 0
     var groupSize: Int
         get() {return mGroupSize}
         set(value) {mGroupSize = value}
 
     init {
-        mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
-        mIntervalDao = mdb!!.intervalDataDao()
-        mNotFoundGroupLabel = mHostActivity.getString(R.string.group_not_found_label).toString()
+        //mdb = IntervalMeDatabase.getInstance(mHostActivity.applicationContext)
+        //mIntervalDao = mdb!!.intervalDataDao()
         IntervalControllerFacade.instance.setDataSource(this)
     }
 
@@ -228,7 +225,7 @@ class IntervalListAdapter
         return group
     }
 
-    fun getProperties(id: Long): IntervalRunProperties?{
+    private fun getProperties(id: Long): IntervalRunProperties?{
         return mIntervalProperties[id]
     }
 
@@ -336,13 +333,6 @@ class IntervalListAdapter
         return getGroup(groupPosition).id
     }
 
-    /**
-     * @see DataSetObservable.notifyChanged
-     */
-    override fun notifyDataSetChanged() {
-        super.notifyDataSetChanged()
-        //Log.d("ILA", "notifyDataSetChanged Called")
-    }
 
     @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
@@ -447,8 +437,7 @@ class IntervalListAdapter
     }
 
     override fun getGroupCount(): Int {
-        val size = mIntervalsList?.size ?: 0
-        return size
+        return mIntervalsList?.size ?: 0
     }
 
     fun startAllIntervals() {

@@ -6,9 +6,9 @@ import android.media.MediaPlayer
 import android.provider.Settings.System.DEFAULT_NOTIFICATION_URI
 
 
-class IntervalSoundController {
+class IntervalSoundController(context: Context, id: Int) {
     private val mMediaPlayer: MediaPlayer
-    private var mId: Int = -1
+    private var mId: Int = id
 
     companion object {
         private val mSoundsControllerInstances: HashMap<Int, IntervalSoundController> = HashMap(2)
@@ -21,18 +21,12 @@ class IntervalSoundController {
             return instance
         }
 
-        fun releaseAllInstances(){
-            mSoundsControllerInstances.values.forEachIndexed { index, intervalSoundController ->
-                intervalSoundController.release()
-            }
-        }
         fun release(controller: IntervalSoundController){
             mSoundsControllerInstances[controller.mId]?.release()
         }
     }
 
-    constructor(context: Context, id: Int){
-        mId = id
+    init {
         mMediaPlayer = try {
             MediaPlayer.create(context, id)
         }catch(e: Resources.NotFoundException){

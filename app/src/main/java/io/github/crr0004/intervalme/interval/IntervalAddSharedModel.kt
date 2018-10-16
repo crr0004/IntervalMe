@@ -10,7 +10,7 @@ import io.github.crr0004.intervalme.database.IntervalRepository
 import io.github.crr0004.intervalme.database.IntervalRunProperties
 import java.util.*
 
-class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mApplication){
+class IntervalAddSharedModel(mApplication: Application): AndroidViewModel(mApplication){
 
     private val mIntervalToEdit: MutableLiveData<IntervalData> = MutableLiveData()
     var mIntervalToEditProperties: MutableLiveData<IntervalRunProperties> = MutableLiveData()
@@ -45,7 +45,7 @@ class IntervalAddSharedModel(val mApplication: Application): AndroidViewModel(mA
         return mIntervalToEdit
     }
 
-    fun setIntervalToEdit(intervalData: IntervalData){
+    private fun setIntervalToEdit(intervalData: IntervalData){
         mIntervalToEdit.postValue(intervalData)
         mStartingInterval = IntervalData.forceCopy(intervalData)
     }

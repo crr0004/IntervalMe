@@ -58,7 +58,7 @@ class IntervalSimpleGroupListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mViewManager = LinearLayoutManager(view.context)
-        mAdapter = IntervalSimpleGroupAdapter(view.context)
+        mAdapter = IntervalSimpleGroupAdapter()
         mAdapter.setHasStableIds(true)
 
         mRecycleListView = view.findViewById(R.id.clockSampleRecycleList)
@@ -145,7 +145,7 @@ class IntervalSimpleGroupListFragment : Fragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    public interface OnFragmentInteractionListener {
+    interface OnFragmentInteractionListener {
         fun onItemSelected(interval: IntervalData, isSelected: Boolean)
         fun attachedTo(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment)
         fun detachedFrom(intervalSimpleGroupListFragment: IntervalSimpleGroupListFragment)
@@ -171,7 +171,7 @@ class IntervalSimpleGroupListFragment : Fragment() {
     }
 }
 
-class MyKeyProvider(val mAdapter: IntervalSimpleGroupAdapter) : ItemKeyProvider<Long>(1){
+class MyKeyProvider(private val mAdapter: IntervalSimpleGroupAdapter) : ItemKeyProvider<Long>(1){
     override fun getKey(p0: Int): Long? {
         return mAdapter.getItemId(p0)
     }

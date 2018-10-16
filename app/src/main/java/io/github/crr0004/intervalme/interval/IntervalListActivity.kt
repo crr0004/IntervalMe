@@ -42,19 +42,20 @@ class IntervalListActivity : AppCompatActivity() {
         private const val INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID = "ilpes"
         const val INTENT_EDIT_REQUEST_CODE = 1
         const val INTENT_ADD_REQUEST_CODE = 2
-        val ETC_GROUP_UUID = UUID.fromString("5c9a12d5-4a99-4957-925e-e61c0bd74a77")
+        val ETC_GROUP_UUID: UUID = UUID.fromString("5c9a12d5-4a99-4957-925e-e61c0bd74a77")
     }
 
     init {
 
     }
 
+    @SuppressLint("InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_list)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        mExpandableListView = findViewById<ExpandableListView>(R.id.intervalsExpList)
+        mExpandableListView = findViewById(R.id.intervalsExpList)
         mAdapter = IntervalListAdapter(this, mExpandableListView!!)
         mExpandableListView!!.setAdapter(mAdapter)
         mExpandableListView!!.choiceMode = CHOICE_MODE_MULTIPLE
@@ -364,7 +365,7 @@ class IntervalListActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
 
-        val expandedGroups = BooleanArray(mAdapter!!.groupCount, {false})
+        val expandedGroups = BooleanArray(mAdapter!!.groupCount) {false}
         expandedGroups.forEachIndexed { index, _ ->
             expandedGroups[index] = mExpandableListView!!.isGroupExpanded(index+1)
         }

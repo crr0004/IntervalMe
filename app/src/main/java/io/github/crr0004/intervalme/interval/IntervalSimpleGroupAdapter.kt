@@ -1,6 +1,5 @@
 package io.github.crr0004.intervalme.interval
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.support.v7.widget.RecyclerView
@@ -13,15 +12,13 @@ import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 import kotlinx.android.synthetic.main.interval_group.view.*
 
-class IntervalSimpleGroupAdapter(private val mContext: Context): RecyclerView.Adapter<IntervalSimpleGroupAdapter.SimpleGroupViewHolder>() {
+class IntervalSimpleGroupAdapter : RecyclerView.Adapter<IntervalSimpleGroupAdapter.SimpleGroupViewHolder>() {
 
     class SimpleGroupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         private var mBoundData: IntervalData? = null
         val itemDetails: ItemDetailsLookup.ItemDetails<Long> = SimpleGroupItemDetails(this)
 
 
-        var boundData: IntervalData? = null
-        get() {return mBoundData}
         fun bind(groupData: IntervalData){
             mBoundData = groupData
             itemView.intervalGroupNameTxt.text = groupData.label
@@ -62,7 +59,7 @@ class IntervalSimpleGroupAdapter(private val mContext: Context): RecyclerView.Ad
     }
 
     override fun onBindViewHolder(holder: SimpleGroupViewHolder, position: Int) {
-        val groupData = mGroupsList!![position]!!
+        val groupData = mGroupsList!![position]
         holder.bind(groupData)
         if(mTracker!!.isSelected(holder.itemId)){
             holder.itemView.background?.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY)
@@ -77,7 +74,7 @@ class IntervalSimpleGroupAdapter(private val mContext: Context): RecyclerView.Ad
     }
 
     override fun getItemId(position: Int): Long {
-        return mGroupsList!![position]!!.id
+        return mGroupsList!![position].id
     }
 
     fun getPositionOfId(id: Long): Long {

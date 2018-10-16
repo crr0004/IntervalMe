@@ -1,26 +1,21 @@
 package io.github.crr0004.intervalme.routine
 
-import android.support.design.widget.TabLayout
+import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
-
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.os.Bundle
-import android.view.LayoutInflater
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-
 import io.github.crr0004.intervalme.R
 import kotlinx.android.synthetic.main.activity_routine_manage.*
 
 class RoutineManageActivity : AppCompatActivity() {
 
     companion object {
-        val routine_edit_id_key = "routine_edit_id_key"
+        const val routine_edit_id_key = "routine_edit_id_key"
     }
 
 

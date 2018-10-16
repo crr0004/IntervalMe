@@ -8,7 +8,7 @@ import io.github.crr0004.intervalme.database.routine.RoutineSetData
 
 class RoutineViewModel(application: Application) : AndroidViewModel(application) {
 
-    val mRepo = RoutineRepo(application)
+    private val mRepo = RoutineRepo(application)
     var mRoutineToEdit: LiveData<RoutineSetData>? = null
     private var mInEditMode: Boolean = false
 

@@ -32,7 +32,7 @@ class IntervalViewModelTest: ActivityTestRule<IntervalListActivity>(IntervalList
 
     private var mRepo: IntervalRepository? = null
     @get:Rule
-    public var mActivityRule: ActivityTestRule<IntervalListActivity> = this
+    var mActivityRule: ActivityTestRule<IntervalListActivity> = this
 
     @Before
     fun createDb() {
@@ -59,9 +59,9 @@ class IntervalViewModelTest: ActivityTestRule<IntervalListActivity>(IntervalList
                 Assert.assertEquals(intervalInput[index], intervalData)
             }
             groups.removeObservers(mActivityRule.activity)
-            synchronized(thread, { (thread as java.lang.Object).notify() })
+            synchronized(thread) { (thread as java.lang.Object).notify() }
         })
-        synchronized(thread, { (thread as java.lang.Object).wait() })
+        synchronized(thread) { (thread as java.lang.Object).wait() }
 
     }
 

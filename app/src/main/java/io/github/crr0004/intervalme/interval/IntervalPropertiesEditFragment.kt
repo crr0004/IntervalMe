@@ -32,10 +32,6 @@ class IntervalPropertiesEditFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_interval_properties_edit, container, false)
     }
 
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mModel.mIntervalToEditProperties.observe(this, Observer {

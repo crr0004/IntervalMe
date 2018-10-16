@@ -1,6 +1,5 @@
 package io.github.crr0004.intervalme.analytics
 
-import android.app.Activity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,7 @@ import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
 import kotlinx.android.synthetic.main.analytics_single_view.view.*
 import java.text.SimpleDateFormat
 
-class AnalyticsRecyclerAdapter(val mHost: Activity) : RecyclerView.Adapter<AnalyticsRecyclerAdapter.ViewHolder>() {
+class AnalyticsRecyclerAdapter : RecyclerView.Adapter<AnalyticsRecyclerAdapter.ViewHolder>() {
 
     var items = arrayOf(IntervalAnalyticsData(label = "Hello world", duration = 60L),IntervalAnalyticsData(label = "Hello world2"))
 

@@ -34,7 +34,7 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
 
     private var mRepo: IntervalRepository? = null
     @get:Rule
-    public var mActivityRule: ActivityTestRule<IntervalListActivity> = this
+    var mActivityRule: ActivityTestRule<IntervalListActivity> = this
 
     @Before
     fun createDb() {
@@ -173,14 +173,14 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
         val observer = Observer<IntervalData> {
             if(it != null) {
                 Assert.assertTrue(interval == it)
-                synchronized(thread, { (thread as java.lang.Object).notify() })
+                synchronized(thread) { (thread as java.lang.Object).notify() }
             }
         }
         retrievedInterval.observe(this.activity, observer)
-        synchronized(thread, {(thread as java.lang.Object).wait()})
+        synchronized(thread) {(thread as java.lang.Object).wait()}
     }
 
-    private class RunOnThisExecutor(private val mHandler: IntervalRepositoryTest): Executor{
+    private class RunOnThisExecutor : Executor{
         override fun execute(p0: Runnable?) {
             p0?.run()
         }
@@ -188,7 +188,7 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
 
     @Test
     fun updateTest(){
-        mRepo!!.executor = RunOnThisExecutor(this)
+        mRepo!!.executor = RunOnThisExecutor()
 
         var observationsFired = 0
         val interval = IntervalData.generate(1)[0]!!
@@ -200,15 +200,15 @@ class IntervalRepositoryTest: ActivityTestRule<IntervalListActivity>(IntervalLis
                 Assert.assertTrue(interval == it)
                 observationsFired++
             }
-            synchronized(thread, {(thread as java.lang.Object).notify()})
+            synchronized(thread) {(thread as java.lang.Object).notify()}
         }
         retrievedInterval.observe(this.activity, observer)
-        synchronized(thread, {(thread as java.lang.Object).wait()})
+        synchronized(thread) {(thread as java.lang.Object).wait()}
 
 
         interval.label = UUID.randomUUID().toString()
         mRepo!!.update(interval)
-        synchronized(thread, {(thread as java.lang.Object).wait()})
+        synchronized(thread) {(thread as java.lang.Object).wait()}
 
         Assert.assertEquals(2, observationsFired)
 //        retrievedInterval.removeObservers(this.activity)
