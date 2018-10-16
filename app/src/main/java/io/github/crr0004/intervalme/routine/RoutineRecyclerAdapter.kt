@@ -7,16 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
+import kotlinx.android.synthetic.main.routine_single.view.*
 import java.util.*
 
 class RoutineRecyclerAdapter(val mHost: RoutineListActivity) : Adapter<RoutineRecyclerAdapter.ViewHolder>() {
 
     val routineData = arrayOf(ExerciseData(description = "Squat",
-            value = "hello",
+            value0 = "",
+            value1 = "",
+            value2 = "",
             lastModified = Date()))
 
     override fun onCreateViewHolder(parent: ViewGroup, pos: Int): ViewHolder {
@@ -36,8 +38,10 @@ class RoutineRecyclerAdapter(val mHost: RoutineListActivity) : Adapter<RoutineRe
     class ViewHolder(val mContext: Context, private val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(exerciseData: ExerciseData) {
             this.view.findViewById<TextView>(R.id.routineDescText).text = exerciseData.description
-            val value = view.findViewById<EditText>(R.id.routineValuesLayout)
-            value.setText(exerciseData.value)
+            val value = view.findViewById<EditText>(R.id.value0)
+            view.value0.setText(exerciseData.value0)
+            view.value1.setText(exerciseData.value1)
+            view.value2.setText(exerciseData.value2)
 
 
 

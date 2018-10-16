@@ -69,14 +69,34 @@
         tools:text="Description" />
 
     <EditText
-        android:id="@+id/routineValuesLayout"
-        android:layout_width="0dp"
+        android:id="@+id/value0"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/routineDescText"
-        app:layout_constraintEnd_toStartOf="@+id/routineDoneCheckBox"
         app:layout_constraintStart_toEndOf="@+id/routineDescText"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <EditText
+        android:id="@+id/value1"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/routineDescText"
+        app:layout_constraintStart_toEndOf="@+id/value0"
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/value2"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/routineDescText"
+        app:layout_constraintStart_toEndOf="@+id/value1"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 </android.support.constraint.ConstraintLayout>

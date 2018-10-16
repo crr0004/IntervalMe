@@ -19,6 +19,11 @@ import kotlinx.android.synthetic.main.activity_routine_manage.*
 
 class RoutineManageActivity : AppCompatActivity() {
 
+    companion object {
+        val routine_edit_id_key = "routine_edit_id_key"
+    }
+
+
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
      * fragments for each of the sections. We use a

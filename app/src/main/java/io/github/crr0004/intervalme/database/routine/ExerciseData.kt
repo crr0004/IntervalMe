@@ -1,27 +1,22 @@
 package io.github.crr0004.intervalme.database.routine
 
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.ForeignKey
+import android.arch.persistence.room.PrimaryKey
+import io.github.crr0004.intervalme.database.IntervalData
 import java.util.*
 
-data class ExerciseData(val id: Long = 0, val description: String, val value: String, val lastModified: Date) {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ExerciseData
-
-        if (description != other.description) return false
-        if (value != other.value) return false
-        if (lastModified != other.lastModified) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = description.hashCode()
-        result = 31 * result + value.hashCode()
-        result = 31 * result + lastModified.hashCode()
-        return result
-    }
+/**
+ * Represents a single exercise that belongs to a routine
+ */
+@Entity(tableName = "Exercise",
+        foreignKeys = [(ForeignKey(entity = RoutineTableData::class, parentColumns = arrayOf("id"), childColumns = arrayOf("routineId")))])
+data class ExerciseData(@PrimaryKey(autoGenerate = true) var id: Long = 0,
+                        var routineId: Long = 0,
+                        var description: String = "",
+                        var lastModified: Date = Date(),
+                        var value0: String = "",
+                        var value1: String = "",
+                        var value2: String = "") {
 
 }

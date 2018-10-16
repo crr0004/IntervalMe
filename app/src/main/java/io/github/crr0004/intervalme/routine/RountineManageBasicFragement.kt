@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
+import kotlinx.android.synthetic.main.fragment_routine_manage_basic.*
 import java.util.*
 
 class RoutineManageBasicFragment : Fragment(){
@@ -29,14 +29,34 @@ class RoutineManageBasicFragment : Fragment(){
                 adapter = RoutineManageBasicItemsAdapter(this@RoutineManageBasicFragment)
             }
         }
+        val routineEditId = activity?.intent?.getLongExtra(RoutineManageActivity.routine_edit_id_key, -1) ?: -1
+        if(routineEditId >= 0){
+            mModel.setRoutineToEdit(routineEditId)
+        }
+        this.routineEditCommitBtn.setOnClickListener {
+            mModel.mRoutineToEdit?.value?.exercises?.addAll(arrayListOf(
+                    ExerciseData(description = "Squat",
+                    lastModified = Date(),
+                    value0 = "",
+                    value1 = "",
+                    value2 = ""),
+                    ExerciseData(description = "Dead lift",
+                            lastModified = Date(),
+                            value0 = "",
+                            value1 = "",
+                            value2 = "")))
+            mModel.commit()
+        }
 
         return view
     }
 
     class RoutineManageBasicItemsAdapter(private val mHost: RoutineManageBasicFragment) : RecyclerView.Adapter<RoutineManageBasicItemViewHolder>() {
         val routineData = arrayOf(ExerciseData(description = "Squat",
-                value = "hello",
-                lastModified = Date()))
+                lastModified = Date(),
+                value0 = "",
+                value1 = "",
+                value2 = ""))
 
 
 
@@ -60,7 +80,7 @@ class RoutineManageBasicFragment : Fragment(){
         fun bind(exerciseData: ExerciseData) {
             this.view.findViewById<TextView>(R.id.routineDescText2).text = exerciseData.description
             val value= view.findViewById<EditText>(R.id.routineValuesLayout)
-            value.setText(exerciseData.value)
+            value.setText(exerciseData.value0)
 
 
             //view.findViewById<LinearLayout>(R.id.routineValuesLayout)

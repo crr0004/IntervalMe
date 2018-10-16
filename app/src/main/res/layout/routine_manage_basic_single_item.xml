@@ -6,6 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <EditText
+        android:id="@+id/routineValuesLayout3"
+        android:layout_width="64dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/routineDescText2"
+        app:layout_constraintStart_toEndOf="@+id/routineValuesLayout2"
+        app:layout_constraintTop_toTopOf="@+id/routineDescText2"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/routineValuesLayout2"
+        android:layout_width="64dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/routineDescText2"
+        app:layout_constraintStart_toEndOf="@+id/routineValuesLayout"
+        app:layout_constraintTop_toTopOf="@+id/routineDescText2"
+        app:layout_constraintVertical_bias="0.0" />
+
     <CheckBox
         android:id="@+id/routineDoneCheckBox2"
         android:layout_width="wrap_content"
@@ -17,7 +37,7 @@
 
     <EditText
         android:id="@+id/routineDescText2"
-        android:layout_width="120dp"
+        android:layout_width="109dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
@@ -30,13 +50,10 @@
 
     <EditText
         android:id="@+id/routineValuesLayout"
-        android:layout_width="0dp"
+        android:layout_width="64dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/routineDescText2"
-        app:layout_constraintEnd_toStartOf="@+id/routineDoneCheckBox2"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/routineDescText2"
         app:layout_constraintTop_toTopOf="@+id/routineDescText2" />
 </android.support.constraint.ConstraintLayout>

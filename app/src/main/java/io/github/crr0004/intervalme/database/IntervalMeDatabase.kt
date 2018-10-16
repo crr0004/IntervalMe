@@ -10,18 +10,27 @@ import android.content.Context
 import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDao
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
+import io.github.crr0004.intervalme.database.routine.ExerciseData
+import io.github.crr0004.intervalme.database.routine.RoutineDao
+import io.github.crr0004.intervalme.database.routine.RoutineSetData
+import io.github.crr0004.intervalme.database.routine.RoutineTableData
 
 /**
  * Created by crr00 on 24-Apr-18.
  */
 
-@Database(entities = [IntervalData::class, IntervalRunProperties::class, IntervalAnalyticsData::class], version = 14)
+@Database(entities = [IntervalData::class,
+    IntervalRunProperties::class,
+    IntervalAnalyticsData::class,
+    RoutineTableData::class,
+    ExerciseData::class], version = 15)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
     abstract fun intervalDataDao(): IntervalDataDAO
     abstract fun propertiesDao(): IntervalRunPropertiesDOA
     abstract fun intervalAnalyticsDao(): IntervalAnalyticsDao
+    abstract fun routineDao(): RoutineDao
 
     companion object {
         private var INSTANCE: IntervalMeDatabase? = null
@@ -41,7 +50,7 @@ abstract class IntervalMeDatabase : RoomDatabase() {
          */
         fun debugGetInstance(): IntervalMeDatabase?{
             return if(BuildConfig.DEBUG)
-                INSTANCE!!
+                INSTANCE ?: TEMP_INSTANCE!!
             else
                 null
         }
@@ -49,7 +58,7 @@ abstract class IntervalMeDatabase : RoomDatabase() {
         fun getSavedInstance(context: Context): IntervalMeDatabase? {
             if (INSTANCE == null) {
                 synchronized(IntervalMeDatabase::class) {
-                    INSTANCE = Room.databaseBuilder(context.applicationContext,
+                    INSTANCE = Room.databaseBuilder(context,
                             IntervalMeDatabase::class.java, "intervalme.db").allowMainThreadQueries()
                             .addMigrations(
                                     MIGRATION_11_12,
