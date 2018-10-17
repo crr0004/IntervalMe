@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        >
         <activity
             android:name=".interval.IntervalListActivity"
             android:launchMode="singleTop"
@@ -26,7 +27,8 @@
         <activity
             android:name=".interval.IntervalPropertiesEditActivity"
             android:label="@string/title_activity_interval_properties"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
@@ -35,7 +37,8 @@
         <activity
             android:name=".routine.RoutineManageActivity"
             android:label="@string/title_activity_routine_manage"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

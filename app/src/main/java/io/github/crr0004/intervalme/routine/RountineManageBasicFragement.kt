@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,52 +14,51 @@ import android.widget.EditText
 import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
-import kotlinx.android.synthetic.main.fragment_routine_manage_basic.*
+import kotlinx.android.synthetic.main.fragment_routine_manage_basic.view.*
+import kotlinx.android.synthetic.main.routine_manage_basic_single_item.view.*
 import java.util.*
 
 class RoutineManageBasicFragment : Fragment(){
 
     private lateinit var mModel: RoutineViewModel
+    private lateinit var mAdapter: RoutineManageBasicItemsAdapter
+    private val exercises = ArrayList<ExerciseData>(1)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_routine_manage_basic, container, false)
         mModel = ViewModelProviders.of(this.activity!!).get(RoutineViewModel::class.java)
         view.apply {
-            findViewById<RecyclerView>(R.id.routine_manage_basic_recycler).apply {
+            findViewById<RecyclerView>(R.id.routineManageBasicRecycler).apply {
                 layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
-                adapter = RoutineManageBasicItemsAdapter(this@RoutineManageBasicFragment)
+                mAdapter = RoutineManageBasicItemsAdapter(this@RoutineManageBasicFragment)
+                mAdapter.values = exercises
+                adapter = mAdapter
             }
         }
         val routineEditId = activity?.intent?.getLongExtra(RoutineManageActivity.routine_edit_id_key, -1) ?: -1
-        if(routineEditId >= 0){
+        if(routineEditId > 0){
             mModel.setRoutineToEdit(routineEditId)
         }
-        this.routineEditCommitBtn.setOnClickListener {
-            mModel.mRoutineToEdit?.value?.exercises?.addAll(arrayListOf(
-                    ExerciseData(description = "Squat",
-                    lastModified = Date(),
-                    value0 = "",
-                    value1 = "",
-                    value2 = ""),
-                    ExerciseData(description = "Dead lift",
-                            lastModified = Date(),
-                            value0 = "",
-                            value1 = "",
-                            value2 = "")))
+        view.routineEditCommitBtn.setOnClickListener {
+            mModel.routineToEdit.description = view.routineManageBasicDescriptionTxt.text.toString()
+            mModel.routineToEdit.exercises.addAll(exercises)
             mModel.commit()
+        }
+
+        view.routineEditAddExerciseBtn.setOnClickListener {
+            exercises.add(ExerciseData())
+            mAdapter.notifyDataSetChanged()
         }
 
         return view
     }
 
     class RoutineManageBasicItemsAdapter(private val mHost: RoutineManageBasicFragment) : RecyclerView.Adapter<RoutineManageBasicItemViewHolder>() {
-        private val routineData = arrayOf(ExerciseData(description = "Squat",
-                lastModified = Date(),
-                value0 = "",
-                value1 = "",
-                value2 = ""))
-
+        private lateinit var mRoutineData: ArrayList<ExerciseData>
+        var values: ArrayList<ExerciseData>
+        set(value) {mRoutineData = value}
+        get() {return mRoutineData}
 
 
         override fun onCreateViewHolder(parent: ViewGroup, pos: Int): RoutineManageBasicItemViewHolder {
@@ -67,20 +68,72 @@ class RoutineManageBasicFragment : Fragment(){
         }
 
         override fun getItemCount(): Int {
-            return routineData.size
+            return mRoutineData.size
         }
 
         override fun onBindViewHolder(holder: RoutineManageBasicItemViewHolder, pos: Int) {
-            holder.bind(routineData[pos])
+            holder.bind(mRoutineData[pos])
         }
 
     }
 
-    class RoutineManageBasicItemViewHolder(itemView: RoutineManageBasicFragment, val view: View) : RecyclerView.ViewHolder(view) {
+    class RoutineManageBasicItemViewHolder(host: RoutineManageBasicFragment, val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(exerciseData: ExerciseData) {
-            this.view.findViewById<TextView>(R.id.routineDescText2).text = exerciseData.description
-            val value= view.findViewById<EditText>(R.id.routineValuesLayout)
+            this.view.findViewById<TextView>(R.id.rMBSIDescText).text = exerciseData.description
+            val value= view.findViewById<EditText>(R.id.rMBSIValue0)
             value.setText(exerciseData.value0)
+            view.rMBSIValue0.addTextChangedListener(object : TextWatcher{
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    exerciseData.value0 = s?.toString() ?: ""
+                }
+            })
+            view.rMBSIValue1.addTextChangedListener(object : TextWatcher{
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    exerciseData.value1 = s?.toString() ?: ""
+                }
+            })
+            view.rMBSIValue2.addTextChangedListener(object : TextWatcher{
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    exerciseData.value2 = s?.toString() ?: ""
+                }
+            })
+            view.rMBSIDescText.addTextChangedListener(object : TextWatcher{
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    exerciseData.description = s?.toString() ?: ""
+                }
+            })
 
 
             //view.findViewById<LinearLayout>(R.id.routineValuesLayout)

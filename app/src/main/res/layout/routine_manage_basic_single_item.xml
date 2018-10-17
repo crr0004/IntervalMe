@@ -4,26 +4,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/routineManageBasicSingleItemLayoutId">
 
     <EditText
-        android:id="@+id/routineValuesLayout3"
+        android:id="@+id/rMBSIValue2"
         android:layout_width="64dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/routineDescText2"
-        app:layout_constraintStart_toEndOf="@+id/routineValuesLayout2"
-        app:layout_constraintTop_toTopOf="@+id/routineDescText2"
+        app:layout_constraintBottom_toBottomOf="@+id/rMBSIDescText"
+        app:layout_constraintStart_toEndOf="@+id/rMBSIValue1"
+        app:layout_constraintTop_toTopOf="@+id/rMBSIDescText"
         app:layout_constraintVertical_bias="1.0" />
 
     <EditText
-        android:id="@+id/routineValuesLayout2"
+        android:id="@+id/rMBSIValue1"
         android:layout_width="64dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/routineDescText2"
-        app:layout_constraintStart_toEndOf="@+id/routineValuesLayout"
-        app:layout_constraintTop_toTopOf="@+id/routineDescText2"
+        app:layout_constraintBottom_toBottomOf="@+id/rMBSIDescText"
+        app:layout_constraintStart_toEndOf="@+id/rMBSIValue0"
+        app:layout_constraintTop_toTopOf="@+id/rMBSIDescText"
         app:layout_constraintVertical_bias="0.0" />
 
     <CheckBox
@@ -31,12 +32,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/routineDescText2"
+        app:layout_constraintBottom_toBottomOf="@+id/rMBSIDescText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/routineDescText2" />
+        app:layout_constraintTop_toTopOf="@+id/rMBSIDescText" />
 
     <EditText
-        android:id="@+id/routineDescText2"
+        android:id="@+id/rMBSIDescText"
         android:layout_width="109dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -48,11 +49,11 @@
         tools:text="Description" />
 
     <EditText
-        android:id="@+id/routineValuesLayout"
+        android:id="@+id/rMBSIValue0"
         android:layout_width="64dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/routineDescText2"
-        app:layout_constraintStart_toEndOf="@+id/routineDescText2"
-        app:layout_constraintTop_toTopOf="@+id/routineDescText2" />
+        app:layout_constraintBottom_toBottomOf="@+id/rMBSIDescText"
+        app:layout_constraintStart_toEndOf="@+id/rMBSIDescText"
+        app:layout_constraintTop_toTopOf="@+id/rMBSIDescText" />
 </android.support.constraint.ConstraintLayout>

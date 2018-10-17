@@ -6,27 +6,27 @@ import android.content.Context
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import java.util.concurrent.Executor
 
-class RoutineRepo(mContext: Context) {
+open class RoutineRepo(mContext: Context) {
     private var mDao: RoutineDao = IntervalMeDatabase.getInstance(mContext)!!.routineDao()
     private var mExecutor: Executor = ThreadPerTaskExecutor()
     var executor: Executor
         set(value) {mExecutor = value}
         get() {return mExecutor}
 
-    fun insert(routineToEdit: LiveData<RoutineSetData>?) {
+    open fun insert(routineToEdit: LiveData<RoutineSetData>?) {
         if(routineToEdit != null && routineToEdit.value != null){
             insert(routineToEdit.value!!)
         }
     }
 
-    fun insert(routineToEdit: RoutineSetData){
+    open fun insert(routineToEdit: RoutineSetData){
         mExecutor.execute {
             mDao.insert(RoutineTableData(0, routineToEdit.description))
             mDao.insert(routineToEdit.exercises)
         }
     }
 
-    fun getRoutineSetById(routineId: Long, routineSetData: LiveData<RoutineSetData>? = null) : LiveData<RoutineSetData>{
+    fun getRoutineSetById(routineId: Long, routineSetData: LiveData<RoutineSetData>? = null) : MutableLiveData<RoutineSetData>{
         val data: MutableLiveData<RoutineSetData> = if(routineSetData == null)
             MutableLiveData()
         else

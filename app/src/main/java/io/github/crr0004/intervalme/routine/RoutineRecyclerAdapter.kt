@@ -36,7 +36,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineListActivity) : Adapter<R
 
     class ViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(exerciseData: ExerciseData) {
-            this.view.findViewById<TextView>(R.id.routineDescText).text = exerciseData.description
+            this.view.findViewById<TextView>(R.id.rMBSIDescText).text = exerciseData.description
             val value = view.findViewById<EditText>(R.id.value0)
             view.value0.setText(exerciseData.value0)
             view.value1.setText(exerciseData.value1)

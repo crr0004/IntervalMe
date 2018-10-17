@@ -3,12 +3,16 @@ package io.github.crr0004.intervalme
 import android.support.test.espresso.UiController
 import android.support.test.espresso.ViewAction
 import android.support.test.espresso.matcher.BoundedMatcher
-import android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
+import android.support.test.espresso.matcher.ViewMatchers.*
+import android.util.Log
 import android.view.View
 import android.widget.ExpandableListView
 import io.github.crr0004.intervalme.database.IntervalData
+import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.interval.IntervalListAdapter
+import io.github.crr0004.intervalme.routine.RoutineManageBasicFragment
+import kotlinx.android.synthetic.main.routine_manage_basic_single_item.view.*
+import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
@@ -71,6 +75,38 @@ class CustomViewActionsMatchers{
             }
         }
 
+        fun editRoutineItemViewHolderDescription(exerciseData: ExerciseData) : ViewAction{
+            return object: ViewAction{
+                override fun getDescription(): String {
+                    return "set description to $exerciseData"
+                }
+
+                override fun getConstraints(): Matcher<View> {
+                    return allOf(isDisplayed(), withId(R.id.routineManageBasicSingleItemLayoutId))
+                }
+
+                override fun perform(uiController: UiController?, view: View?) {
+                    Log.d("","")
+                    view!!.rMBSIDescText.setText(exerciseData.description)
+                    view.rMBSIValue0.setText(exerciseData.value0)
+                    view.rMBSIValue1.setText(exerciseData.value1)
+                    view.rMBSIValue2.setText(exerciseData.value2)
+                }
+            }
+        }
+
+        fun matchRoutineItemViewHolderPosition(pos: Int) : Matcher<RoutineManageBasicFragment.RoutineManageBasicItemViewHolder>{
+            return object : BaseMatcher<RoutineManageBasicFragment.RoutineManageBasicItemViewHolder>() {
+                override fun describeTo(description: Description?) {
+
+                }
+
+                override fun matches(item: Any?): Boolean {
+                    return item is RoutineManageBasicFragment.RoutineManageBasicItemViewHolder &&
+                            item.adapterPosition == pos
+                }
+            }
+        }
     }
 
 }
