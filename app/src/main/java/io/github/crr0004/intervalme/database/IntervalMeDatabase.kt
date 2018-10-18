@@ -51,7 +51,8 @@ abstract class IntervalMeDatabase : RoomDatabase() {
                             .addMigrations(
                                     MIGRATION_11_12,
                                     MIGRATION_12_13,
-                                    MIGRATION_13_14)
+                                    MIGRATION_13_14,
+                                    MIGRATION_14_15)
                             .build()
                 }
             }
@@ -87,6 +88,12 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE `IntervalAnalytics` ADD COLUMN groupName TEXT DEFAULT ''")
                 database.execSQL("UPDATE IntervalAnalytics set groupName = (select Interval.label from Interval where Interval.`group`=IntervalAnalytics.`group`)")
+            }
+        }
+        private val MIGRATION_14_15 = object: Migration(14, 15){
+            override fun migrate(_db: SupportSQLiteDatabase) {
+                _db.execSQL("CREATE TABLE IF NOT EXISTS `Routine` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `description` TEXT NOT NULL)")
+                _db.execSQL("CREATE TABLE IF NOT EXISTS `Exercise` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `routineId` INTEGER NOT NULL, `description` TEXT NOT NULL, `lastModified` INTEGER NOT NULL, `value0` TEXT NOT NULL, `value1` TEXT NOT NULL, `value2` TEXT NOT NULL, FOREIGN KEY(`routineId`) REFERENCES `Routine`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )")
             }
         }
     }
