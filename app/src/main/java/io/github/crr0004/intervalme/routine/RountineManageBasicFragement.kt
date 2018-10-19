@@ -39,6 +39,15 @@ class RoutineManageBasicFragment : Fragment(){
         val routineEditId = activity?.intent?.getLongExtra(RoutineManageActivity.routine_edit_id_key, -1) ?: -1
         if(routineEditId > 0){
             mModel.setRoutineToEdit(routineEditId)
+            mModel.mRoutineToEdit.observe(this.activity!!, android.arch.lifecycle.Observer{
+                if(it != null){
+                    view.routineManageBasicDescriptionTxt.setText(it.description)
+                    exercises.clear()
+                    exercises.addAll(it.exercises)
+                    mAdapter.values = exercises
+                    mAdapter.notifyDataSetChanged()
+                }
+            })
         }
         view.routineEditCommitBtn.setOnClickListener {
             mModel.routineToEdit.description = view.routineManageBasicDescriptionTxt.text.toString()
@@ -79,9 +88,11 @@ class RoutineManageBasicFragment : Fragment(){
 
     class RoutineManageBasicItemViewHolder(host: RoutineManageBasicFragment, val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(exerciseData: ExerciseData) {
-            this.view.findViewById<TextView>(R.id.rMBSIDescText).text = exerciseData.description
-            val value= view.findViewById<EditText>(R.id.rMBSIValue0)
-            value.setText(exerciseData.value0)
+            this.view.rMBSIDescText.setText(exerciseData.description)
+            view.rMBSIValue0.setText(exerciseData.value0)
+            view.rMBSIValue1.setText(exerciseData.value1)
+            view.rMBSIValue2.setText(exerciseData.value2)
+
             view.rMBSIValue0.addTextChangedListener(object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
 

@@ -50,17 +50,48 @@ class RoutineRepoTest{
                         value2 = ""))
         val routineSetData = RoutineSetData(routineId = 1, description = "")
         routineSetData.exercises.addAll(exercises)
-        Log.d("Test_RP", "Inserting routineSetData")
         mRepo.insert(routineSetData)
-        Log.d("Test_RP", "Inserted routineSetData")
         val data = TestLiveData<RoutineSetData>()
         mRepo.getRoutineSetById(1, data)
-        Log.d("Test_RP", "Fetched routineSetData")
         Assert.assertNotNull(data.value)
         Assert.assertEquals(1, data.value!!.routineId)
         exercises.forEachIndexed { index, exerciseData ->
             Assert.assertEquals(exerciseData, data.value!!.exercises[index])
         }
+    }
+
+    @Test
+    fun update(){
+        val exercises = arrayListOf(
+                ExerciseData(description = "Squat",
+                        id = 1,
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "1",
+                        value1 = "2",
+                        value2 = "3"),
+                ExerciseData(description = "Dead lift",
+                        lastModified = Date(),
+                        id = 2,
+                        routineId = 1,
+                        value0 = "4",
+                        value1 = "5",
+                        value2 = "6"))
+        val routineSetData = RoutineSetData(routineId = 1, description = "Routine1")
+        routineSetData.exercises.addAll(exercises)
+        mRepo.insert(routineSetData)
+        val data = TestLiveData<RoutineSetData>()
+        mRepo.getRoutineSetById(1, data)
+        Assert.assertNotNull(data.value)
+        data.value!!.description = "Routine2"
+        data.value!!.exercises[0].value0 = "7"
+        mRepo.update(data)
+
+        val data2 = TestLiveData<RoutineSetData>()
+        mRepo.getRoutineSetById(1, data2)
+        Assert.assertEquals(1, data2.value!!.routineId)
+        Assert.assertEquals("Routine2", data2.value!!.description)
+        Assert.assertEquals("7", data2.value!!.exercises[0].value0)
     }
 
     internal inner class SynchronousExecutor : Executor {
@@ -73,7 +104,14 @@ class RoutineRepoTest{
     internal class TestLiveData<T> : MutableLiveData<T>(){
         @Volatile
         private var mData: T? = null
+
+        override fun postValue(value: T) {
+            super.postValue(value)
+            mData = value
+        }
+
         override fun setValue(value: T) {
+            super.setValue(value)
             mData = value
         }
 

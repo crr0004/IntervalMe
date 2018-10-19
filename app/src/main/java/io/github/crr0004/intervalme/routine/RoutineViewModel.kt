@@ -9,6 +9,10 @@ import io.github.crr0004.intervalme.database.routine.RoutineSetData
 
 class RoutineViewModel(application: Application) : AndroidViewModel(application) {
 
+    companion object {
+        var repoOverride: RoutineRepo? = null
+    }
+
     private var mRepo = RoutineRepo(application)
     var mRoutineToEdit: MutableLiveData<RoutineSetData> = MutableLiveData()
     private var mInEditMode: Boolean = false
@@ -22,6 +26,11 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
             return mRoutineToEdit.value!!
         }
 
+    init {
+        if(repoOverride != null)
+            mRepo = repoOverride!!
+    }
+
     fun setRoutineToEdit(routineEditId: Long) {
         mRoutineToEdit = mRepo.getRoutineSetById(routineEditId)
         mInEditMode = true
@@ -30,6 +39,7 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     fun commit() {
         if(mInEditMode){
             // We commit an existing routine
+            mRepo.update(mRoutineToEdit)
         }else{
             mRepo.insert(mRoutineToEdit)
         }

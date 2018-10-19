@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true">
 
     <EditText
         android:id="@+id/routineManageBasicDescriptionTxt"
@@ -11,21 +12,24 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:hint="Routine Name"
         android:textAppearance="@style/LargeInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Description" />
+        tools:text="Routine Name" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/routineManageBasicRecycler"
         android:layout_width="0dp"
-        android:layout_height="216dp"
+        android:layout_height="400dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:nestedScrollingEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/routineManageBasicDescriptionTxt" />
+        app:layout_constraintTop_toBottomOf="@+id/routineManageBasicDescriptionTxt"
+        tools:listitem="Test" />
 
     <Button
         android:id="@+id/routineEditCommitBtn"
