@@ -2,8 +2,8 @@ package io.github.crr0004.intervalme.routine
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineRepo
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 
@@ -15,6 +15,7 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
 
     private var mRepo = RoutineRepo(application)
     var mRoutineToEdit: MutableLiveData<RoutineSetData> = MutableLiveData()
+    private val mExercisesToBeDeleted: ArrayList<ExerciseData> = ArrayList(1)
     private var mInEditMode: Boolean = false
     val routineToEdit: RoutineSetData
         get() {
@@ -39,6 +40,9 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     fun commit() {
         if(mInEditMode){
             // We commit an existing routine
+            mExercisesToBeDeleted.forEach {
+                mRepo.deleteExercise(it.id)
+            }
             mRepo.update(mRoutineToEdit)
         }else{
             mRepo.insert(mRoutineToEdit)
@@ -49,5 +53,8 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         mRepo = repo
     }
 
-
+    fun deleteExerciseAt(pos: Int) {
+        mExercisesToBeDeleted.add(mRoutineToEdit.value!!.exercises[pos])
+        mRoutineToEdit.value!!.exercises.removeAt(pos)
+    }
 }

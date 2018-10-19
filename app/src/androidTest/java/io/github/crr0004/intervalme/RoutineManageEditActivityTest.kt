@@ -3,13 +3,12 @@ package io.github.crr0004.intervalme
 import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.action.ViewActions.replaceText
+import android.support.test.espresso.assertion.ViewAssertions.doesNotExist
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.verify
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
@@ -136,12 +135,53 @@ class RoutineManageEditActivityTest : ActivityTestRule<RoutineManageActivity>(Ro
         verify(mMockRepo).update(liveData)
     }
 
+    @Test
+    fun deleteExercise(){
+        val intent = Intent()
+        intent.putExtra(RoutineManageActivity.routine_edit_id_key, 1L)
+
+        val routine = RoutineSetData(1, "Routine1", arrayListOf(
+                ExerciseData(description = "Squat",
+                        id=1,
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "4",
+                        value1 = "5",
+                        value2 = "50kg"),
+                ExerciseData(description = "Dead lift",
+                        id=2,
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "1",
+                        value1 = "6",
+                        value2 = "100kg")
+        ))
+        val liveData = MutableLiveData<RoutineSetData>()
+        liveData.postValue(routine)
+        `when`(mMockRepo.getRoutineSetById(eq(routine.routineId), eq(null))).thenReturn(liveData)
+
+        this.launchActivity(intent)
+
+        onView(allOf(withId(R.id.rMBSICheckBox), hasSibling(withText("Squat")))).perform(click())
+        onView(withId(R.id.routineEditDeleteExerciseBtn)).check(matches(isDisplayed())).perform(click())
+        onView(withId(R.id.routineEditCommitBtn)).check(matches(isDisplayed())).perform(click())
+        verify(mMockRepo).deleteExercise(1L)
+        verify(mMockRepo).update(liveData)
+        onView(withText("Squat")).check(doesNotExist())
+    }
+
     internal class TestLiveData<T> : MutableLiveData<T>(){
         @Volatile
         private var mData: T? = null
-        override fun setValue(value: T) {
-            mData = value
 
+        override fun postValue(value: T) {
+            super.postValue(value)
+            mData = value
+        }
+
+        override fun setValue(value: T) {
+            super.setValue(value)
+            mData = value
         }
 
         override fun getValue(): T? {

@@ -44,15 +44,21 @@ open class RoutineRepo(mContext: Context) {
         return data
     }
 
-    fun update(routineToEdit: LiveData<RoutineSetData>){
+    open fun update(routineToEdit: LiveData<RoutineSetData>){
         if(routineToEdit.value != null)
             update(routineToEdit.value!!)
     }
 
-    fun update(routineToEdit: RoutineSetData) {
+    open fun update(routineToEdit: RoutineSetData) {
         mExecutor.execute {
             mDao.update(RoutineTableData(routineToEdit))
             mDao.update(routineToEdit.exercises)
+        }
+    }
+
+    open fun deleteExercise(id: Long) {
+        mExecutor.execute {
+            mDao.deleteExercise(id)
         }
     }
 

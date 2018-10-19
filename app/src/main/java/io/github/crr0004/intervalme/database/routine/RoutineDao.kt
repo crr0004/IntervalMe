@@ -31,5 +31,8 @@ interface RoutineDao{
     @Update
     fun update(routineTableData: ArrayList<ExerciseData>)
 
+    @Query("delete from Exercise where id = :id")
+    fun deleteExercise(id: Long)
+
 
 }

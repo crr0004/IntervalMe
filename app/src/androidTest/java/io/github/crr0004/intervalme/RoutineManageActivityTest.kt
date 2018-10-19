@@ -2,9 +2,7 @@ package io.github.crr0004.intervalme
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModelProviders
-import android.support.test.espresso.Espresso
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.TypeTextAction
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.action.ViewActions.replaceText
 import android.support.test.espresso.assertion.ViewAssertions.matches
@@ -13,22 +11,16 @@ import android.support.test.espresso.matcher.ViewMatchers
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
 import android.util.Log
-import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.isA
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.editRoutineItemViewHolderDescription
-import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.matchRoutineItemViewHolderPosition
-import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineRepo
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
-import io.github.crr0004.intervalme.interval.IntervalListActivity
 import io.github.crr0004.intervalme.routine.RoutineManageActivity
 import io.github.crr0004.intervalme.routine.RoutineManageBasicFragment
 import io.github.crr0004.intervalme.routine.RoutineViewModel
-import org.hamcrest.Matchers
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.Mock

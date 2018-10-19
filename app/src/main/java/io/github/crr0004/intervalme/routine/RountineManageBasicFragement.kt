@@ -7,11 +7,10 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import kotlinx.android.synthetic.main.fragment_routine_manage_basic.view.*
@@ -24,6 +23,8 @@ class RoutineManageBasicFragment : Fragment(){
     private lateinit var mAdapter: RoutineManageBasicItemsAdapter
     private val exercises = ArrayList<ExerciseData>(1)
 
+    private val mSelectedItems = SparseBooleanArray()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_routine_manage_basic, container, false)
@@ -33,6 +34,7 @@ class RoutineManageBasicFragment : Fragment(){
                 layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
                 mAdapter = RoutineManageBasicItemsAdapter(this@RoutineManageBasicFragment)
                 mAdapter.values = exercises
+                
                 adapter = mAdapter
             }
         }
@@ -54,6 +56,16 @@ class RoutineManageBasicFragment : Fragment(){
             mModel.routineToEdit.exercises.addAll(exercises)
             mModel.commit()
         }
+        view.routineEditDeleteExerciseBtn.setOnClickListener {
+            for(i in 0 until mSelectedItems.size()){
+                val pos = mSelectedItems.keyAt(i)
+                exercises.removeAt(pos)
+                mAdapter.notifyDataSetChanged()
+
+                mModel.deleteExerciseAt(pos)
+            }
+
+        }
 
         view.routineEditAddExerciseBtn.setOnClickListener {
             exercises.add(ExerciseData())
@@ -61,6 +73,13 @@ class RoutineManageBasicFragment : Fragment(){
         }
 
         return view
+    }
+
+    private fun itemSelected(adapterPosition: Int, checked: Boolean) {
+        if(checked)
+            mSelectedItems.put(adapterPosition, checked)
+        else
+            mSelectedItems.delete(adapterPosition)
     }
 
     class RoutineManageBasicItemsAdapter(private val mHost: RoutineManageBasicFragment) : RecyclerView.Adapter<RoutineManageBasicItemViewHolder>() {
@@ -86,12 +105,15 @@ class RoutineManageBasicFragment : Fragment(){
 
     }
 
-    class RoutineManageBasicItemViewHolder(host: RoutineManageBasicFragment, val view: View) : RecyclerView.ViewHolder(view) {
+    class RoutineManageBasicItemViewHolder(val host: RoutineManageBasicFragment, val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(exerciseData: ExerciseData) {
             this.view.rMBSIDescText.setText(exerciseData.description)
             view.rMBSIValue0.setText(exerciseData.value0)
             view.rMBSIValue1.setText(exerciseData.value1)
             view.rMBSIValue2.setText(exerciseData.value2)
+            view.rMBSICheckBox.setOnCheckedChangeListener { buttonView, isChecked -> 
+                host.itemSelected(adapterPosition, isChecked)
+            }
 
             view.rMBSIValue0.addTextChangedListener(object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
@@ -150,4 +172,6 @@ class RoutineManageBasicFragment : Fragment(){
             //view.findViewById<LinearLayout>(R.id.routineValuesLayout)
         }
     }
+
+    
 }
