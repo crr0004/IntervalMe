@@ -21,12 +21,15 @@ open class RoutineRepo(mContext: Context) {
 
     open fun insert(routineToEdit: RoutineSetData){
         mExecutor.execute {
-            mDao.insert(RoutineTableData(0, routineToEdit.description))
+            val id = mDao.insert(RoutineTableData(0, routineToEdit.description))
+            routineToEdit.exercises.forEach {
+                it.routineId = id
+            }
             mDao.insert(routineToEdit.exercises)
         }
     }
 
-    fun getRoutineSetById(routineId: Long, routineSetData: LiveData<RoutineSetData>? = null) : MutableLiveData<RoutineSetData>{
+    open fun getRoutineSetById(routineId: Long, routineSetData: LiveData<RoutineSetData>? = null) : MutableLiveData<RoutineSetData>{
         val data: MutableLiveData<RoutineSetData> = if(routineSetData == null)
             MutableLiveData()
         else
@@ -39,6 +42,18 @@ open class RoutineRepo(mContext: Context) {
             data.postValue(setData)
         }
         return data
+    }
+
+    fun update(routineToEdit: LiveData<RoutineSetData>){
+        if(routineToEdit.value != null)
+            update(routineToEdit.value!!)
+    }
+
+    fun update(routineToEdit: RoutineSetData) {
+        mExecutor.execute {
+            mDao.update(RoutineTableData(routineToEdit))
+            mDao.update(routineToEdit.exercises)
+        }
     }
 
     internal inner class ThreadPerTaskExecutor : Executor {

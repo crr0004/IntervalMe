@@ -3,6 +3,7 @@ package io.github.crr0004.intervalme.database.routine
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
+import android.arch.persistence.room.Update
 
 @Dao
 interface RoutineDao{
@@ -23,6 +24,12 @@ interface RoutineDao{
 
     @Query("select * from Exercise where routineId = :routineId")
     fun getSyncExercisesWithRoutineId(routineId: Long) : Array<ExerciseData>
+
+    @Update
+    fun update(routineTableData: RoutineTableData)
+
+    @Update
+    fun update(routineTableData: ArrayList<ExerciseData>)
 
 
 }
