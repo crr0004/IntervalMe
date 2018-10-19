@@ -7,4 +7,9 @@ import android.arch.persistence.room.PrimaryKey
  */
 @Entity(tableName = "Routine")
 data class RoutineTableData (@PrimaryKey(autoGenerate = true) var id: Long = 0,
-                             var description: String = "")
+                             var description: String = "") {
+    constructor(routine: RoutineSetData) : this(){
+        this.id = routine.routineId
+        this.description = routine.description
+    }
+}
