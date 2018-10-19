@@ -15,8 +15,8 @@ import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
-import com.nhaarman.mockito_kotlin.doAnswer
-import com.nhaarman.mockito_kotlin.isA
+import com.nhaarman.mockitokotlin2.doAnswer
+import com.nhaarman.mockitokotlin2.isA
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.editRoutineItemViewHolderDescription
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.matchRoutineItemViewHolderPosition
 import io.github.crr0004.intervalme.database.IntervalData
