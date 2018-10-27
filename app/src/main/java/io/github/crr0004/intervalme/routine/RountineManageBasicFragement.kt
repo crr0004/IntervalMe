@@ -34,7 +34,7 @@ class RoutineManageBasicFragment : Fragment(){
                 layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
                 mAdapter = RoutineManageBasicItemsAdapter(this@RoutineManageBasicFragment)
                 mAdapter.values = exercises
-                
+
                 adapter = mAdapter
             }
         }
@@ -53,22 +53,26 @@ class RoutineManageBasicFragment : Fragment(){
         }
         view.routineEditCommitBtn.setOnClickListener {
             mModel.routineToEdit.description = view.routineManageBasicDescriptionTxt.text.toString()
-            mModel.routineToEdit.exercises.addAll(exercises)
+            //mModel.routineToEdit.exercises.addAll(exercises)
             mModel.commit()
+            activity!!.finish()
         }
         view.routineEditDeleteExerciseBtn.setOnClickListener {
-            for(i in 0 until mSelectedItems.size()){
+            for(i in mSelectedItems.size()-1 downTo 0){
                 val pos = mSelectedItems.keyAt(i)
                 exercises.removeAt(pos)
                 mAdapter.notifyDataSetChanged()
 
                 mModel.deleteExerciseAt(pos)
             }
+            mSelectedItems.clear()
 
         }
 
         view.routineEditAddExerciseBtn.setOnClickListener {
-            exercises.add(ExerciseData())
+            val e = ExerciseData()
+            exercises.add(e)
+            mModel.routineToEdit.exercises.add(e)
             mAdapter.notifyDataSetChanged()
         }
 
@@ -114,6 +118,7 @@ class RoutineManageBasicFragment : Fragment(){
             view.rMBSICheckBox.setOnCheckedChangeListener { buttonView, isChecked -> 
                 host.itemSelected(adapterPosition, isChecked)
             }
+            view.rMBSICheckBox.isChecked = false
 
             view.rMBSIValue0.addTextChangedListener(object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {

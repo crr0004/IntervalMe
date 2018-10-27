@@ -57,6 +57,49 @@ class RoutineDaoTest {
     }
 
     @Test
+    fun getAllRoutineAndExerciseCountTest(){
+        val exercises = arrayListOf(
+                ExerciseData(description = "Squat",
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "",
+                        value1 = "",
+                        value2 = ""),
+                ExerciseData(description = "Dead lift",
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "",
+                        value1 = "",
+                        value2 = ""),
+                ExerciseData(description = "Dead lift",
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "",
+                        value1 = "",
+                        value2 = ""),
+                ExerciseData(description = "Dead lift",
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "",
+                        value1 = "",
+                        value2 = ""),
+                ExerciseData(description = "Dead lift",
+                        lastModified = Date(),
+                        routineId = 1,
+                        value0 = "",
+                        value1 = "",
+                        value2 = ""))
+        val routineSetData = RoutineSetData(routineId = 1, description = "")
+        routineSetData.exercises.addAll(exercises)
+        mDao.insert(RoutineTableData(0, routineSetData.description))
+        mDao.insert(RoutineTableData(0, routineSetData.description))
+        mDao.insert(RoutineTableData(0, routineSetData.description))
+        mDao.insert(routineSetData.exercises)
+        val count = mDao.getSyncAllRoutineAndExerciseCount()
+        Assert.assertEquals(8, count)
+    }
+
+    @Test
     fun getRoutineSetData(){
         val exercises = arrayListOf(
                 ExerciseData(description = "Squat",

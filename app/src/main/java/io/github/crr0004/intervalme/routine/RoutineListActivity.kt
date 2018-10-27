@@ -1,6 +1,8 @@
 package io.github.crr0004.intervalme.routine
 
 import android.app.ActivityOptions
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -10,15 +12,17 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import io.github.crr0004.intervalme.analytics.AnalyticsActivity
-import io.github.crr0004.intervalme.interval.IntervalListActivity
 import io.github.crr0004.intervalme.R
+import io.github.crr0004.intervalme.analytics.AnalyticsActivity
+import io.github.crr0004.intervalme.database.routine.RoutineSetData
+import io.github.crr0004.intervalme.interval.IntervalListActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
 
 class RoutineListActivity : AppCompatActivity() {
 
     private var mRoutineAdapter: RoutineRecyclerAdapter = RoutineRecyclerAdapter(this)
     private val mLayoutManager: RecyclerView.LayoutManager? = LinearLayoutManager(this)
+    private lateinit var mModel: RoutineViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +36,19 @@ class RoutineListActivity : AppCompatActivity() {
             adapter = mRoutineAdapter
             layoutManager = mLayoutManager
         }
+        mModel = ViewModelProviders.of(this).get(RoutineViewModel::class.java)
+        mModel.setOnRoutineAddedListener { routine: RoutineSetData ->
+
+        }
+        mModel.getAllRoutines().observe(this, Observer{
+            if(it != null)
+                mRoutineAdapter.values = it
+        })
+        mModel.getAllRoutineAndExerciseCount().observe(this, Observer {
+            if(it != null)
+                mRoutineAdapter.totalCount = it
+        })
+
 
         setupNavigation()
     }

@@ -16,4 +16,5 @@ data class ExerciseData(@PrimaryKey(autoGenerate = true) var id: Long = 0,
                         var lastModified: Date = Date(),
                         var value0: String = "",
                         var value1: String = "",
-                        var value2: String = "")
+                        var value2: String = "",
+                        var isDone: Boolean = false)

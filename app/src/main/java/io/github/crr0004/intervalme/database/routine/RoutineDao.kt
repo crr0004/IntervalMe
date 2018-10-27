@@ -1,5 +1,6 @@
 package io.github.crr0004.intervalme.database.routine
 
+import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
@@ -33,6 +34,12 @@ interface RoutineDao{
 
     @Query("delete from Exercise where id = :id")
     fun deleteExercise(id: Long)
+
+    @Query("select COUNT(id) from (select id from Routine UNION ALL select id from Exercise)")
+    fun getAllRoutineAndExerciseCount(): LiveData<Int>
+
+    @Query("select COUNT(id) from (select id from Routine UNION ALL select id from Exercise)")
+    fun getSyncAllRoutineAndExerciseCount() : Int
 
 
 }
