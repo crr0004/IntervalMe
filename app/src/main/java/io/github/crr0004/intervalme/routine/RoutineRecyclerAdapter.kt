@@ -12,7 +12,11 @@ import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import kotlinx.android.synthetic.main.routine_manage_basic_single_item.view.*
 import kotlinx.android.synthetic.main.routine_single.view.*
 
-class RoutineRecyclerAdapter(private val mHost: RoutineListActivity) : Adapter<RoutineRecyclerAdapter.RoutineSetViewHolder>() {
+class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) : Adapter<RoutineRecyclerAdapter.RoutineSetViewHolder>() {
+
+    interface RoutineRecyclerAdapterActionsI{
+        fun deleteRoutine(routineData: RoutineSetData)
+    }
 
     var values: ArrayList<RoutineSetData>? = null
     set(value) {
@@ -31,11 +35,14 @@ class RoutineRecyclerAdapter(private val mHost: RoutineListActivity) : Adapter<R
 
         val viewHolder: RoutineSetViewHolder
         viewHolder = if(getItemViewType(pos) == 0){
-            val view = LayoutInflater.from(mHost).inflate(R.layout.routine_single, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single, parent, false)
 
-            RoutineSetViewHolder(view)
+            RoutineSetViewHolder(view, mHost)
         }else{
-            ExerciseViewHolder(LayoutInflater.from(mHost).inflate(R.layout.routine_manage_basic_single_item, parent, false))
+            ExerciseViewHolder(
+                    LayoutInflater.from(parent.context).inflate(R.layout.routine_manage_basic_single_item, parent, false),
+                    mHost
+            )
         }
 
 
@@ -71,13 +78,16 @@ class RoutineRecyclerAdapter(private val mHost: RoutineListActivity) : Adapter<R
 
     data class RoutinePositionMap(val pos: Int, val routineData: RoutineSetData)
 
-    open class RoutineSetViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    open class RoutineSetViewHolder(private val view: View, private val mHost: RoutineRecyclerAdapterActionsI) : RecyclerView.ViewHolder(view) {
         open fun bind(routineData: RoutineSetData, index: Int) {
             this.view.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
             this.view.routineListGroupEditBtn.setOnClickListener {
                 val intent = Intent(view.context, RoutineManageActivity::class.java)
                 intent.putExtra(RoutineManageActivity.routine_edit_id_key, routineData.routineId)
                 view.context.startActivity(intent)
+            }
+            this.view.routineListGroupDeleteBtn.setOnClickListener {
+                mHost.deleteRoutine(routineData)
             }
 
 
@@ -86,7 +96,8 @@ class RoutineRecyclerAdapter(private val mHost: RoutineListActivity) : Adapter<R
 
     }
 
-    class ExerciseViewHolder(private val view: View) : RoutineSetViewHolder(view){
+    class ExerciseViewHolder(private val view: View, mHost: RoutineRecyclerAdapterActionsI) :
+            RoutineSetViewHolder(view, mHost){
         override fun bind(routineData: RoutineSetData, index: Int) {
             val exerciseData = routineData.exercises[index-1]
             this.view.findViewById<TextView>(R.id.rMBSIDescText).text = exerciseData.description

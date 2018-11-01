@@ -18,7 +18,7 @@ import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.interval.IntervalListActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
 
-class RoutineListActivity : AppCompatActivity() {
+class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineRecyclerAdapterActionsI {
 
     private var mRoutineAdapter: RoutineRecyclerAdapter = RoutineRecyclerAdapter(this)
     private val mLayoutManager: RecyclerView.LayoutManager? = LinearLayoutManager(this)
@@ -41,8 +41,7 @@ class RoutineListActivity : AppCompatActivity() {
 
         }
         mModel.getAllRoutines().observe(this, Observer{
-            if(it != null)
-                mRoutineAdapter.values = it
+            mRoutineAdapter.values = it
         })
         mModel.getAllRoutineAndExerciseCount().observe(this, Observer {
             if(it != null)
@@ -51,6 +50,10 @@ class RoutineListActivity : AppCompatActivity() {
 
 
         setupNavigation()
+    }
+
+    override fun deleteRoutine(routineData: RoutineSetData) {
+        mModel.deleteRoutine(routineData)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

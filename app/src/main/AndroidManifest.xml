@@ -33,7 +33,9 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity android:name=".analytics.AnalyticsActivity" />
-        <activity android:name=".routine.RoutineListActivity" />
+        <activity
+            android:name=".routine.RoutineListActivity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".routine.RoutineManageActivity"
             android:label="@string/title_activity_routine_manage"

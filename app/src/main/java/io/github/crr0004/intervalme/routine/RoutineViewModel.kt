@@ -75,4 +75,8 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     fun setOnRoutineAddedListener(arg : ((RoutineSetData) -> Unit)) {
         mRoutineAddedListener = arg
     }
+
+    fun deleteRoutine(routineData: RoutineSetData) {
+        mRepo.deleteRoutineById(routineData.routineId)
+    }
 }

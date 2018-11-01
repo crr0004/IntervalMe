@@ -76,14 +76,17 @@ class RoutineManageActivity : AppCompatActivity() {
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+    inner class SectionsPagerAdapter(val fm: FragmentManager) : FragmentPagerAdapter(fm) {
+        private var mBasicFrag: RoutineManageBasicFragment? = null
 
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             return when(position){
                 0 -> {
-                    RoutineManageBasicFragment()
+                    if(mBasicFrag == null)
+                        mBasicFrag = RoutineManageBasicFragment()
+                    mBasicFrag!!
                 }
                 else -> {
                     throw RuntimeException("Trying to create a fragment for an invalid position")

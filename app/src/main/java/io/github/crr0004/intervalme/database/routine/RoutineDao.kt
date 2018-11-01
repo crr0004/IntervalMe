@@ -41,5 +41,11 @@ interface RoutineDao{
     @Query("select COUNT(id) from (select id from Routine UNION ALL select id from Exercise)")
     fun getSyncAllRoutineAndExerciseCount() : Int
 
+    @Query("delete from Routine where id = :id")
+    fun deleteRoutine(id: Long)
+
+    @Query("delete from Exercise where routineId = :routineId")
+    fun deleteExercisesInRoutine(routineId: Long)
+
 
 }

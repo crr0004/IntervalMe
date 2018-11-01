@@ -9,7 +9,7 @@ import java.util.*
  * Represents a single exercise that belongs to a routine
  */
 @Entity(tableName = "Exercise",
-        foreignKeys = [(ForeignKey(entity = RoutineTableData::class, parentColumns = arrayOf("id"), childColumns = arrayOf("routineId")))])
+        foreignKeys = [(ForeignKey(entity = RoutineTableData::class, onDelete = ForeignKey.CASCADE ,parentColumns = arrayOf("id"), childColumns = arrayOf("routineId")))])
 data class ExerciseData(@PrimaryKey(autoGenerate = true) var id: Long = 0,
                         var routineId: Long = 0,
                         var description: String = "",

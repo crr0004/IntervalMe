@@ -69,12 +69,12 @@ open class RoutineRepo(mContext: Context) {
         }
     }
 
-    fun getAllRoutineAndExerciseCount(): LiveData<Int> {
+    open fun getAllRoutineAndExerciseCount(): LiveData<Int> {
         return mDao.getAllRoutineAndExerciseCount()
     }
 
     @SuppressLint("RestrictedApi")
-    fun  getAllRoutines(): LiveData<ArrayList<RoutineSetData>> {
+    open fun  getAllRoutines(): LiveData<ArrayList<RoutineSetData>> {
         val routineSql = "select * from Routine"
         val routineStatement = RoomSQLiteQuery.acquire(routineSql, 0)
 
@@ -153,6 +153,12 @@ open class RoutineRepo(mContext: Context) {
         }
         exerciseStatement.release()
         return results
+    }
+
+    open fun deleteRoutineById(routineId: Long) {
+        mExecutor.execute{
+            mDao.deleteRoutine(routineId)
+        }
     }
 
     internal inner class ThreadPerTaskExecutor : Executor {
