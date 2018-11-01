@@ -50,6 +50,7 @@ class RoutineManageBasicFragment : Fragment(){
                     mAdapter.notifyDataSetChanged()
                 }
             })
+            view.routineEditCommitBtn.setText(R.string.update)
         }
         view.routineEditCommitBtn.setOnClickListener {
             mModel.routineToEdit.description = view.routineManageBasicDescriptionTxt.text.toString()

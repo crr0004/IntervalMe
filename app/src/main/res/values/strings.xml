@@ -50,4 +50,8 @@
     <string name="title_activity_routine_manage">RoutineManageActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="exercises">Exercises</string>
+    <string name="routine_name">Routine Name</string>
+    <string name="add_routine">Add</string>
+    <string name="add_item">+ Item</string>
+    <string name="delete_selected">Delete Selected</string>
 </resources>

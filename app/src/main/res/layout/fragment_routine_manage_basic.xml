@@ -12,11 +12,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:hint="Routine Name"
+        android:hint="@string/routine_name"
         android:textAppearance="@style/LargeInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Routine Name" />
+        tools:text="Routine Name"
+        android:importantForAutofill="no"
+        tools:ignore="UnusedAttribute"
+        android:inputType="text" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/routineManageBasicRecycler"
@@ -29,7 +32,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routineManageBasicDescriptionTxt"
-        tools:listitem="@android:layout/list_content" />
+        tools:listitem="@android:layout/list_content"
+        tools:ignore="UnusedAttribute" />
 
     <Button
         android:id="@+id/routineEditCommitBtn"
@@ -37,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Done"
+        android:text="@string/add_routine"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routineManageBasicRecycler" />
@@ -48,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Add Item"
+        android:text="@string/add_item"
         app:layout_constraintEnd_toStartOf="@+id/routineEditDeleteExerciseBtn"
         app:layout_constraintTop_toBottomOf="@+id/routineManageBasicRecycler" />
 
@@ -58,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Delete Selected"
+        android:text="@string/delete_selected"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routineManageBasicRecycler" />
 </android.support.constraint.ConstraintLayout>
