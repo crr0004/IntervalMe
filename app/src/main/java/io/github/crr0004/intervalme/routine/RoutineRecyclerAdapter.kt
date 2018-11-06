@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
-import kotlinx.android.synthetic.main.routine_manage_basic_single_item.view.*
+import kotlinx.android.synthetic.main.routine_list_single_exercise.view.*
 import kotlinx.android.synthetic.main.routine_single.view.*
 
 class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) : Adapter<RoutineRecyclerAdapter.RoutineSetViewHolder>() {
@@ -40,7 +40,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
             RoutineSetViewHolder(view, mHost)
         }else{
             ExerciseViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.routine_manage_basic_single_item, parent, false),
+                    LayoutInflater.from(parent.context).inflate(R.layout.routine_list_single_exercise, parent, false),
                     mHost
             )
         }
@@ -100,10 +100,10 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
             RoutineSetViewHolder(view, mHost){
         override fun bind(routineData: RoutineSetData, index: Int) {
             val exerciseData = routineData.exercises[index-1]
-            this.view.findViewById<TextView>(R.id.rMBSIDescText).text = exerciseData.description
-            view.rMBSIValue0.setText(exerciseData.value0)
-            view.rMBSIValue1.setText(exerciseData.value1)
-            view.rMBSIValue2.setText(exerciseData.value2)
+            this.view.rLSEIDescText.text = exerciseData.description
+            view.rLSEIValue0.text = exerciseData.value0
+            view.rLSEIValue1.text = exerciseData.value1
+            view.rLSEIValue2.text = exerciseData.value2
 
 
             //view.findViewById<LinearLayout>(R.id.routineValuesLayout)
