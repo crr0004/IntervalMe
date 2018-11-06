@@ -52,7 +52,8 @@ abstract class IntervalMeDatabase : RoomDatabase() {
                                     MIGRATION_11_12,
                                     MIGRATION_12_13,
                                     MIGRATION_13_14,
-                                    MIGRATION_14_17)
+                                    MIGRATION_14_17,
+                                    MIGRATION_15_17)
                             .build()
                 }
             }
@@ -94,6 +95,14 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             override fun migrate(_db: SupportSQLiteDatabase) {
                 _db.execSQL("CREATE TABLE IF NOT EXISTS `Routine` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `description` TEXT NOT NULL)")
                 _db.execSQL("CREATE TABLE IF NOT EXISTS `Exercise` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `routineId` INTEGER NOT NULL, `description` TEXT NOT NULL, `lastModified` INTEGER NOT NULL, `value0` TEXT NOT NULL, `value1` TEXT NOT NULL, `value2` TEXT NOT NULL, `isDone` INTEGER NOT NULL, FOREIGN KEY(`routineId`) REFERENCES `Routine`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+            }
+        }
+        private val MIGRATION_15_17 = object : Migration(15, 17){
+            override fun migrate(_db: SupportSQLiteDatabase) {
+                _db.execSQL("CREATE TABLE IF NOT EXISTS `Routine` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `description` TEXT NOT NULL)")
+                _db.execSQL("DROP TABLE `Exercise`")
+                _db.execSQL("CREATE TABLE IF NOT EXISTS `Exercise` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `routineId` INTEGER NOT NULL, `description` TEXT NOT NULL, `lastModified` INTEGER NOT NULL, `value0` TEXT NOT NULL, `value1` TEXT NOT NULL, `value2` TEXT NOT NULL, `isDone` INTEGER NOT NULL, FOREIGN KEY(`routineId`) REFERENCES `Routine`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+
             }
         }
     }
