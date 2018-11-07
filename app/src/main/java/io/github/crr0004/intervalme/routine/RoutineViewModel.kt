@@ -25,7 +25,7 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         get() {
             if(mRoutineToEdit.value == null){
                 mInEditMode = false
-                mRoutineToEdit.value = RoutineSetData(0, "")
+                mRoutineToEdit.value = RoutineSetData(0, "", isTemplate = false)
 
             }
             return mRoutineToEdit.value!!

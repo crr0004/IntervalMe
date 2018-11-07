@@ -12,5 +12,6 @@ data class RoutineTableData (@PrimaryKey(autoGenerate = true) var id: Long = 0,
     constructor(routine: RoutineSetData) : this(){
         this.id = routine.routineId
         this.description = routine.description
+        this.isTemplate = routine.isTemplate
     }
 }

@@ -42,6 +42,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/add_routine"
+        android:textAppearance="@style/SmallInput"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routineManageBasicRecycler" />
@@ -53,6 +54,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="@string/add_item"
+        android:textAppearance="@style/SmallInput"
         app:layout_constraintEnd_toStartOf="@+id/routineEditDeleteExerciseBtn"
         app:layout_constraintTop_toBottomOf="@+id/routineManageBasicRecycler" />
 
@@ -63,6 +65,18 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="@string/delete_selected"
+        android:textAppearance="@style/SmallInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routineManageBasicRecycler" />
+
+    <CheckBox
+        android:id="@+id/routineManageTemplateChxBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Template"
+        android:textAppearance="@style/SmallInput"
+        app:layout_constraintBottom_toBottomOf="@+id/routineManageBasicDescriptionTxt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/routineManageBasicDescriptionTxt" />
 </android.support.constraint.ConstraintLayout>

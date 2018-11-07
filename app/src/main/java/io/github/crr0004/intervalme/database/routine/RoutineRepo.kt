@@ -44,7 +44,7 @@ open class RoutineRepo(mContext: Context) {
         mExecutor.execute {
             val routine = mDao.getSyncRoutineTableById(routineId)
             val exerciseData = mDao.getSyncExercisesWithRoutineId(routineId)
-            val setData = RoutineSetData(routineId, routine.description)
+            val setData = RoutineSetData(routineId, routine.description, isTemplate = routine.isTemplate)
             setData.exercises.addAll(exerciseData)
             data.postValue(setData)
         }
@@ -104,12 +104,14 @@ open class RoutineRepo(mContext: Context) {
                 cursorOuter.use { cursor ->
                     val _cursorIndexOfId = cursor.getColumnIndexOrThrow("id")
                     val _cursorIndexOfDesc = cursor.getColumnIndexOrThrow("description")
+                    val _cursorIndexOfIsTemplate = cursor.getColumnIndexOrThrow("isTemplate")
                     val result = ArrayList<RoutineSetData>(cursor.count)
                     var index = 0
                     while (cursor.moveToNext()) {
                         val item = RoutineSetData(
                                 cursor.getLong(_cursorIndexOfId),
-                                cursor.getString(_cursorIndexOfDesc))
+                                cursor.getString(_cursorIndexOfDesc),
+                                isTemplate = cursor.getInt(_cursorIndexOfIsTemplate) > 0)
                         item.exercises = getExerciseFromId(item.routineId)
                         result.add(item)
                         index++

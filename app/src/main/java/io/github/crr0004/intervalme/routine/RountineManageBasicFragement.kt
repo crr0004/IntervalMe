@@ -44,6 +44,7 @@ class RoutineManageBasicFragment : Fragment(){
             mModel.mRoutineToEdit.observe(this.activity!!, android.arch.lifecycle.Observer{
                 if(it != null){
                     view.routineManageBasicDescriptionTxt.setText(it.description)
+                    view.routineManageTemplateChxBox.isChecked = it.isTemplate
                     exercises.clear()
                     exercises.addAll(it.exercises)
                     mAdapter.values = exercises
@@ -68,6 +69,9 @@ class RoutineManageBasicFragment : Fragment(){
             }
             mSelectedItems.clear()
 
+        }
+        view.routineManageTemplateChxBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            mModel.routineToEdit.isTemplate = isChecked
         }
 
         view.routineEditAddExerciseBtn.setOnClickListener {
