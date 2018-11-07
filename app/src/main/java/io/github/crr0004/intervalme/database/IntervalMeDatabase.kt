@@ -21,7 +21,7 @@ import io.github.crr0004.intervalme.database.routine.RoutineTableData
     IntervalRunProperties::class,
     IntervalAnalyticsData::class,
     RoutineTableData::class,
-    ExerciseData::class], version = 17)
+    ExerciseData::class], version = 18)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
@@ -53,7 +53,8 @@ abstract class IntervalMeDatabase : RoomDatabase() {
                                     MIGRATION_12_13,
                                     MIGRATION_13_14,
                                     MIGRATION_14_17,
-                                    MIGRATION_15_17)
+                                    MIGRATION_15_17,
+                                    MIGRATION_17_18)
                             .build()
                 }
             }
@@ -103,6 +104,11 @@ abstract class IntervalMeDatabase : RoomDatabase() {
                 _db.execSQL("DROP TABLE `Exercise`")
                 _db.execSQL("CREATE TABLE IF NOT EXISTS `Exercise` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `routineId` INTEGER NOT NULL, `description` TEXT NOT NULL, `lastModified` INTEGER NOT NULL, `value0` TEXT NOT NULL, `value1` TEXT NOT NULL, `value2` TEXT NOT NULL, `isDone` INTEGER NOT NULL, FOREIGN KEY(`routineId`) REFERENCES `Routine`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
 
+            }
+        }
+        private val MIGRATION_17_18 = object : Migration(17, 18){
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE `Routine` ADD COLUMN isTemplate INTEGER NOT NULL DEFAULT 0")
             }
         }
     }
