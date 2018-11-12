@@ -7,21 +7,22 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
+import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import kotlinx.android.synthetic.main.fragment_routine_manage_basic.view.*
 import kotlinx.android.synthetic.main.routine_manage_basic_single_item.view.*
-import java.util.*
 
 class RoutineManageBasicFragment : Fragment(){
 
     private lateinit var mModel: RoutineViewModel
     private lateinit var mAdapter: RoutineManageBasicItemsAdapter
-    private val exercises = ArrayList<ExerciseData>(1)
+    //private val exercises = ArrayList<ExerciseData>(1)
 
     private val mSelectedItems = SparseBooleanArray()
 
@@ -33,7 +34,7 @@ class RoutineManageBasicFragment : Fragment(){
             findViewById<RecyclerView>(R.id.routineManageBasicRecycler).apply {
                 layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
                 mAdapter = RoutineManageBasicItemsAdapter(this@RoutineManageBasicFragment)
-                mAdapter.values = exercises
+                mAdapter.routine = mModel.routineToEdit
 
                 adapter = mAdapter
             }
@@ -45,9 +46,9 @@ class RoutineManageBasicFragment : Fragment(){
                 if(it != null){
                     view.routineManageBasicDescriptionTxt.setText(it.description)
                     view.routineManageTemplateChxBox.isChecked = it.isTemplate
-                    exercises.clear()
-                    exercises.addAll(it.exercises)
-                    mAdapter.values = exercises
+                    //it.exercises.clear()
+                    //it.exercises.addAll(it.exercises)
+                    mAdapter.routine = it
                     mAdapter.notifyDataSetChanged()
                 }
             })
@@ -62,7 +63,6 @@ class RoutineManageBasicFragment : Fragment(){
         view.routineEditDeleteExerciseBtn.setOnClickListener {
             for(i in mSelectedItems.size()-1 downTo 0){
                 val pos = mSelectedItems.keyAt(i)
-                exercises.removeAt(pos)
                 mAdapter.notifyDataSetChanged()
 
                 mModel.deleteExerciseAt(pos)
@@ -76,7 +76,6 @@ class RoutineManageBasicFragment : Fragment(){
 
         view.routineEditAddExerciseBtn.setOnClickListener {
             val e = ExerciseData()
-            exercises.add(e)
             mModel.routineToEdit.exercises.add(e)
             mAdapter.notifyDataSetChanged()
         }
@@ -92,10 +91,11 @@ class RoutineManageBasicFragment : Fragment(){
     }
 
     class RoutineManageBasicItemsAdapter(private val mHost: RoutineManageBasicFragment) : RecyclerView.Adapter<RoutineManageBasicItemViewHolder>() {
-        private lateinit var mRoutineData: ArrayList<ExerciseData>
-        var values: ArrayList<ExerciseData>
-        set(value) {mRoutineData = value}
-        get() {return mRoutineData}
+        var routine: RoutineSetData? = null
+        //private lateinit var mRoutineData: ArrayList<ExerciseData>
+        //var values: ArrayList<ExerciseData>
+        //set(value) {mRoutineData = value}
+        //get() {return mRoutineData}
 
 
         override fun onCreateViewHolder(parent: ViewGroup, pos: Int): RoutineManageBasicItemViewHolder {
@@ -105,27 +105,44 @@ class RoutineManageBasicFragment : Fragment(){
         }
 
         override fun getItemCount(): Int {
-            return mRoutineData.size
+            return routine?.exercises?.size ?: 0
         }
 
         override fun onBindViewHolder(holder: RoutineManageBasicItemViewHolder, pos: Int) {
-            holder.bind(mRoutineData[pos])
+            if(routine != null)
+                holder.bind(routine!!.exercises[pos], pos)
         }
 
+        override fun onViewRecycled(holder: RoutineManageBasicItemViewHolder) {
+            holder.unbind()
+            super.onViewRecycled(holder)
+        }
+
+        override fun getItemViewType(position: Int): Int {
+            return 0
+        }
     }
 
-    class RoutineManageBasicItemViewHolder(val host: RoutineManageBasicFragment, val view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(exerciseData: ExerciseData) {
-            this.view.rMBSIDescText.setText(exerciseData.description)
-            view.rMBSIValue0.setText(exerciseData.value0)
-            view.rMBSIValue1.setText(exerciseData.value1)
-            view.rMBSIValue2.setText(exerciseData.value2)
-            view.rMBSICheckBox.setOnCheckedChangeListener { buttonView, isChecked -> 
+    class RoutineManageBasicItemViewHolder(val host: RoutineManageBasicFragment, view: View) : RecyclerView.ViewHolder(view) {
+        private lateinit var v0TextWatcher: TextWatcher
+        private lateinit var v1TextWatcher: TextWatcher
+        private lateinit var v2TextWatcher: TextWatcher
+        private lateinit var descTextWatcher: TextWatcher
+        fun unbind(){
+            itemView.rMBSICheckBox.setOnCheckedChangeListener(null)
+            itemView.rMBSIValue0.removeTextChangedListener(v0TextWatcher)
+            itemView.rMBSIValue1.removeTextChangedListener(v1TextWatcher)
+            itemView.rMBSIValue2.removeTextChangedListener(v2TextWatcher)
+            itemView.rMBSIDescText.removeTextChangedListener(descTextWatcher)
+        }
+        fun bind(exerciseData: ExerciseData, pos: Int) {
+            Log.d("RMBF", "Binding $pos $exerciseData")
+            itemView.rMBSICheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
                 host.itemSelected(adapterPosition, isChecked)
             }
-            view.rMBSICheckBox.isChecked = false
+            itemView.rMBSICheckBox.isChecked = false
 
-            view.rMBSIValue0.addTextChangedListener(object : TextWatcher{
+            v0TextWatcher = object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
 
                 }
@@ -137,8 +154,10 @@ class RoutineManageBasicFragment : Fragment(){
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     exerciseData.value0 = s?.toString() ?: ""
                 }
-            })
-            view.rMBSIValue1.addTextChangedListener(object : TextWatcher{
+            }
+
+
+            v1TextWatcher = object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
 
                 }
@@ -150,8 +169,11 @@ class RoutineManageBasicFragment : Fragment(){
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     exerciseData.value1 = s?.toString() ?: ""
                 }
-            })
-            view.rMBSIValue2.addTextChangedListener(object : TextWatcher{
+            }
+
+
+
+            v2TextWatcher = object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
 
                 }
@@ -163,8 +185,10 @@ class RoutineManageBasicFragment : Fragment(){
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     exerciseData.value2 = s?.toString() ?: ""
                 }
-            })
-            view.rMBSIDescText.addTextChangedListener(object : TextWatcher{
+            }
+
+
+            descTextWatcher = object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
 
                 }
@@ -174,10 +198,19 @@ class RoutineManageBasicFragment : Fragment(){
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
                     exerciseData.description = s?.toString() ?: ""
                 }
-            })
+            }
+            itemView.rMBSIValue0.addTextChangedListener(v0TextWatcher)
+            itemView.rMBSIValue1.addTextChangedListener(v1TextWatcher)
+            itemView.rMBSIValue2.addTextChangedListener(v2TextWatcher)
+            itemView.rMBSIDescText.addTextChangedListener(descTextWatcher)
 
+            itemView.rMBSIDescText.setText(exerciseData.description)
+            itemView.rMBSIValue0.setText(exerciseData.value0)
+            itemView.rMBSIValue1.setText(exerciseData.value1)
+            itemView.rMBSIValue2.setText(exerciseData.value2)
 
             //view.findViewById<LinearLayout>(R.id.routineValuesLayout)
         }
