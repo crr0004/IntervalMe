@@ -77,7 +77,7 @@ class RoutineManageEditActivityTest : ActivityTestRule<RoutineManageActivity>(Ro
                         value0 = "1",
                         value1 = "6",
                         value2 = "100kg")
-        ))
+        ), isTemplate = false)
         val liveData = MutableLiveData<RoutineSetData>()
         liveData.postValue(routine)
         `when`(mMockRepo.getRoutineSetById(eq(1L), eq(null))).thenReturn(liveData)
@@ -118,7 +118,7 @@ class RoutineManageEditActivityTest : ActivityTestRule<RoutineManageActivity>(Ro
                         value0 = "1",
                         value1 = "6",
                         value2 = "100kg")
-        ))
+        ), isTemplate = false)
         val liveData = MutableLiveData<RoutineSetData>()
         liveData.postValue(routine)
         `when`(mMockRepo.getRoutineSetById(eq(1L), eq(null))).thenReturn(liveData)
@@ -155,7 +155,7 @@ class RoutineManageEditActivityTest : ActivityTestRule<RoutineManageActivity>(Ro
                         value0 = "1",
                         value1 = "6",
                         value2 = "100kg")
-        ))
+        ), isTemplate = false)
         val liveData = MutableLiveData<RoutineSetData>()
         liveData.postValue(routine)
         `when`(mMockRepo.getRoutineSetById(eq(routine.routineId), eq(null))).thenReturn(liveData)
