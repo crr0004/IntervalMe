@@ -18,11 +18,7 @@
             android:name=".interval.IntervalListActivity"
             android:launchMode="singleTop"
             android:noHistory="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".interval.IntervalPropertiesEditActivity"
@@ -40,7 +36,13 @@
             android:name=".routine.RoutineManageActivity"
             android:label="@string/title_activity_routine_manage"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden|adjustResize">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
     </application>
 
 </manifest>
