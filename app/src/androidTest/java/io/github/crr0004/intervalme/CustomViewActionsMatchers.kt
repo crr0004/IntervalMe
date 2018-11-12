@@ -4,7 +4,7 @@ import android.support.test.espresso.UiController
 import android.support.test.espresso.ViewAction
 import android.support.test.espresso.matcher.BoundedMatcher
 import android.support.test.espresso.matcher.ViewMatchers.*
-import android.util.Log
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ExpandableListView
 import io.github.crr0004.intervalme.database.IntervalData
@@ -86,7 +86,6 @@ class CustomViewActionsMatchers{
                 }
 
                 override fun perform(uiController: UiController?, view: View?) {
-                    Log.d("","")
                     view!!.rMBSIDescText.setText(exerciseData.description)
                     view.rMBSIValue0.setText(exerciseData.value0)
                     view.rMBSIValue1.setText(exerciseData.value1)
@@ -104,6 +103,25 @@ class CustomViewActionsMatchers{
                 override fun matches(item: Any?): Boolean {
                     return item is RoutineManageBasicFragment.RoutineManageBasicItemViewHolder &&
                             item.adapterPosition == pos
+                }
+            }
+        }
+
+        fun setRoutineManageBasicRecyclerItems(data: ArrayList<ExerciseData>) : ViewAction{
+            return object: ViewAction{
+                override fun getDescription(): String {
+                    return "sets the items in R.id.routineManageBasicRecycler"
+                }
+
+                override fun getConstraints(): Matcher<View> {
+                    return allOf(withId(R.id.routineManageBasicRecycler))
+                }
+
+                override fun perform(uiController: UiController?, view: View?) {
+                    val adapter = ((view!! as RecyclerView)
+                            .adapter as RoutineManageBasicFragment.RoutineManageBasicItemsAdapter)
+                    adapter.routine?.exercises?.addAll(data)
+                    adapter.notifyDataSetChanged()
                 }
             }
         }
