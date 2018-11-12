@@ -14,6 +14,7 @@ import android.support.test.rule.ActivityTestRule
 import android.util.Log
 import com.nhaarman.mockitokotlin2.isA
 import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.editRoutineItemViewHolderDescription
+import io.github.crr0004.intervalme.CustomViewActionsMatchers.Companion.setRoutineManageBasicRecyclerItems
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineRepo
@@ -85,5 +86,22 @@ class RoutineManageActivityTest : ActivityTestRule<RoutineManageActivity>(Routin
         onView(withId(R.id.routineEditCommitBtn))
                 .check(matches(isDisplayed()))
                 .perform(click())
+    }
+
+    /**
+     * When adding an exercise item when creating a routine, it resets the other items
+     */
+    @Test
+    fun addItemResetItemsRegressionTest(){
+        onView(withId(R.id.routineEditAddExerciseBtn))
+                .check(matches(isDisplayed()))
+                .perform(click())
+        val exerciseData = arrayListOf(
+                ExerciseData(description = "squat", value0 = "1", value1 = "5", value2 = "50kg"),
+                ExerciseData(description = "squat1", value0 = "1", value1 = "5", value2 = "50kg"),
+                ExerciseData(description = "squat2", value0 = "1", value1 = "5", value2 = "50kg")
+                )
+        onView((withId(R.id.routineManageBasicRecycler))).perform(setRoutineManageBasicRecyclerItems(exerciseData))
+
     }
 }

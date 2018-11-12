@@ -45,7 +45,7 @@ class RoutineDaoTest {
                         value0 = "",
                         value1 = "",
                         value2 = ""))
-        val routineSetData = RoutineSetData(routineId = 1, description = "")
+        val routineSetData = RoutineSetData(routineId = 1, description = "", isTemplate = false)
         routineSetData.exercises.addAll(exercises)
         val routineId = mDao.insert(RoutineTableData(0, routineSetData.description))
         Assert.assertEquals(1, routineId)
@@ -89,7 +89,7 @@ class RoutineDaoTest {
                         value0 = "",
                         value1 = "",
                         value2 = ""))
-        val routineSetData = RoutineSetData(routineId = 1, description = "")
+        val routineSetData = RoutineSetData(routineId = 1, description = "", isTemplate = false)
         routineSetData.exercises.addAll(exercises)
         mDao.insert(RoutineTableData(0, routineSetData.description))
         mDao.insert(RoutineTableData(0, routineSetData.description))
@@ -114,7 +114,7 @@ class RoutineDaoTest {
                         value0 = "",
                         value1 = "",
                         value2 = ""))
-        val routineSetData = RoutineSetData(routineId = 1, description = "")
+        val routineSetData = RoutineSetData(routineId = 1, description = "", isTemplate = false)
         routineSetData.exercises.addAll(exercises)
         mDao.insert(RoutineTableData(0, routineSetData.description))
         mDao.insert(routineSetData.exercises)

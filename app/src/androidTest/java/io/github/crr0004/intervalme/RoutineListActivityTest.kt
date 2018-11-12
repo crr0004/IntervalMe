@@ -79,7 +79,7 @@ class RoutineListActivityTest : ActivityTestRule<RoutineListActivity>(RoutineLis
                         value0 = "1",
                         value1 = "6",
                         value2 = "100kg")
-        ))
+        ), isTemplate = false)
         val routine2 = RoutineSetData(1, "Routine2", arrayListOf(
                 ExerciseData(description = "Squat2",
                         lastModified = Date(),
@@ -93,7 +93,7 @@ class RoutineListActivityTest : ActivityTestRule<RoutineListActivity>(RoutineLis
                         value0 = "12",
                         value1 = "62",
                         value2 = "1002kg")
-        ))
+        ), isTemplate = false)
         val list = ArrayList<RoutineSetData>()
         list.add(routine)
         list.add(routine2)
@@ -131,7 +131,7 @@ class RoutineListActivityTest : ActivityTestRule<RoutineListActivity>(RoutineLis
                         value0 = "1",
                         value1 = "6",
                         value2 = "100kg")
-        ))
+        ), isTemplate = false)
         val list = ArrayList<RoutineSetData>()
         list.add(routine)
         val liveData = TestLiveData<ArrayList<RoutineSetData>>()

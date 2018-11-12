@@ -50,7 +50,7 @@ class RoutineRepoTest{
                         value0 = "",
                         value1 = "",
                         value2 = ""))
-        val routineSetData = RoutineSetData(routineId = 1, description = "")
+        val routineSetData = RoutineSetData(routineId = 1, description = "", isTemplate = false)
         routineSetData.exercises.addAll(exercises)
         mRepo.insert(routineSetData)
         val data = TestLiveData<RoutineSetData>()
@@ -79,7 +79,7 @@ class RoutineRepoTest{
                         value0 = "4",
                         value1 = "5",
                         value2 = "6"))
-        val routineSetData = RoutineSetData(routineId = 1, description = "Routine1")
+        val routineSetData = RoutineSetData(routineId = 1, description = "Routine1", isTemplate = false)
         routineSetData.exercises.addAll(exercises)
         mRepo.insert(routineSetData)
         val data = TestLiveData<RoutineSetData>()
@@ -113,7 +113,7 @@ class RoutineRepoTest{
                         value0 = "4",
                         value1 = "5",
                         value2 = "6"))
-        val routineSetData = RoutineSetData(routineId = 1, description = "Routine1")
+        val routineSetData = RoutineSetData(routineId = 1, description = "Routine1", isTemplate = false)
         routineSetData.exercises.addAll(exercises)
         mRepo.insert(routineSetData)
         val data = TestLiveData<RoutineSetData>()
