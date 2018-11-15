@@ -31,17 +31,19 @@
         <activity android:name=".analytics.AnalyticsActivity" />
         <activity
             android:name=".routine.RoutineListActivity"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity
-            android:name=".routine.RoutineManageActivity"
-            android:label="@string/title_activity_routine_manage"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="stateHidden">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        </activity>
+        <activity
+            android:name=".routine.RoutineManageActivity"
+            android:label="@string/title_activity_routine_manage"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+
         </activity>
     </application>
 
