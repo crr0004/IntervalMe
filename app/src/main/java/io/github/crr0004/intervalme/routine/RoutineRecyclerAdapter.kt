@@ -16,6 +16,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
 
     interface RoutineRecyclerAdapterActionsI{
         fun deleteRoutine(routineData: RoutineSetData)
+        fun isShowEditButtons(): Boolean
     }
 
     var values: ArrayList<RoutineSetData>? = null
@@ -81,6 +82,13 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     open class RoutineSetViewHolder(private val view: View, private val mHost: RoutineRecyclerAdapterActionsI) : RecyclerView.ViewHolder(view) {
         open fun bind(routineData: RoutineSetData, index: Int) {
             this.view.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
+            if(!mHost.isShowEditButtons()){
+                this.view.routineListGroupEditBtn.visibility = View.INVISIBLE
+                this.view.routineListGroupDeleteBtn.visibility = View.INVISIBLE
+            }else{
+                this.view.routineListGroupEditBtn.visibility = View.VISIBLE
+                this.view.routineListGroupDeleteBtn.visibility = View.VISIBLE
+            }
             this.view.routineListGroupEditBtn.setOnClickListener {
                 val intent = Intent(view.context, RoutineManageActivity::class.java)
                 intent.putExtra(RoutineManageActivity.routine_edit_id_key, routineData.routineId)

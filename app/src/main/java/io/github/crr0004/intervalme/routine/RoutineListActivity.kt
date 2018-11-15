@@ -23,6 +23,7 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
     private var mRoutineAdapter: RoutineRecyclerAdapter = RoutineRecyclerAdapter(this)
     private val mLayoutManager: RecyclerView.LayoutManager? = LinearLayoutManager(this)
     private lateinit var mModel: RoutineViewModel
+    private var mShowEditButtons: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +57,20 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
         mModel.deleteRoutine(routineData)
     }
 
+    override fun isShowEditButtons(): Boolean {
+        return mShowEditButtons
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when(item?.itemId){
             R.id.routine_list_menu_add -> {
                 startActivity(Intent(this, RoutineManageActivity::class.java))
-               true
+                true
+            }
+            R.id.routine_list_toggle_edit_buttons -> {
+                mShowEditButtons = !mShowEditButtons
+                mRoutineAdapter.notifyDataSetChanged()
+                true
             }
             else ->{
                 super.onOptionsItemSelected(item)
