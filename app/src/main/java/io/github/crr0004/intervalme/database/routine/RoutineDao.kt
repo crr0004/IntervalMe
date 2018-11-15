@@ -47,5 +47,8 @@ interface RoutineDao{
     @Query("delete from Exercise where routineId = :routineId")
     fun deleteExercisesInRoutine(routineId: Long)
 
+    @Update
+    fun update(exerciseData: ExerciseData)
+
 
 }

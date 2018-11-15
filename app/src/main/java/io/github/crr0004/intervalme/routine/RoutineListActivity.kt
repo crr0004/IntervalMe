@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.analytics.AnalyticsActivity
+import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.interval.IntervalListActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
@@ -59,6 +60,10 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
 
     override fun isShowEditButtons(): Boolean {
         return mShowEditButtons
+    }
+
+    override fun update(exerciseData: ExerciseData) {
+        mModel.update(exerciseData)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

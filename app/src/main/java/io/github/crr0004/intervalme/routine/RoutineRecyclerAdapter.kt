@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.github.crr0004.intervalme.R
+import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import kotlinx.android.synthetic.main.routine_list_single_exercise.view.*
 import kotlinx.android.synthetic.main.routine_single.view.*
@@ -17,6 +18,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     interface RoutineRecyclerAdapterActionsI{
         fun deleteRoutine(routineData: RoutineSetData)
         fun isShowEditButtons(): Boolean
+        fun update(exerciseData: ExerciseData)
     }
 
     var values: ArrayList<RoutineSetData>? = null
@@ -77,44 +79,60 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
         holderRoutineSet.bind(data.routineData, index)
     }
 
+    override fun onViewRecycled(holder: RoutineSetViewHolder) {
+        super.onViewRecycled(holder)
+        holder.unbind()
+    }
+
     data class RoutinePositionMap(val pos: Int, val routineData: RoutineSetData)
 
-    open class RoutineSetViewHolder(private val view: View, private val mHost: RoutineRecyclerAdapterActionsI) : RecyclerView.ViewHolder(view) {
+    open class RoutineSetViewHolder(view: View, private val mHost: RoutineRecyclerAdapterActionsI) : RecyclerView.ViewHolder(view) {
         open fun bind(routineData: RoutineSetData, index: Int) {
-            this.view.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
+            itemView.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
             if(!mHost.isShowEditButtons()){
-                this.view.routineListGroupEditBtn.visibility = View.INVISIBLE
-                this.view.routineListGroupDeleteBtn.visibility = View.INVISIBLE
+                itemView.routineListGroupEditBtn.visibility = View.INVISIBLE
+                itemView.routineListGroupDeleteBtn.visibility = View.INVISIBLE
             }else{
-                this.view.routineListGroupEditBtn.visibility = View.VISIBLE
-                this.view.routineListGroupDeleteBtn.visibility = View.VISIBLE
+                itemView.routineListGroupEditBtn.visibility = View.VISIBLE
+                itemView.routineListGroupDeleteBtn.visibility = View.VISIBLE
             }
-            this.view.routineListGroupEditBtn.setOnClickListener {
-                val intent = Intent(view.context, RoutineManageActivity::class.java)
+            itemView.routineListGroupEditBtn.setOnClickListener {
+                val intent = Intent(itemView.context, RoutineManageActivity::class.java)
                 intent.putExtra(RoutineManageActivity.routine_edit_id_key, routineData.routineId)
-                view.context.startActivity(intent)
+                itemView.context.startActivity(intent)
             }
-            this.view.routineListGroupDeleteBtn.setOnClickListener {
+            itemView.routineListGroupDeleteBtn.setOnClickListener {
                 mHost.deleteRoutine(routineData)
             }
-
-
-            //view.findViewById<LinearLayout>(R.id.routineValuesLayout)
+            //itemView.findViewById<LinearLayout>(R.id.routineValuesLayout)
+        }
+        open fun unbind(){
+            itemView.routineListGroupEditBtn.setOnClickListener(null)
+            itemView.routineListGroupDeleteBtn.setOnClickListener(null)
         }
 
     }
 
-    class ExerciseViewHolder(private val view: View, mHost: RoutineRecyclerAdapterActionsI) :
+    class ExerciseViewHolder(view: View, val mHost: RoutineRecyclerAdapterActionsI) :
             RoutineSetViewHolder(view, mHost){
         override fun bind(routineData: RoutineSetData, index: Int) {
             val exerciseData = routineData.exercises[index-1]
-            this.view.rLSEIDescText.text = exerciseData.description
-            view.rLSEIValue0.text = exerciseData.value0
-            view.rLSEIValue1.text = exerciseData.value1
-            view.rLSEIValue2.text = exerciseData.value2
+            itemView.rLSEIDescText.text = exerciseData.description
+            itemView.rLSEIValue0.text = exerciseData.value0
+            itemView.rLSEIValue1.text = exerciseData.value1
+            itemView.rLSEIValue2.text = exerciseData.value2
+            itemView.rLSEICheckBox.isChecked = exerciseData.isDone
+            itemView.rLSEICheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+                exerciseData.isDone = isChecked
+                // We do this so the animation has time to complete
+                buttonView.postDelayed({
+                    mHost.update(exerciseData)
+                }, buttonView.resources.getInteger(android.R.integer.config_shortAnimTime).toLong())
+            }
+        }
 
-
-            //view.findViewById<LinearLayout>(R.id.routineValuesLayout)
+        override fun unbind() {
+            itemView.rLSEICheckBox.setOnCheckedChangeListener(null)
         }
     }
 

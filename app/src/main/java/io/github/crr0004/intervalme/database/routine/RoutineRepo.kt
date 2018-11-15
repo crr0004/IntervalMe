@@ -138,6 +138,7 @@ open class RoutineRepo(mContext: Context) {
             val _cursorIndexOfValue0 = cursor.getColumnIndexOrThrow("value0")
             val _cursorIndexOfValue1 = cursor.getColumnIndexOrThrow("value1")
             val _cursorIndexOfValue2 = cursor.getColumnIndexOrThrow("value2")
+            val _cursorIndexOfIsDone = cursor.getColumnIndexOrThrow("isDone")
             var index = 0
             while(cursor.moveToNext()){
                 val item = ExerciseData()
@@ -149,6 +150,7 @@ open class RoutineRepo(mContext: Context) {
                 item.value0 = cursor.getString(_cursorIndexOfValue0)
                 item.value1 = cursor.getString(_cursorIndexOfValue1)
                 item.value2 = cursor.getString(_cursorIndexOfValue2)
+                item.isDone = cursor.getInt(_cursorIndexOfIsDone) > 0
                 results.add(item)
                 index++
             }
@@ -160,6 +162,12 @@ open class RoutineRepo(mContext: Context) {
     open fun deleteRoutineById(routineId: Long) {
         mExecutor.execute{
             mDao.deleteRoutine(routineId)
+        }
+    }
+
+    fun update(exerciseData: ExerciseData) {
+        mExecutor.execute{
+            mDao.update(exerciseData)
         }
     }
 

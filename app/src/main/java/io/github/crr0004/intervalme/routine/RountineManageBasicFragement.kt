@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -136,7 +135,6 @@ class RoutineManageBasicFragment : Fragment(){
             itemView.rMBSIDescText.removeTextChangedListener(descTextWatcher)
         }
         fun bind(exerciseData: ExerciseData, pos: Int) {
-            Log.d("RMBF", "Binding $pos $exerciseData")
             itemView.rMBSICheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
                 host.itemSelected(adapterPosition, isChecked)
             }

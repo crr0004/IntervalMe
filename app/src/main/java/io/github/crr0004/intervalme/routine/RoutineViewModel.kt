@@ -79,4 +79,8 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     fun deleteRoutine(routineData: RoutineSetData) {
         mRepo.deleteRoutineById(routineData.routineId)
     }
+
+    fun update(exerciseData: ExerciseData) {
+        mRepo.update(exerciseData)
+    }
 }
