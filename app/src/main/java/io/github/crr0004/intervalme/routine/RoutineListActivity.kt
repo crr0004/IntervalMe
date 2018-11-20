@@ -45,11 +45,6 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
         mModel.getAllRoutines().observe(this, Observer{
             mRoutineAdapter.values = it
         })
-        mModel.getAllRoutineAndExerciseCount().observe(this, Observer {
-            if(it != null)
-                mRoutineAdapter.totalCount = it
-        })
-
 
         setupNavigation()
     }

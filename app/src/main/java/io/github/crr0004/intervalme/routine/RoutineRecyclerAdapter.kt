@@ -24,8 +24,11 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     var values: ArrayList<RoutineSetData>? = null
     set(value) {
         var index = 0
+        totalCount = 0
+        totalCount += value?.size ?: 0
         value?.forEach { routineSetData ->
             positionMap[index] = RoutinePositionMap(index, routineSetData)
+            totalCount += routineSetData.exercises.size
             index += routineSetData.exercises.size+1
         }
         field = value

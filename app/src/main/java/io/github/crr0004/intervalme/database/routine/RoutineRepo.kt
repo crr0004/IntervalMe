@@ -10,6 +10,7 @@ import android.content.Context
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import java.util.*
 import java.util.concurrent.Executor
+import kotlin.collections.ArrayList
 
 open class RoutineRepo(mContext: Context) {
     private var mDb = IntervalMeDatabase.getInstance(mContext)!!
@@ -74,8 +75,7 @@ open class RoutineRepo(mContext: Context) {
     }
 
     @SuppressLint("RestrictedApi")
-    open fun  getAllRoutines(): LiveData<ArrayList<RoutineSetData>> {
-        val routineSql = "select * from Routine"
+    open fun  getAllRoutines(routineSql: String = "select * from Routine", exerciseSql: String? = null): LiveData<ArrayList<RoutineSetData>> {
         val routineStatement = RoomSQLiteQuery.acquire(routineSql, 0)
 
         return object : ComputableLiveData<ArrayList<RoutineSetData>>() {
@@ -112,7 +112,10 @@ open class RoutineRepo(mContext: Context) {
                                 cursor.getLong(_cursorIndexOfId),
                                 cursor.getString(_cursorIndexOfDesc),
                                 isTemplate = cursor.getInt(_cursorIndexOfIsTemplate) > 0)
-                        item.exercises = getExerciseFromId(item.routineId)
+                        item.exercises = if(exerciseSql == null)
+                            getExerciseFromId(item.routineId)
+                        else
+                            getExerciseFromId(item.routineId, exerciseSql)
                         result.add(item)
                         index++
                     }
@@ -124,8 +127,7 @@ open class RoutineRepo(mContext: Context) {
     }
 
     @SuppressLint("RestrictedApi")
-    private fun getExerciseFromId(routineId: Long) : ArrayList<ExerciseData>{
-        val exerciseSql = "select * from Exercise where routineId = ?"
+    private fun getExerciseFromId(routineId: Long, exerciseSql: String = "select * from Exercise where routineId = ?") : ArrayList<ExerciseData>{
         val exerciseStatement = RoomSQLiteQuery.acquire(exerciseSql, 1)
         exerciseStatement.bindLong(1, routineId)
         val cursorOuter = mDb.query(exerciseStatement)
@@ -169,6 +171,10 @@ open class RoutineRepo(mContext: Context) {
         mExecutor.execute{
             mDao.update(exerciseData)
         }
+    }
+
+    fun getTemplateRoutines(): LiveData<ArrayList<RoutineSetData>> {
+        return getAllRoutines("select * from Routine where isTemplate = 1")
     }
 
     internal inner class ThreadPerTaskExecutor : Executor {

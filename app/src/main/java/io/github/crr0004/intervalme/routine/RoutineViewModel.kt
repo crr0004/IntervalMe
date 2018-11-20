@@ -63,11 +63,7 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun getAllRoutines() : LiveData<ArrayList<RoutineSetData>> {
-        return mRepo.getAllRoutines()
-    }
-
-    fun getAllRoutineAndExerciseCount() : LiveData<Int>{
-        return mRepo.getAllRoutineAndExerciseCount()
+        return mRepo.getAllRoutines("select * from Routine where isTemplate = 0")
     }
 
 
@@ -82,5 +78,9 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
 
     fun update(exerciseData: ExerciseData) {
         mRepo.update(exerciseData)
+    }
+
+    fun getTemplateRoutines() : LiveData<ArrayList<RoutineSetData>> {
+        return mRepo.getTemplateRoutines()
     }
 }
