@@ -8,25 +8,27 @@
 
     <TextView
         android:id="@+id/rLSEIValue2"
-        android:layout_width="64dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:textAppearance="@style/SmallInputLabel"
         app:layout_constraintBottom_toBottomOf="@+id/rLSEIDescText"
-        app:layout_constraintStart_toEndOf="@+id/rLSEIValue1"
+        app:layout_constraintEnd_toStartOf="@+id/rLSEICheckBox"
         app:layout_constraintTop_toTopOf="@+id/rLSEIDescText"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="aaaa" />
 
     <TextView
         android:id="@+id/rLSEIValue1"
-        android:layout_width="64dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:textAppearance="@style/SmallInputLabel"
         app:layout_constraintBottom_toBottomOf="@+id/rLSEIDescText"
-        app:layout_constraintStart_toEndOf="@+id/rLSEIValue0"
+        app:layout_constraintEnd_toStartOf="@+id/rLSEIValue2"
         app:layout_constraintTop_toTopOf="@+id/rLSEIDescText"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="aaaa" />
 
     <CheckBox
         android:id="@+id/rLSEICheckBox"
@@ -39,23 +41,26 @@
 
     <TextView
         android:id="@+id/rLSEIDescText"
-        android:layout_width="109dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:textAppearance="@style/MediumInputLabel"
+        app:layout_constraintEnd_toStartOf="@+id/rLSEIValue0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Description" />
 
     <TextView
         android:id="@+id/rLSEIValue0"
-        android:layout_width="64dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:textAppearance="@style/SmallInputLabel"
         app:layout_constraintBottom_toBottomOf="@+id/rLSEIDescText"
-        app:layout_constraintStart_toEndOf="@+id/rLSEIDescText"
-        app:layout_constraintTop_toTopOf="@+id/rLSEIDescText" />
+        app:layout_constraintEnd_toStartOf="@+id/rLSEIValue1"
+        app:layout_constraintTop_toTopOf="@+id/rLSEIDescText"
+        tools:text="aaaa" />
 </android.support.constraint.ConstraintLayout>
