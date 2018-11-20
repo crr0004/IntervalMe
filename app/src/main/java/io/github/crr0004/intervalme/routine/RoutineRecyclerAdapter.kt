@@ -19,6 +19,8 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
         fun deleteRoutine(routineData: RoutineSetData)
         fun isShowEditButtons(): Boolean
         fun update(exerciseData: ExerciseData)
+        fun isOverrideRoutineSetViewHolder() : Boolean {return false}
+        fun getRoutineSetViewHolder(parent: ViewGroup, pos: Int) : RoutineSetViewHolder? {return null}
     }
 
     var values: ArrayList<RoutineSetData>? = null
@@ -41,9 +43,13 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
 
         val viewHolder: RoutineSetViewHolder
         viewHolder = if(getItemViewType(pos) == 0){
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single, parent, false)
 
-            RoutineSetViewHolder(view, mHost)
+            if(mHost.isOverrideRoutineSetViewHolder())
+                mHost.getRoutineSetViewHolder(parent, pos)!!
+            else {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single, parent, false)
+                RoutineSetViewHolder(view, mHost)
+            }
         }else{
             ExerciseViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.routine_list_single_exercise, parent, false),

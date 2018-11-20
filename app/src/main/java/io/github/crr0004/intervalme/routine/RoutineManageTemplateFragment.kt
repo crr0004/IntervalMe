@@ -2,6 +2,7 @@ package io.github.crr0004.intervalme.routine
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -10,9 +11,11 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
+import kotlinx.android.synthetic.main.routine_single.view.*
 
 class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapter.RoutineRecyclerAdapterActionsI {
 
@@ -51,4 +54,40 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapter.Routine
     override fun update(exerciseData: ExerciseData) {
 
     }
+
+    override fun isOverrideRoutineSetViewHolder() : Boolean{
+        return true
+    }
+
+    override fun getRoutineSetViewHolder(parent: ViewGroup, pos: Int): RoutineRecyclerAdapter.RoutineSetViewHolder? {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single_template, parent, false)
+        return RoutineSetViewHolder1(view, this)
+    }
+}
+
+class RoutineSetViewHolder1(view: View, mHost: RoutineRecyclerAdapter.RoutineRecyclerAdapterActionsI) : RoutineRecyclerAdapter.RoutineSetViewHolder(view, mHost){
+    override fun bind(routineData: RoutineSetData, index: Int) {
+        itemView.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
+        if(false){
+            itemView.routineListGroupEditBtn.visibility = View.INVISIBLE
+            itemView.routineListGroupDeleteBtn.visibility = View.INVISIBLE
+        }else{
+            itemView.routineListGroupEditBtn.visibility = View.VISIBLE
+            itemView.routineListGroupDeleteBtn.visibility = View.VISIBLE
+        }
+        itemView.routineListGroupEditBtn.setOnClickListener {
+            val intent = Intent(itemView.context, RoutineManageActivity::class.java)
+            intent.putExtra(RoutineManageActivity.routine_edit_id_key, routineData.routineId)
+            itemView.context.startActivity(intent)
+        }
+        itemView.routineListGroupDeleteBtn.setOnClickListener {
+            //mHost.deleteRoutine(routineData)
+        }
+        //itemView.findViewById<LinearLayout>(R.id.routineValuesLayout)
+    }
+    override fun unbind(){
+        itemView.routineListGroupEditBtn.setOnClickListener(null)
+        itemView.routineListGroupDeleteBtn.setOnClickListener(null)
+    }
+
 }

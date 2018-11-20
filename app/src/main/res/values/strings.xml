@@ -56,4 +56,5 @@
     <string name="delete_selected">Delete Selected</string>
     <string name="toggle_edit_buttons">Toggle Edit Buttons</string>
     <string name="templates">Templates</string>
+    <string name="routine">Routine</string>
 </resources>
