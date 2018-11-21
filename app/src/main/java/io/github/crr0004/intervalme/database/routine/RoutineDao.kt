@@ -14,6 +14,9 @@ interface RoutineDao{
     @Insert
     fun insert(routineTableData: List<ExerciseData>) : Array<Long>
 
+    @Insert
+    fun insert(exerciseData: ExerciseData) : Long
+
     @Query("select * from Routine where id = :id")
     fun getSyncRoutineTableById(id: Long) : RoutineTableData
 

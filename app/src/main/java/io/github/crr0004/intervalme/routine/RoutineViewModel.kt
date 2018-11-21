@@ -15,13 +15,13 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private var mRepo = RoutineRepo(application)
-    var mRoutineToEdit: MutableLiveData<RoutineSetData> = MutableLiveData()
+    private var mRoutineToEdit: MutableLiveData<RoutineSetData> = MutableLiveData()
     private val mExercisesToBeDeleted: ArrayList<ExerciseData> = ArrayList(1)
     private var mInEditMode: Boolean = false
 
     private lateinit var mRoutineAddedListener: (RoutineSetData) -> Unit
 
-    val routineToEdit: RoutineSetData
+    var routineToEdit: RoutineSetData
         get() {
             if(mRoutineToEdit.value == null){
                 mInEditMode = false
@@ -30,6 +30,10 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
             }
             return mRoutineToEdit.value!!
         }
+    set(value) {
+        mRoutineToEdit.postValue(value)
+        mInEditMode = true
+    }
 
     init {
         if(repoOverride != null)
@@ -39,6 +43,17 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     fun setRoutineToEdit(routineEditId: Long) {
         mRoutineToEdit = mRepo.getRoutineSetById(routineEditId)
         mInEditMode = true
+    }
+
+    fun copyRoutineFromTemplate(routineData: RoutineSetData){
+        val routine = RoutineSetData(routineData)
+        routine.isTemplate = false
+        routine.routineId = 0
+        routine.exercises.forEach {
+            it.id = 0
+            it.routineId = 0
+        }
+        mRoutineToEdit.postValue(routine)
     }
 
     fun commit() {
@@ -66,12 +81,6 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         return mRepo.getAllRoutines("select * from Routine where isTemplate = 0")
     }
 
-
-
-    fun setOnRoutineAddedListener(arg : ((RoutineSetData) -> Unit)) {
-        mRoutineAddedListener = arg
-    }
-
     fun deleteRoutine(routineData: RoutineSetData) {
         mRepo.deleteRoutineById(routineData.routineId)
     }
@@ -82,5 +91,9 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
 
     fun getTemplateRoutines() : LiveData<ArrayList<RoutineSetData>> {
         return mRepo.getTemplateRoutines()
+    }
+
+    fun getRoutineLiveData(): LiveData<RoutineSetData> {
+        return mRoutineToEdit
     }
 }

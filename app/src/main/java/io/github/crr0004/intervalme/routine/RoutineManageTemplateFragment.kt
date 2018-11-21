@@ -2,9 +2,9 @@ package io.github.crr0004.intervalme.routine
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.SparseBooleanArray
@@ -15,7 +15,7 @@ import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
-import kotlinx.android.synthetic.main.routine_single.view.*
+import kotlinx.android.synthetic.main.routine_single_template.view.*
 
 class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapter.RoutineRecyclerAdapterActionsI {
 
@@ -63,25 +63,38 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapter.Routine
         val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single_template, parent, false)
         return RoutineSetViewHolder1(view, this)
     }
+
+    fun editTemplate(routineData: RoutineSetData) {
+        mModel.routineToEdit = routineData
+        this.activity!!.findViewById<ViewPager>(R.id.container).setCurrentItem(0, true)
+    }
+
+    fun copyTemplate(routineData: RoutineSetData) {
+        mModel.copyRoutineFromTemplate(routineData)
+        this.activity!!.findViewById<ViewPager>(R.id.container).setCurrentItem(0, true)
+    }
 }
 
-class RoutineSetViewHolder1(view: View, mHost: RoutineRecyclerAdapter.RoutineRecyclerAdapterActionsI) : RoutineRecyclerAdapter.RoutineSetViewHolder(view, mHost){
+class RoutineSetViewHolder1(view: View, val mHost: RoutineManageTemplateFragment) : RoutineRecyclerAdapter.RoutineSetViewHolder(view, mHost){
     override fun bind(routineData: RoutineSetData, index: Int) {
         itemView.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
-        if(false){
+        if(!mHost.isShowEditButtons()){
             itemView.routineListGroupEditBtn.visibility = View.INVISIBLE
             itemView.routineListGroupDeleteBtn.visibility = View.INVISIBLE
+            itemView.routineListGroupCopyBtn.visibility = View.INVISIBLE
         }else{
             itemView.routineListGroupEditBtn.visibility = View.VISIBLE
             itemView.routineListGroupDeleteBtn.visibility = View.VISIBLE
+            itemView.routineListGroupCopyBtn.visibility = View.VISIBLE
         }
         itemView.routineListGroupEditBtn.setOnClickListener {
-            val intent = Intent(itemView.context, RoutineManageActivity::class.java)
-            intent.putExtra(RoutineManageActivity.routine_edit_id_key, routineData.routineId)
-            itemView.context.startActivity(intent)
+            mHost.editTemplate(routineData)
         }
         itemView.routineListGroupDeleteBtn.setOnClickListener {
-            //mHost.deleteRoutine(routineData)
+            mHost.deleteRoutine(routineData)
+        }
+        itemView.routineListGroupCopyBtn.setOnClickListener {
+            mHost.copyTemplate(routineData)
         }
         //itemView.findViewById<LinearLayout>(R.id.routineValuesLayout)
     }

@@ -41,18 +41,22 @@ class RoutineManageBasicFragment : Fragment(){
         val routineEditId = activity?.intent?.getLongExtra(RoutineManageActivity.routine_edit_id_key, -1) ?: -1
         if(routineEditId > 0){
             mModel.setRoutineToEdit(routineEditId)
-            mModel.mRoutineToEdit.observe(this.activity!!, android.arch.lifecycle.Observer{
-                if(it != null){
-                    view.routineManageBasicDescriptionTxt.setText(it.description)
-                    view.routineManageTemplateChxBox.isChecked = it.isTemplate
-                    //it.exercises.clear()
-                    //it.exercises.addAll(it.exercises)
-                    mAdapter.routine = it
-                    mAdapter.notifyDataSetChanged()
-                }
-            })
-            view.routineEditCommitBtn.setText(R.string.update)
         }
+        mModel.getRoutineLiveData().observe(this.activity!!, android.arch.lifecycle.Observer{
+            if(it != null){
+                view.routineManageBasicDescriptionTxt.setText(it.description)
+                view.routineManageTemplateChxBox.isChecked = it.isTemplate
+                if(it.routineId > 0){
+                    view.routineEditCommitBtn.setText(R.string.update)
+                }else{
+                    view.routineEditCommitBtn.setText(R.string.add)
+                }
+                //it.exercises.clear()
+                //it.exercises.addAll(it.exercises)
+                mAdapter.routine = it
+                mAdapter.notifyDataSetChanged()
+            }
+        })
         view.routineEditCommitBtn.setOnClickListener {
             mModel.routineToEdit.description = view.routineManageBasicDescriptionTxt.text.toString()
             //mModel.routineToEdit.exercises.addAll(exercises)

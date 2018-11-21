@@ -39,9 +39,7 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
             layoutManager = mLayoutManager
         }
         mModel = ViewModelProviders.of(this).get(RoutineViewModel::class.java)
-        mModel.setOnRoutineAddedListener { routine: RoutineSetData ->
 
-        }
         mModel.getAllRoutines().observe(this, Observer{
             mRoutineAdapter.values = it
         })

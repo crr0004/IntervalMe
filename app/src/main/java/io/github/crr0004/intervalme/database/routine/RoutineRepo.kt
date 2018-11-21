@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.InvalidationTracker
 import android.arch.persistence.room.RoomSQLiteQuery
 import android.content.Context
+import android.util.Log
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
 import java.util.*
 import java.util.concurrent.Executor
@@ -60,7 +61,15 @@ open class RoutineRepo(mContext: Context) {
     open fun update(routineToEdit: RoutineSetData) {
         mExecutor.execute {
             mDao.update(RoutineTableData(routineToEdit))
-            mDao.update(routineToEdit.exercises)
+            routineToEdit.exercises.forEach {
+                if(it.routineId > 0){
+                    mDao.update(it)
+                }else{
+                    it.routineId = routineToEdit.routineId
+                    mDao.insert(it)
+                }
+            }
+
         }
     }
 
@@ -76,14 +85,17 @@ open class RoutineRepo(mContext: Context) {
 
     @SuppressLint("RestrictedApi")
     open fun  getAllRoutines(routineSql: String = "select * from Routine", exerciseSql: String? = null): LiveData<ArrayList<RoutineSetData>> {
-        val routineStatement = RoomSQLiteQuery.acquire(routineSql, 0)
+
 
         return object : ComputableLiveData<ArrayList<RoutineSetData>>() {
+
             private var routineObserver: InvalidationTracker.Observer? = null
             private var exerciseObserver: InvalidationTracker.Observer? = null
 
             @SuppressLint("RestrictedApi")
             override fun compute(): ArrayList<RoutineSetData> {
+                val routineStatement = RoomSQLiteQuery.acquire(routineSql, 0)
+                Log.d("RR", routineStatement.sql)
                 if (routineObserver == null) {
                     routineObserver = object : InvalidationTracker.Observer("Routine") {
                         override fun onInvalidated(tables: Set<String>) {
