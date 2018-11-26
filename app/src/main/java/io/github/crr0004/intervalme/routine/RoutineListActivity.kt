@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -66,7 +67,21 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
                 true
             }
             R.id.routine_list_toggle_edit_buttons -> {
+
+                //val animation = AnimationUtils.loadAnimation(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if(!mShowEditButtons){
+                        val animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
+                        item.icon = animatedVectorDrawableCompat
+                        animatedVectorDrawableCompat?.start()
+                    }else{
+                        val animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_reverse_animation)
+                        item.icon = animatedVectorDrawableCompat
+                        animatedVectorDrawableCompat?.start()
+                    }
+                }
                 mShowEditButtons = !mShowEditButtons
+                //animation!!.start()
                 mRoutineAdapter.notifyDataSetChanged()
                 true
             }

@@ -36,9 +36,6 @@
     <string name="reset_changes">Reset Changes</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
-
-
     <string name="user_interface">User Interface</string>
     <string name="pref_description_ui_invert_add_minus">Swap Add and Minus buttons in interval add screen</string>
     <string name="pref_title_ui_invert_add_minus">Invert Add and Minus</string>
@@ -48,7 +45,6 @@
     <string name="analytics">Analytics</string>
     <string name="routines">Routines</string>
     <string name="title_activity_routine_manage">RoutineManageActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="exercises">Exercises</string>
     <string name="routine_name">Routine Name</string>
     <string name="add_routine">Add</string>

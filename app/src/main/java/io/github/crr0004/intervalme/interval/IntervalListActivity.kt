@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.preference.PreferenceManager
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.view.menu.MenuBuilder
@@ -22,11 +23,14 @@ import android.view.View
 import android.widget.AbsListView.CHOICE_MODE_MULTIPLE
 import android.widget.ExpandableListView
 import android.widget.Toast
-import io.github.crr0004.intervalme.*
-import io.github.crr0004.intervalme.routine.RoutineListActivity
+import io.github.crr0004.intervalme.BuildConfig
+import io.github.crr0004.intervalme.DragDropAnimationController
+import io.github.crr0004.intervalme.R
+import io.github.crr0004.intervalme.SettingsActivity
+import io.github.crr0004.intervalme.analytics.AnalyticsActivity
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalMeDatabase
-import io.github.crr0004.intervalme.analytics.AnalyticsActivity
+import io.github.crr0004.intervalme.routine.RoutineListActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
 import java.util.*
 
@@ -237,19 +241,14 @@ class IntervalListActivity : AppCompatActivity() {
                 true
             }
             R.id.action_edit_items -> {
-                if(!mAdapter!!.mInEditMode) {
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        item.icon = resources.getDrawable(R.drawable.ic_done_white_24dp, theme)
-                    }else{
-                        item.icon = resources.getDrawable(R.drawable.ic_done_white_24dp)
-                    }
+                if(!mAdapter!!.mInEditMode){
+                    val animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
+                    item.icon = animatedVectorDrawableCompat
+                    animatedVectorDrawableCompat?.start()
                 }else{
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        item.icon = resources.getDrawable(R.drawable.ic_mode_edit_white_24dp, theme)
-                    }else{
-                        item.icon = resources.getDrawable(R.drawable.ic_mode_edit_white_24dp)
-                    }
+                    val animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_reverse_animation)
+                    item.icon = animatedVectorDrawableCompat
+                    animatedVectorDrawableCompat?.start()
                 }
                 mAdapter!!.mInEditMode = !mAdapter!!.mInEditMode
                 mAdapter!!.notifyDataSetChanged()

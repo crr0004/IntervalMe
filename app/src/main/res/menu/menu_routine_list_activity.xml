@@ -9,7 +9,7 @@
     <item android:id="@+id/routine_list_toggle_edit_buttons"
         android:title="@string/toggle_edit_buttons"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_mode_edit_white_24dp"
+        android:icon="@drawable/ic_mode_edit_strike_out_animated_24dp"
         />
 
 </menu>

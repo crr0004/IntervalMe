@@ -41,7 +41,7 @@
     <item
         android:id="@+id/action_edit_items"
         android:title="@string/edit"
-        android:icon="@drawable/ic_mode_edit_white_24dp"
+        android:icon="@drawable/ic_mode_edit_strike_out_animated_24dp"
         app:showAsAction="ifRoom"
         />
     <item
