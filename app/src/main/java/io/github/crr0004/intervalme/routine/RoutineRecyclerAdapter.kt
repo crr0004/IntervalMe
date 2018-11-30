@@ -1,8 +1,10 @@
 package io.github.crr0004.intervalme.routine
 
 import android.content.Intent
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +22,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
         fun update(exerciseData: ExerciseData)
         fun isOverrideRoutineSetViewHolder() : Boolean {return false}
         fun getRoutineSetViewHolder(parent: ViewGroup, pos: Int) : RoutineSetViewHolder? {return null}
+        fun update(routineData: RoutineSetData)
     }
 
     var values: ArrayList<RoutineSetData>? = null
@@ -47,7 +50,11 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
                 mHost.getRoutineSetViewHolder(parent, pos)!!
             else {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single, parent, false)
-                RoutineSetViewHolder(view, mHost)
+                val menu = PopupMenu(parent.context, view, (Gravity.END or Gravity.TOP))
+                menu.menuInflater.inflate(R.menu.menu_routine_group, menu.menu)
+                val holder = RoutineSetViewHolder(view, mHost)
+                holder.menu = menu
+                holder
             }
         }else{
             ExerciseViewHolder(
@@ -116,6 +123,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     data class RoutinePositionMap(val pos: Int, val routineData: RoutineSetData)
 
     open class RoutineSetViewHolder(view: View, private val mHost: RoutineRecyclerAdapterActionsI) : RecyclerView.ViewHolder(view) {
+        var menu: PopupMenu? = null
         open fun bind(routineData: RoutineSetData, index: Int) {
             itemView.routineSingleName.text = routineData.description
             if(!mHost.isShowEditButtons()){
@@ -126,18 +134,48 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
                 itemView.routineListGroupDeleteBtn.visibility = View.VISIBLE
             }
             itemView.routineListGroupEditBtn.setOnClickListener {
-                val intent = Intent(itemView.context, RoutineManageActivity::class.java)
-                intent.putExtra(RoutineManageActivity.routine_edit_id_key, routineData.routineId)
-                itemView.context.startActivity(intent)
+                editRoutine(routineData)
             }
             itemView.routineListGroupDeleteBtn.setOnClickListener {
                 mHost.deleteRoutine(routineData)
             }
+            itemView.routineGroupMenuView.setOnClickListener {
+                menu?.show()
+            }
+            menu?.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.routine_group_menu_mark_done -> {
+                        routineData.isDone = true
+                        mHost.update(routineData)
+                        true
+                    }
+                    R.id.routine_group_menu_delete -> {
+                        mHost.deleteRoutine(routineData)
+                        true
+                    }
+                    R.id.routine_group_menu_edit -> {
+                        editRoutine(routineData)
+                        true
+                    }
+                    else -> {
+                        false
+                    }
+                }
+            }
             //itemView.findViewById<LinearLayout>(R.id.routineValuesLayout)
         }
+
+        private fun editRoutine(routineData: RoutineSetData) {
+            val intent = Intent(itemView.context, RoutineManageActivity::class.java)
+            intent.putExtra(RoutineManageActivity.routine_edit_id_key, routineData.routineId)
+            itemView.context.startActivity(intent)
+        }
+
         open fun unbind(){
             itemView.routineListGroupEditBtn.setOnClickListener(null)
             itemView.routineListGroupDeleteBtn.setOnClickListener(null)
+            menu?.setOnMenuItemClickListener(null)
+            itemView.routineGroupMenuView.setOnClickListener(null)
         }
 
     }

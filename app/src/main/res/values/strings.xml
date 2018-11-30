@@ -55,4 +55,6 @@
     <string name="routine">Routine</string>
     <string name="value_for_exercise">Value</string>
     <string name="description">Description</string>
+    <string name="mark_done">Mark Done</string>
+    <string name="delete">Delete</string>
 </resources>

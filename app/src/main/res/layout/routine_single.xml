@@ -24,7 +24,7 @@
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/edit_interval_button"
         android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/routineGroupMenuView"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_mode_edit_white_12dp" />
 
@@ -68,5 +68,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView4"
         app:srcCompat="@drawable/ic_done_black_24dp" />
+
+    <ImageButton
+        android:id="@+id/routineGroupMenuView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/routineListGroupEditBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/routineListGroupEditBtn"
+        app:srcCompat="@drawable/ic_more_vert_black_12dp" />
 
 </android.support.constraint.ConstraintLayout>

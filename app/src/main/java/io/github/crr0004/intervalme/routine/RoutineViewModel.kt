@@ -25,7 +25,7 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         get() {
             if(mRoutineToEdit.value == null){
                 mInEditMode = false
-                mRoutineToEdit.value = RoutineSetData(0, "", isTemplate = false)
+                mRoutineToEdit.value = RoutineSetData(0, "", isTemplate = false, isDone = false)
 
             }
             return mRoutineToEdit.value!!
@@ -78,7 +78,7 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun getAllRoutines() : LiveData<ArrayList<RoutineSetData>> {
-        return mRepo.getAllRoutines("select * from Routine where isTemplate = 0")
+        return mRepo.getAllRoutines("select * from Routine where isTemplate = 0 and isDone = 0")
     }
 
     fun deleteRoutine(routineData: RoutineSetData) {
@@ -95,5 +95,9 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
 
     fun getRoutineLiveData(): LiveData<RoutineSetData> {
         return mRoutineToEdit
+    }
+
+    fun update(routine: RoutineSetData) {
+        mRepo.update(routine)
     }
 }

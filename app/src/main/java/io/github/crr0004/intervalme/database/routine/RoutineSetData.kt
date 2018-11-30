@@ -6,10 +6,14 @@ package io.github.crr0004.intervalme.database.routine
 data class RoutineSetData (var routineId: Long,
                            var description: String,
                            var exercises: ArrayList<ExerciseData> = ArrayList(),
-                           var isTemplate: Boolean) {
+                           var isTemplate: Boolean,
+                           var isDone: Boolean) {
+
+
     constructor(routine: RoutineSetData) : this(
             routine.routineId,
             routine.description,
             ArrayList(routine.exercises),
-            routine.isTemplate)
+            routine.isTemplate,
+            routine.isDone)
 }

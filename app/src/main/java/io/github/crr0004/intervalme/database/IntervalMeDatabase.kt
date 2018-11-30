@@ -21,7 +21,7 @@ import io.github.crr0004.intervalme.database.routine.RoutineTableData
     IntervalRunProperties::class,
     IntervalAnalyticsData::class,
     RoutineTableData::class,
-    ExerciseData::class], version = 18)
+    ExerciseData::class], version = 19)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
@@ -47,14 +47,15 @@ abstract class IntervalMeDatabase : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(IntervalMeDatabase::class) {
                     INSTANCE = Room.databaseBuilder(context,
-                            IntervalMeDatabase::class.java, "intervalme.db").allowMainThreadQueries()
+                            IntervalMeDatabase::class.java, "intervalme.db")
                             .addMigrations(
                                     MIGRATION_11_12,
                                     MIGRATION_12_13,
                                     MIGRATION_13_14,
                                     MIGRATION_14_17,
                                     MIGRATION_15_17,
-                                    MIGRATION_17_18)
+                                    MIGRATION_17_18,
+                                    MIGRATION_18_19)
                             .build()
                 }
             }
@@ -109,6 +110,11 @@ abstract class IntervalMeDatabase : RoomDatabase() {
         private val MIGRATION_17_18 = object : Migration(17, 18){
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE `Routine` ADD COLUMN isTemplate INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        private val MIGRATION_18_19 = object : Migration(18,19){
+            override fun migrate(sb: SupportSQLiteDatabase) {
+                sb.execSQL("ALTER TABLE `Routine` ADD COLUMN isDone INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

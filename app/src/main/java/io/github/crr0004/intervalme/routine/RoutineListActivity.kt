@@ -67,6 +67,10 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
         mModel.update(exerciseData)
     }
 
+    override fun update(routineData: RoutineSetData){
+        mModel.update(routineData)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when(item?.itemId){
             R.id.routine_list_menu_add -> {
