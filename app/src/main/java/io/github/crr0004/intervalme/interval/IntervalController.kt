@@ -74,25 +74,8 @@ open class IntervalController
 
         // We do this so accessibility has correct logic
         mClockView?.setOnClickListener {
-            if(!mClockRunning) {
-                startClockAsNew()
-            }else{
-                // The clock has already been started so now we just invert the runnable
-                mClockTickRunnable.mRunning = !mClockTickRunnable.mRunning
-                if(mClockTickRunnable.mRunning){
-                    // The clock was paused so we need to start it again
-                    // We also move the clock ahead to the current time minus however much time has passed
-                    mClockTickRunnable.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable.mElapsedTime
-                    // mClockView!!.post(mClockTickRunnable)
-                    mCallBackHost.clockResumedFromPause(this)
-                }else{
-                    mThread?.interrupt()
-                    mCallBackHost.clockPaused(this)
-                }
-                startClockThread()
-            }
+            clickOnClock()
         }
-
         mClockView?.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))
             mClockTickRunnable = TickClockRunnable(mClockView, TimeUnit.SECONDS.toMillis(childOfInterval.duration), this)
         if (childOfInterval.runningDuration > 0) {
@@ -102,6 +85,26 @@ open class IntervalController
         //Only create new sound mController if it's been previously released
         if(mSoundController == null && applicationContext != null)
             mSoundController = IntervalSoundController.instanceWith(applicationContext.applicationContext, R.raw.digital_watch_alarm_1)
+    }
+
+    private fun clickOnClock(){
+        if(!mClockRunning) {
+            startClockAsNew()
+        }else{
+            // The clock has already been started so now we just invert the runnable
+            mClockTickRunnable.mRunning = !mClockTickRunnable.mRunning
+            if(mClockTickRunnable.mRunning){
+                // The clock was paused so we need to start it again
+                // We also move the clock ahead to the current time minus however much time has passed
+                mClockTickRunnable.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable.mElapsedTime
+                // mClockView!!.post(mClockTickRunnable)
+                mCallBackHost.clockResumedFromPause(this)
+            }else{
+                mThread?.interrupt()
+                mCallBackHost.clockPaused(this)
+            }
+            startClockThread()
+        }
     }
 
     /* This may still be needed in the future
@@ -190,6 +193,9 @@ open class IntervalController
             mClockTickRunnable.connectNewClock(view)
             mClockView!!.setOnTouchListener { _, event ->
                 mDetector.onTouchEvent(event)
+            }
+            mClockView!!.setOnClickListener {
+                clickOnClock()
             }
         }
 
