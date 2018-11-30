@@ -24,8 +24,12 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
 
     private var mRoutineAdapter: RoutineRecyclerAdapter = RoutineRecyclerAdapter(this)
     private val mLayoutManager: RecyclerView.LayoutManager? = LinearLayoutManager(this)
+    private lateinit var mRecyclerView: RecyclerView
     private lateinit var mModel: RoutineViewModel
     private var mShowEditButtons: Boolean = false
+
+    private var editStrikeOutIcon: AnimatedVectorDrawableCompat? = null
+    private var editStrikeOutIconReversed: AnimatedVectorDrawableCompat? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +37,8 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
 
         setSupportActionBar(findViewById(R.id.routine_actionbar))
         supportActionBar?.title = getString(R.string.app_name)
-
-        with(findViewById<RecyclerView>(R.id.routineRecyclerView)){
+        mRecyclerView = findViewById<RecyclerView>(R.id.routineRecyclerView)
+        with(mRecyclerView){
             setHasFixedSize(false)
             adapter = mRoutineAdapter
             layoutManager = mLayoutManager
@@ -44,6 +48,9 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
         mModel.getAllRoutines().observe(this, Observer{
             mRoutineAdapter.values = it
         })
+
+        editStrikeOutIcon = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
+        editStrikeOutIconReversed = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_reverse_animation)
 
         setupNavigation()
     }
@@ -69,20 +76,16 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineR
             R.id.routine_list_toggle_edit_buttons -> {
 
                 //val animation = AnimationUtils.loadAnimation(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if(!mShowEditButtons){
-                        val animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
-                        item.icon = animatedVectorDrawableCompat
-                        animatedVectorDrawableCompat?.start()
-                    }else{
-                        val animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_reverse_animation)
-                        item.icon = animatedVectorDrawableCompat
-                        animatedVectorDrawableCompat?.start()
-                    }
+                if(!mShowEditButtons){
+                    item.icon = editStrikeOutIcon
+                    editStrikeOutIcon?.start()
+                }else{
+                    item.icon = editStrikeOutIconReversed
+                    editStrikeOutIconReversed?.start()
                 }
                 mShowEditButtons = !mShowEditButtons
-                //animation!!.start()
-                mRoutineAdapter.notifyDataSetChanged()
+                mRoutineAdapter.updateRoutineViews()
+
                 true
             }
             else ->{

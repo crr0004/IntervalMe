@@ -9,11 +9,11 @@
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:propertyName="pathData"
-                android:duration="300"
+                android:duration="200"
                 android:valueTo="M 148 160 L 678 160 L 678 690 L 148 690 Z"
                 android:valueFrom="M 148 160 L 178 160 L 178 190 L 148 190 Z"
                 android:valueType="pathType"
-                android:interpolator="@android:anim/accelerate_interpolator"/>
+                android:interpolator="@android:interpolator/accelerate_cubic"/>
         </aapt:attr>
     </target>
 </animated-vector>

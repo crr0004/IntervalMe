@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
@@ -36,7 +35,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
         field = value
         notifyDataSetChanged()
     }
-    var positionMap: HashMap<Int, RoutinePositionMap> = HashMap(1)
+    private var positionMap: HashMap<Int, RoutinePositionMap> = HashMap(1)
     var totalCount: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, pos: Int): RoutineSetViewHolder {
@@ -56,9 +55,31 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
                     mHost
             )
         }
-
+        viewHolder.setIsRecyclable(true)
 
         return viewHolder
+    }
+
+    fun updateRoutineViews(){
+        var index = 0
+        values?.forEach { routineSetData ->
+            this.notifyItemChanged(index)
+            index += routineSetData.exercises.size+1
+        }
+    }
+
+    override fun setHasStableIds(hasStableIds: Boolean) {
+        super.setHasStableIds(true)
+    }
+
+    override fun getItemId(pos: Int): Long {
+        return if(getItemViewType(pos) == 0){
+            positionMap[pos]!!.routineData.routineId
+        }else {
+            val data = positionMap[pos]
+            val index = pos - data!!.pos
+            data.routineData.exercises[index - 1].id
+        }
     }
 
     override fun getItemViewType(pos: Int): Int {
@@ -89,7 +110,6 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     }
 
     override fun onViewRecycled(holder: RoutineSetViewHolder) {
-        super.onViewRecycled(holder)
         holder.unbind()
     }
 
@@ -97,7 +117,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
 
     open class RoutineSetViewHolder(view: View, private val mHost: RoutineRecyclerAdapterActionsI) : RecyclerView.ViewHolder(view) {
         open fun bind(routineData: RoutineSetData, index: Int) {
-            itemView.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
+            itemView.routineSingleName.text = routineData.description
             if(!mHost.isShowEditButtons()){
                 itemView.routineListGroupEditBtn.visibility = View.INVISIBLE
                 itemView.routineListGroupDeleteBtn.visibility = View.INVISIBLE
