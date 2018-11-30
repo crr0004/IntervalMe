@@ -305,7 +305,9 @@ class IntervalRepository(mContext: Context) {
     }
 
     fun insert(intervalToEditProperties: IntervalRunProperties) {
-        mPropertiesDao!!.insert(intervalToEditProperties)
+        mExecutor.execute {
+            mPropertiesDao!!.insert(intervalToEditProperties)
+        }
     }
 
     fun deleteChild(childOfInterval: IntervalData) {
