@@ -1,6 +1,10 @@
 package io.github.crr0004.intervalme.database
 
+import android.annotation.SuppressLint
+import android.arch.lifecycle.ComputableLiveData
 import android.arch.lifecycle.LiveData
+import android.arch.persistence.room.InvalidationTracker
+import android.arch.persistence.room.RoomSQLiteQuery
 import android.content.Context
 import java.util.*
 import java.util.concurrent.Executor
@@ -315,6 +319,95 @@ class IntervalRepository(mContext: Context) {
             mIntervalDao!!.shuffleChildrenInGroupUpFrom(childOfInterval.groupPosition, childOfInterval.group)
             mPropertiesDao!!.deleteByIntervalId(childOfInterval.id)
             mIntervalDao!!.delete(childOfInterval)
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun getAllGroupsAsHashMap(): LiveData<ArrayList<IntervalData>> {
+        return object : ComputableLiveData<ArrayList<IntervalData>>(){
+            private var intervalObserver: InvalidationTracker.Observer? = null
+
+            override fun compute(): ArrayList<IntervalData> {
+                val groupsStatement = RoomSQLiteQuery.acquire(
+                        "select * from Interval where ownerOfGroup order by groupPosition",
+                        0
+                )
+                val allResults: ArrayList<IntervalData> = ArrayList()
+                if(intervalObserver == null){
+                    intervalObserver = object : InvalidationTracker.Observer("Interval"){
+                        override fun onInvalidated(tables: MutableSet<String>) {
+                            invalidate()
+                        }
+                    }
+                    mdb?.invalidationTracker?.addWeakObserver(intervalObserver)
+                }
+                val groupCursorOut = mdb!!.query(groupsStatement)
+                groupCursorOut.use {cursor ->
+                    val cursorIndexOfId = cursor.getColumnIndexOrThrow("id")
+                    val cursorIndexOfLabel = cursor.getColumnIndexOrThrow("label")
+                    val cursorIndexOfGroup = cursor.getColumnIndexOrThrow("group")
+                    // We know this interval is an owner of the group
+                    //val cursorIndexOfOwnerOfGroup = groupCursor.getColumnIndexOrThrow("ownerOfGroup")
+                    val cursorIndexOfLastModified = cursor.getColumnIndexOrThrow("lastModified")
+                    val cursorIndexOfDuration = cursor.getColumnIndexOrThrow("duration")
+                    val cursorIndexOfRunningDuration = cursor.getColumnIndexOrThrow("runningDuration")
+                    val cursorIndexOfGroupPosition = cursor.getColumnIndexOrThrow("groupPosition")
+                    allResults.ensureCapacity(cursor.count)
+                    while(cursor.moveToNext()){
+                        val group = cursor.getString(cursorIndexOfGroup)
+                        val intervalGroup = IntervalData(
+                                cursor.getLong(cursorIndexOfId),
+                                cursor.getString(cursorIndexOfLabel),
+                                UUID.fromString(cursor.getString(cursorIndexOfGroup)),
+                                true,
+                                Date(cursor.getLong(cursorIndexOfLastModified)),
+                                cursor.getLong(cursorIndexOfDuration),
+                                cursor.getLong(cursorIndexOfRunningDuration),
+                                cursor.getLong(cursorIndexOfGroupPosition))
+                        allResults.add(intervalGroup)
+                        getAllOfGroupCursor(group, allResults)
+                    }
+                    groupsStatement.release()
+                    return allResults
+                }
+            }
+        }.liveData
+
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun getAllOfGroupCursor(group: String, allResults: ArrayList<IntervalData>){
+        val groupsStatement = RoomSQLiteQuery.acquire(
+                "select * from Interval where not ownerOfGroup and `group` = ? order by groupPosition",
+                1
+        )
+        groupsStatement.bindString(1, group)
+        val groupCursor = mdb!!.query(groupsStatement)
+        groupCursor.use {
+            val cursorIndexOfId = groupCursor.getColumnIndexOrThrow("id")
+            val cursorIndexOfLabel = groupCursor.getColumnIndexOrThrow("label")
+            val cursorIndexOfGroup = groupCursor.getColumnIndexOrThrow("group")
+            // We know this interval isn't an owner of the group
+            //val cursorIndexOfOwnerOfGroup = groupCursor.getColumnIndexOrThrow("ownerOfGroup")
+            val cursorIndexOfLastModified = groupCursor.getColumnIndexOrThrow("lastModified")
+            val cursorIndexOfDuration = groupCursor.getColumnIndexOrThrow("duration")
+            val cursorIndexOfRunningDuration = groupCursor.getColumnIndexOrThrow("runningDuration")
+            val cursorIndexOfGroupPosition = groupCursor.getColumnIndexOrThrow("groupPosition")
+            while(it.moveToNext()) {
+                val data = IntervalData(
+                        it.getLong(cursorIndexOfId),
+                        it.getString(cursorIndexOfLabel),
+                        UUID.fromString(it.getString(cursorIndexOfGroup)),
+                        false,
+                        Date(it.getLong(cursorIndexOfLastModified)),
+                        it.getLong(cursorIndexOfDuration),
+                        it.getLong(cursorIndexOfRunningDuration),
+                        it.getLong(cursorIndexOfGroupPosition)
+                )
+                allResults.add(data)
+            }
+            groupsStatement.release()
+            return
         }
     }
 

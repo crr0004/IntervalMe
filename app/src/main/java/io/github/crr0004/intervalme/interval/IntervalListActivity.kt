@@ -17,12 +17,10 @@ import android.support.v7.app.AppCompatDelegate
 import android.support.v7.view.menu.MenuBuilder
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.DragDropAnimationController
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.SettingsActivity
@@ -141,13 +139,8 @@ class IntervalListActivity : AppCompatActivity() {
     }
 
     private fun setUpAdapterDataObservers() {
-        val groupObserver = GroupObserver()
-        val liveGroups = mProvider.getGroups()
-        liveGroups.observe(this, Observer { groups: Array<IntervalData>? ->
-            //mAdapter?.clear()
-            groups?.forEachIndexed { index, intervalData ->
-                mProvider.getAllOfGroup(intervalData.group).observe(this, groupObserver)
-            }
+        mProvider.getAllGroups().observe(this, Observer {
+            mRecyclerAdapter.groups = it
         })
         /*
         mProvider.getGroupsSize().observe(this, Observer {
@@ -161,7 +154,7 @@ class IntervalListActivity : AppCompatActivity() {
             }
         })
     }
-
+/*
     inner class GroupObserver : Observer<Array<IntervalData>>{
         override fun onChanged(it: Array<IntervalData>?) {
             if(it != null && it.isNotEmpty()){
@@ -172,13 +165,13 @@ class IntervalListActivity : AppCompatActivity() {
                     Log.d("ILA", "Group is getting set without a group owner")
                 }else{
                     mRecyclerAdapter.setGroup(it[0].groupPosition, it)
-
                 }
             }
             mRecyclerAdapter.notifyDataSetChanged()
         }
 
     }
+    */
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.interval_list_menu, menu)
@@ -367,7 +360,7 @@ class IntervalListActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
 
-        val expandedGroups = BooleanArray(mRecyclerAdapter.groupCount) {false}
+        val expandedGroups = BooleanArray(mRecyclerAdapter.itemCount) {false}
         expandedGroups.forEachIndexed { index, _ ->
             expandedGroups[index] = mRecyclerAdapter.isGroupExpanded(index+1)
         }

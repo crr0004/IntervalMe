@@ -81,4 +81,8 @@ class IntervalViewModel(mApplication: Application): AndroidViewModel(mApplicatio
     fun deleteChild(childOfInterval: IntervalData) {
         mRepo.deleteChild(childOfInterval)
     }
+
+    fun getAllGroups(): LiveData<ArrayList<IntervalData>> {
+        return mRepo.getAllGroupsAsHashMap()
+    }
 }

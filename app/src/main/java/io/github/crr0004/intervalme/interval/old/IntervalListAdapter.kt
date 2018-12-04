@@ -78,14 +78,6 @@ class IntervalListAdapter
         return this
     }
 
-    override fun notifyDataSetChanged() {
-        super.notifyDataSetChanged()
-    }
-
-    override fun notifyDataSetInvalidated() {
-        super.notifyDataSetInvalidated()
-    }
-
     override fun swapItems(item1: IntervalData, item2: IntervalData) {
         val aPos = item1.groupPosition
         var bPos = item2.groupPosition
