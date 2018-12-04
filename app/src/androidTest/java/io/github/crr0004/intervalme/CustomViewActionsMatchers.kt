@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.ExpandableListView
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.routine.ExerciseData
-import io.github.crr0004.intervalme.interval.IntervalListAdapter
+import io.github.crr0004.intervalme.interval.old.IntervalListAdapter
 import io.github.crr0004.intervalme.routine.RoutineManageBasicFragment
 import kotlinx.android.synthetic.main.routine_manage_basic_single_item.view.*
 import org.hamcrest.BaseMatcher

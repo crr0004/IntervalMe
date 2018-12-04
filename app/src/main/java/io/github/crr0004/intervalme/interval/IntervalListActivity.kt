@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.ClipData
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
@@ -16,12 +15,12 @@ import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.view.menu.MenuBuilder
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AbsListView.CHOICE_MODE_MULTIPLE
-import android.widget.ExpandableListView
 import android.widget.Toast
 import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.DragDropAnimationController
@@ -36,8 +35,10 @@ import java.util.*
 
 class IntervalListActivity : AppCompatActivity() {
 
-    private var mAdapter: IntervalListAdapter? = null
-    private var mExpandableListView: ExpandableListView? = null
+    //private var mAdapter: IntervalListAdapter? = null
+    //private var mExpandableListView: ExpandableListView? = null
+    private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mRecyclerAdapter: IntervalRecyclerAdapter
     private lateinit var mDragDropSortController: DragDropAnimationController<IntervalData>
     private lateinit var mProvider: IntervalViewModel
     private var mGroupsSize: Long = 0
@@ -53,16 +54,20 @@ class IntervalListActivity : AppCompatActivity() {
 
     }
 
+
+
     @SuppressLint("InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interval_list)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        mExpandableListView = findViewById(R.id.intervalsExpList)
-        mAdapter = IntervalListAdapter(this, mExpandableListView!!)
-        mExpandableListView!!.setAdapter(mAdapter)
-        mExpandableListView!!.choiceMode = CHOICE_MODE_MULTIPLE
+        mRecyclerView = findViewById(R.id.intervalsExpList)
+        mRecyclerAdapter = IntervalRecyclerAdapter(this)
+        mRecyclerView.apply {
+            adapter = mRecyclerAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        }
         setSupportActionBar(findViewById(R.id.interval_list_actionbar))
         volumeControlStream = AudioManager.STREAM_MUSIC
 
@@ -70,7 +75,7 @@ class IntervalListActivity : AppCompatActivity() {
             val expandedState = savedInstanceState.getBooleanArray(INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID)
 
             expandedState?.forEachIndexed { index, b ->
-                mExpandableListView!!.expandGroup(index+1)
+                //mExpandableListView!!.expandGroup(index+1)
             }
         }
 
@@ -109,14 +114,8 @@ class IntervalListActivity : AppCompatActivity() {
         }
         this.navigation.menu.findItem(R.id.nav_bar_intervals).isChecked = true
 
-
-        if(mAdapter !is DragDropAnimationController.DragDropViewSource<IntervalData>){
-            throw ClassCastException("Cannot cast mAdapter to DragDropViewSource<IntervalData>")
-        }
-        mDragDropSortController = DragDropAnimationController(this, mAdapter as DragDropAnimationController.DragDropViewSource<IntervalData>)
-
-
-        mExpandableListView!!.setOnItemLongClickListener { parentAdapter, v, position, _ ->
+        /*
+        mRecyclerView.setOnLongClickListener { v ->
             val intervalData = parentAdapter.getItemAtPosition(position) as IntervalData
             if(intervalData.ownerOfGroup) {
                 mExpandableListView!!.collapseGroup(intervalData.groupPosition.toInt())
@@ -127,9 +126,11 @@ class IntervalListActivity : AppCompatActivity() {
             v.startDrag(ClipData.newPlainText("",""), View.DragShadowBuilder(v), intervalData, View.DRAG_FLAG_GLOBAL)
             true
         }
+
         mExpandableListView?.setOnGroupExpandListener {
             IntervalControllerFacade.instance.groupExpanded(it)
         }
+        */
 
 
         mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
@@ -148,14 +149,15 @@ class IntervalListActivity : AppCompatActivity() {
                 mProvider.getAllOfGroup(intervalData.group).observe(this, groupObserver)
             }
         })
-
+        /*
         mProvider.getGroupsSize().observe(this, Observer {
             mAdapter?.groupSize = it?.toInt() ?: 0
             mGroupsSize = it ?: 0L
         })
+        */
         mProvider.getProperties().observe(this, Observer {
             it?.forEachIndexed { _, intervalRunProperties ->
-                mAdapter?.setProperty(intervalRunProperties.intervalId, intervalRunProperties)
+                mRecyclerAdapter.setProperty(intervalRunProperties.intervalId, intervalRunProperties)
             }
         })
     }
@@ -169,11 +171,11 @@ class IntervalListActivity : AppCompatActivity() {
                     //mProvider.moveOrphanedChildrenToGroup(ETC_GROUP_UUID)
                     Log.d("ILA", "Group is getting set without a group owner")
                 }else{
-                    mAdapter?.setGroup(it[0].groupPosition, it)
+                    mRecyclerAdapter.setGroup(it[0].groupPosition, it)
 
                 }
             }
-            mAdapter?.notifyDataSetChanged()
+            mRecyclerAdapter.notifyDataSetChanged()
         }
 
     }
@@ -205,20 +207,20 @@ class IntervalListActivity : AppCompatActivity() {
                 true
             }
             R.id.action_start_all_clocks ->{
-                mAdapter?.startAllIntervals()
+                mRecyclerAdapter.startAllIntervals()
                 true
             }
             R.id.action_swap_intervals ->{
-                val itemPositions = mAdapter!!.mChecked
+                val itemPositions = mRecyclerAdapter.mChecked
                 if(itemPositions.size() != 2){
                     Toast.makeText(this, "Please select two items", Toast.LENGTH_SHORT).show()
                     return false
                 }
-                val item1 = mExpandableListView!!.getItemAtPosition(itemPositions.keyAt(0)) as IntervalData
-                val item2 = mExpandableListView!!.getItemAtPosition(itemPositions.keyAt(1)) as IntervalData
+                val item1 = mRecyclerAdapter.getItemAtPosition(itemPositions.keyAt(0)) as IntervalData
+                val item2 = mRecyclerAdapter.getItemAtPosition(itemPositions.keyAt(1)) as IntervalData
 
-                mAdapter!!.setItemChecked(itemPositions.keyAt(0), false)
-                mAdapter!!.setItemChecked(itemPositions.keyAt(1), false)
+                mRecyclerAdapter.setItemChecked(itemPositions.keyAt(0), false)
+                mRecyclerAdapter.setItemChecked(itemPositions.keyAt(1), false)
 
                 mDragDropSortController.swapItems(item1,item2)
 
@@ -237,11 +239,12 @@ class IntervalListActivity : AppCompatActivity() {
                     it.groupPosition = i.toLong()
                     intervalDao.update(it)
                 }
-                mAdapter!!.notifyDataSetInvalidated()
+                mRecyclerAdapter.notifyDataSetChanged()
                 true
             }
             R.id.action_edit_items -> {
-                if(!mAdapter!!.mInEditMode){
+
+                if(!mRecyclerAdapter.mInEditMode){
                     val animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
                     item.icon = animatedVectorDrawableCompat
                     animatedVectorDrawableCompat?.start()
@@ -250,8 +253,9 @@ class IntervalListActivity : AppCompatActivity() {
                     item.icon = animatedVectorDrawableCompat
                     animatedVectorDrawableCompat?.start()
                 }
-                mAdapter!!.mInEditMode = !mAdapter!!.mInEditMode
-                mAdapter!!.notifyDataSetChanged()
+
+                mRecyclerAdapter.mInEditMode = !mRecyclerAdapter.mInEditMode
+                mRecyclerAdapter.notifyDataSetChanged()
                 true
             }
             R.id.action_create_etc_group -> {
@@ -278,14 +282,14 @@ class IntervalListActivity : AppCompatActivity() {
                 true
             }
             R.id.action_duplicate_intervals -> {
-                val checked = mAdapter!!.mChecked
+                val checked = mRecyclerAdapter.mChecked
                 if(checked.size() > 0) {
                     val copiedList = Array<IntervalData?>(checked.size()) {
-                        val intervalToCopy = mExpandableListView!!.getItemAtPosition(checked.keyAt(it)) as IntervalData
+                        val intervalToCopy = mRecyclerAdapter.getItemAtPosition(checked.keyAt(it))
                         IntervalData(intervalToCopy)
                     }
                     mProvider.insertIntervalIntoGroup(copiedList, copiedList[0]!!.group)
-                    mAdapter!!.mChecked.clear()
+                    mRecyclerAdapter.mChecked.clear()
                 }else{
                     Toast.makeText(this, "Please select items", Toast.LENGTH_SHORT).show()
                     return false
@@ -339,12 +343,11 @@ class IntervalListActivity : AppCompatActivity() {
 
         super.onActivityResult(requestCode, resultCode, data)
 
-        Log.d("ila", "IntervalListActivity onActivityResult")
         if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
             //val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
-            mAdapter?.notifyDataSetChanged()
+            //mAdapter?.notifyDataSetChanged()
         }else if(requestCode == INTENT_ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-            mAdapter?.notifyDataSetChanged()
+           // mAdapter?.notifyDataSetChanged()
         }
     }
 
@@ -364,9 +367,9 @@ class IntervalListActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
 
-        val expandedGroups = BooleanArray(mAdapter!!.groupCount) {false}
+        val expandedGroups = BooleanArray(mRecyclerAdapter.groupCount) {false}
         expandedGroups.forEachIndexed { index, _ ->
-            expandedGroups[index] = mExpandableListView!!.isGroupExpanded(index+1)
+            expandedGroups[index] = mRecyclerAdapter.isGroupExpanded(index+1)
         }
         // ilpes -> interval_list_pause_expanded_state
         outState!!.putBooleanArray(INTERVAL_LIST_BUNDLE_EXPANDED_STATE_ID, expandedGroups)

@@ -154,7 +154,7 @@ open class IntervalController
         mThread?.interrupt()
 
         mClockTickRunnable.mTimeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)
-        mCallBackHost.clockStopped(this)
+        //mCallBackHost.clockStopped(this)
 
         //mClockView?.setClockTime(mClockTickRunnable.mTimeToRun)
     }
@@ -187,8 +187,17 @@ open class IntervalController
     }
 
     open fun connectNewClockView(view: View) {
+        val attached = false
+        Log.d("IC", "Connecting " + Integer.toHexString(System.identityHashCode(view)) + " is attached $attached")
         if(view.id == R.id.intervalClockView) {
+
+            mClockView?.setOnTouchListener(null)
+            mClockView?.setOnClickListener(null)
+            mClockView?.mPercentageComplete = 0f
+            mClockView?.setClockTime(0)
+
             mClockView = view as IntervalClockView
+
 
             mClockTickRunnable.connectNewClock(view)
             mClockView!!.setOnTouchListener { _, event ->
@@ -230,14 +239,16 @@ open class IntervalController
                 mClockView?.setClockTime(mTimeToRun - mElapsedTime)
             }else{
                 mClockView?.setClockTime(0)
+                //mUpdateClockHandler?.removeCallbacks(this)
             }
         }
 
         fun connectNewClock(clockView: IntervalClockView){
-            mClockView = clockView
-            mClockView?.setClockTime(mTimeToRun - mElapsedTime)
+            mUpdateClockHandler?.removeCallbacks(updateClock)
+            this.mClockView = clockView
             updatePercentComplete()
-            mUpdateClockHandler = mClockView?.handler
+            mUpdateClockHandler = mClockView!!.handler
+            mClockView!!.setClockTime(mTimeToRun - mElapsedTime)
 
         }
 
@@ -252,6 +263,7 @@ open class IntervalController
 
                     }
                 } else if (mRunning) {
+                    //mUpdateClockHandler?.removeCallbacks(updateClock)
                     mUpdateClockHandler?.post(updateClock)
                     mIntervalController.finishedTimer()
                     mRunning = false
@@ -263,7 +275,7 @@ open class IntervalController
             mStartingTime = SystemClock.elapsedRealtime()
             mElapsedTime = 0
         }
-        @Synchronized
+
         fun updatePercentComplete(){
             if(mTimeToRun - mElapsedTime >= 100f) {
                 mClockView?.mPercentageComplete = mElapsedTime.toFloat() / mTimeToRun

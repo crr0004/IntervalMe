@@ -6,14 +6,14 @@ import android.os.Build
 import android.os.Handler
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import io.github.crr0004.intervalme.R
-import java.lang.UnsupportedOperationException
 import java.util.concurrent.TimeUnit
 
 
-class IntervalClockView(context: Context?, attrs: AttributeSet?) : android.support.v7.widget.AppCompatImageView(context, attrs) {
+class IntervalClockView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
 
     private var mCirclePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -29,10 +29,6 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : android.suppo
     private val mHandler: Handler = Handler()
 
     var mPercentageComplete = 0.0f
-        set(value) {
-            field = value
-            this.invalidate()
-        }
 
     private var mClockText: StringBuilder = StringBuilder(8)
 
@@ -87,6 +83,11 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : android.suppo
                 //time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
         ))
         this.invalidate()
+        Log.d("ICV", "in setClockTime $time view is attached ")
+    }
+
+    override fun isClickable(): Boolean {
+        return true
     }
 
 
@@ -112,17 +113,17 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : android.suppo
         //Center is in the center of the view
         mCenter.set((w/2).toFloat(), (h/2).toFloat())
         mBounds.set(mCenter.x-mCircleSize,mCenter.y-mCircleSize,mCenter.x+mCircleSize,mCenter.y+mCircleSize)
+
     }
 
     override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
+
         //canvas!!.drawCircle((width/2).toFloat(), (height/2).toFloat(), (Math.min(width,height)/2).toFloat(), mCirclePaint)
         canvas!!.drawArc(mBounds,0.0f, 360f, false, mCirclePaint)
         //270 so it starts at the top
         canvas.drawArc(mBounds,270f, 360f * mPercentageComplete, true, mOverlayPaint)
 
         canvas.drawText(mClockText.toString(),mCenter.x,mCenter.y,mTextPaint)
-
     }
 
     /**
@@ -134,7 +135,7 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : android.suppo
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        //super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         // Try for a width based on our minimum
         val minw = paddingLeft + paddingRight + suggestedMinimumWidth

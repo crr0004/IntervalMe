@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <ExpandableListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/intervalsExpList"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -1,4 +1,4 @@
-package io.github.crr0004.intervalme.interval
+package io.github.crr0004.intervalme.interval.old
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
@@ -20,6 +20,8 @@ import io.github.crr0004.intervalme.DragDropAnimationController
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
+import io.github.crr0004.intervalme.interval.IntervalControllerFacade
+import io.github.crr0004.intervalme.interval.IntervalListActivity
 import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.*
 
@@ -74,6 +76,14 @@ class IntervalListAdapter
 
     override fun getAdapter(): ExpandableListAdapter {
         return this
+    }
+
+    override fun notifyDataSetChanged() {
+        super.notifyDataSetChanged()
+    }
+
+    override fun notifyDataSetInvalidated() {
+        super.notifyDataSetInvalidated()
     }
 
     override fun swapItems(item1: IntervalData, item2: IntervalData) {
@@ -334,30 +344,19 @@ class IntervalListAdapter
     }
 
 
-    @SuppressLint("InflateParams")
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
         var toReturn: View? = null
         val childOfInterval = getChild(groupPosition, childPosition)
-        var previousInterval: IntervalData? = null
-
-        if(childPosition > 0) {
-            previousInterval = getChild(groupPosition, childPosition - 1)
-        }
-
-        //toReturn = mCachedViews[childOfInterval.id]
 
         //Top null check for cached view
-        if(convertView?.id == R.layout.interval_single_clock)
+        if(convertView?.id == R.id.interval_single_clock)
             toReturn = convertView
-        // Look for our mController that may have been forward init
-        //var controller: IntervalGroupController? = mGroupControlls[groupPosition.toLong()]!!
-        // If we're using an existing mController we must make sure to release properly before re-init
 
         // second null check for using a converted view
         if (toReturn == null) {
             val inflater = mHostActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            //Passing null as root until I figure it out. Passing parent causes a crash
-            toReturn = inflater.inflate(R.layout.interval_single_clock, null)
+            toReturn = inflater.inflate(R.layout.interval_single_clock, parent, false)
+            Log.d("ILA", "Inflating new single clock layout")
         }
 
         val clockView = toReturn!!.findViewById<IntervalClockView>(R.id.intervalClockView)
@@ -366,7 +365,7 @@ class IntervalListAdapter
         val checkBox = toReturn.findViewById<CheckBox>(R.id.clockEditCheckbox)
         val properties = getProperties(childOfInterval.id)
         if(properties != null){
-            toReturn.findViewById<TextView>(R.id.clockLoopsTxt).text = properties .loops.toString()
+            toReturn.findViewById<TextView>(R.id.clockLoopsTxt).text = properties.loops.toString()
         }else{
             toReturn.findViewById<TextView>(R.id.clockLoopsTxt).visibility = View.GONE
             toReturn.findViewById<TextView>(R.id.clockLabelLoops).visibility = View.GONE
@@ -388,24 +387,9 @@ class IntervalListAdapter
 
         toReturn.setOnDragListener(intervalOnDragListener)
 
-        IntervalControllerFacade.instance.connectClockView(clockView, groupPosition, childOfInterval)
-        // Controller hasn't been forward cached so create it
-        //if(controller == null) {
-            //controller = IntervalController(clockView, childOfInterval, applicationContext = this.mHostActivity.applicationContext, runProperties = properties)
-        //}else {
-            // We need to tell the other mController to disconnect from the clock
-            //clockView.mController?.disconnectFromViews()
-            //controller?.disconnectFromViews(childPosition)
-            //controller?.connectNewClockView(clockView, childPosition)
-            //clockView.mController = controller
-        //}
-        // Ensure controller is up to date
-        //controller.mChildOfInterval = childOfInterval
+        if(convertView != null)
+            IntervalControllerFacade.instance.connectClockView(clockView, groupPosition, childOfInterval)
 
-        //if(childPosition > 0)
-            //mCachedControllers[previousInterval!!.id]!!.setNextInterval(controller)
-
-        //mCachedControllers[childOfInterval.id] = controller
         val flatListPosition = mHost.getFlatListPosition(getPackedPositionForChild(groupPosition, childPosition))
         checkBox.setOnClickListener {
             setItemChecked(flatListPosition, checkBox.isChecked)
@@ -431,10 +415,14 @@ class IntervalListAdapter
         return toReturn
     }
 
+
+
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {
         val childOfInterval = getChild(groupPosition,childPosition)
         return childOfInterval.id
     }
+
+
 
     override fun getGroupCount(): Int {
         return mIntervalsList?.size ?: 0
