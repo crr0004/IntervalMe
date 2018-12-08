@@ -187,10 +187,9 @@ open class IntervalController
     }
 
     open fun connectNewClockView(view: View) {
-        val attached = false
-        Log.d("IC", "Connecting " + Integer.toHexString(System.identityHashCode(view)) + " is attached $attached")
         if(view.id == R.id.intervalClockView) {
 
+            // Reset last bound view
             mClockView?.setOnTouchListener(null)
             mClockView?.setOnClickListener(null)
             mClockView?.mPercentageComplete = 0f
@@ -244,6 +243,7 @@ open class IntervalController
         }
 
         fun connectNewClock(clockView: IntervalClockView){
+            // Ensure no lingering updates are going to happen
             mUpdateClockHandler?.removeCallbacks(updateClock)
             this.mClockView = clockView
             updatePercentComplete()

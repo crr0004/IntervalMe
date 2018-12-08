@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Handler
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import io.github.crr0004.intervalme.R
@@ -83,7 +82,6 @@ class IntervalClockView(context: Context?, attrs: AttributeSet?) : View(context,
                 //time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
         ))
         this.invalidate()
-        Log.d("ICV", "in setClockTime $time view is attached ")
     }
 
     override fun isClickable(): Boolean {
