@@ -216,14 +216,19 @@ open class IntervalViewHolder(v: View, val mHost: IntervalRecyclerViewHolderActi
     val data: IntervalData?
     get() {return mData}
     open fun bind(intervalData: IntervalData, expanded: Boolean = false){
-        Log.d("IRA", "Binding $adapterPosition")
+        //Log.d("IRA", "Binding $adapterPosition")
         this.mData = intervalData
+
         itemView.findViewById<TextView>(R.id.intervalGroupNameTxt).text = intervalData.label
         itemView.findViewById<TextView>(R.id.intervalGroupPos).text = intervalData.groupPosition.toString()
         itemView.setTag(R.id.id_interval_view_interval, intervalData)
+
         val editButton = itemView.findViewById<AppCompatImageButton>(R.id.clockGroupEditButton)
         val deleteButton = itemView.findViewById<AppCompatImageButton>(R.id.clockGroupDeleteButton)
-        IntervalControllerFacade.instance.setUpGroupOrder(intervalData.groupPosition.toInt(), itemView.context)
+
+        if(!IntervalControllerFacade.instance.isGroupSetUp(group = intervalData.group))
+            IntervalControllerFacade.instance.setUpGroupOrder(intervalData.groupPosition.toInt(), itemView.context)
+
         itemView.intervalGroupLoops.text = (mHost.getPropertiesFor(intervalData)?.loops ?: "").toString()
         if(mHost.isInEditMode()){
             editButton.visibility = View.VISIBLE

@@ -103,7 +103,6 @@ open class IntervalController
                 mThread?.interrupt()
                 mCallBackHost.clockPaused(this)
             }
-            startClockThread()
         }
     }
 

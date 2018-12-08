@@ -38,6 +38,15 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
                 connectNewClockView(toReturn)
     }
 
+    fun isGroupSetUp(groupPosition: Int): Boolean {
+        return mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)] != null
+    }
+
+    fun isGroupSetUp(group: UUID): Boolean{
+        return mControllers[group] != null
+    }
+
+
     /**
      * Sets up an intervals group controllers. This is a heavy call so be careful to only cal when needed
      */
@@ -198,6 +207,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     fun groupExpanded(pos: Int) {
         updateProperties(mDataSource.facadeGetIDFromPosition(pos))
     }
+
 
     companion object {
 
