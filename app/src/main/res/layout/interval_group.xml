@@ -43,8 +43,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:singleLine="true"
         android:maxWidth="305dp"
+        android:singleLine="true"
         android:text="@string/app_name"
         android:textAlignment="center"
         android:textSize="30sp"
@@ -76,4 +76,28 @@
         app:layout_constraintEnd_toStartOf="@id/clockGroupEditButton"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_remove_white_12dp" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/intervalGroupNameTxt" />
+
+    <ImageButton
+        android:id="@+id/clockGroupMoreButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        android:tint="@color/gray_active"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/intervalGroupNameTxt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_expand_more_24dp" />
 </android.support.constraint.ConstraintLayout>
