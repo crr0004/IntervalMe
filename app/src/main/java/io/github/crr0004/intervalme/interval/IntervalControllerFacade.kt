@@ -56,11 +56,11 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     fun connectClockView(clockView: IntervalClockView, groupPosition: Int, childOfInterval: IntervalData) {
         // Gets the id (uuid) of a group from its position, then the child by the position within the group
         // then connects a new view to the controller
-        if(BuildConfig.DEBUG && childOfInterval.groupPosition + 1 >= mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)]?.size ?: 0){
+        if(BuildConfig.DEBUG && childOfInterval.groupPosition + 1 >= mControllers[childOfInterval.group]?.size ?: 0){
             val childPos = childOfInterval.groupPosition + 1
             Log.d("ICF", "Trying to get a child at $childPos of group $groupPosition that doesn't have a controller")
         }
-        mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)]!![childOfInterval.groupPosition.toInt()+1].connectNewClockView(clockView)
+        mControllers[childOfInterval.group]!![childOfInterval.groupPosition.toInt()+1].connectNewClockView(clockView)
     }
 
     fun setIntervalAsLast(groupPosition: Int, childOfInterval: IntervalData) {
@@ -98,7 +98,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     }
 
     /**
-     * Causes a view update to match the groups properties
+     * Causes a view update to match the mGroups properties
      */
     private fun updateProperties(group: UUID){
         val properties = getRunningProperties(group)

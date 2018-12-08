@@ -413,6 +413,7 @@ class IntervalRepository(mContext: Context) {
 
 
     internal inner class QueueExecutor : Executor{
+        @get:Synchronized
         private val queue = ArrayList<Runnable>()
         private var running = false
         override fun execute(p0: Runnable?) {
@@ -422,11 +423,11 @@ class IntervalRepository(mContext: Context) {
         }
 
         fun runQueue(){
-            Thread {
+            Thread( {
                 queue.forEachIndexed { _, runnable ->
                     runnable.run()
                 }
-            }.run()
+            }, "Queue Runnable").start()
             running = true
         }
     }

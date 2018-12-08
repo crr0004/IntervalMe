@@ -60,11 +60,18 @@ class IntervalListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_interval_list)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        mRecyclerView = findViewById(R.id.intervalsExpList)
+        mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
         mRecyclerAdapter = IntervalRecyclerAdapter(this)
+
+        IntervalControllerFacade.instance.setAnalyticsDataSource(mProvider.mAnalyticsRepository)
+        IntervalControllerFacade.instance.setDataSource(mRecyclerAdapter)
+
+        mRecyclerView = findViewById(R.id.intervalsExpList)
+
         mRecyclerView.apply {
             adapter = mRecyclerAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            setHasFixedSize(false)
         }
         setSupportActionBar(findViewById(R.id.interval_list_actionbar))
         volumeControlStream = AudioManager.STREAM_MUSIC
@@ -131,16 +138,14 @@ class IntervalListActivity : AppCompatActivity() {
         */
 
 
-        mProvider = ViewModelProviders.of(this).get(IntervalViewModel::class.java)
 
-        IntervalControllerFacade.instance.setAnalyticsDataSource(mProvider.mAnalyticsRepository)
 
         setUpAdapterDataObservers()
     }
 
     private fun setUpAdapterDataObservers() {
         mProvider.getAllGroups().observe(this, Observer {
-            mRecyclerAdapter.groups = it
+            mRecyclerAdapter.mGroups = it
         })
         /*
         mProvider.getGroupsSize().observe(this, Observer {
@@ -204,13 +209,13 @@ class IntervalListActivity : AppCompatActivity() {
                 true
             }
             R.id.action_swap_intervals ->{
-                val itemPositions = mRecyclerAdapter.mChecked
+                val itemPositions = mRecyclerAdapter.getCheckedItems()
                 if(itemPositions.size() != 2){
                     Toast.makeText(this, "Please select two items", Toast.LENGTH_SHORT).show()
                     return false
                 }
-                val item1 = mRecyclerAdapter.getItemAtPosition(itemPositions.keyAt(0)) as IntervalData
-                val item2 = mRecyclerAdapter.getItemAtPosition(itemPositions.keyAt(1)) as IntervalData
+                val item1 = mRecyclerAdapter.getItemAtPosition(itemPositions.keyAt(0))
+                val item2 = mRecyclerAdapter.getItemAtPosition(itemPositions.keyAt(1))
 
                 mRecyclerAdapter.setItemChecked(itemPositions.keyAt(0), false)
                 mRecyclerAdapter.setItemChecked(itemPositions.keyAt(1), false)
@@ -248,7 +253,7 @@ class IntervalListActivity : AppCompatActivity() {
                 }
 
                 mRecyclerAdapter.mInEditMode = !mRecyclerAdapter.mInEditMode
-                mRecyclerAdapter.notifyDataSetChanged()
+                mRecyclerAdapter.notifyItemRangeChanged(0, mRecyclerAdapter.itemCount)
                 true
             }
             R.id.action_create_etc_group -> {
@@ -275,14 +280,14 @@ class IntervalListActivity : AppCompatActivity() {
                 true
             }
             R.id.action_duplicate_intervals -> {
-                val checked = mRecyclerAdapter.mChecked
+                val checked = mRecyclerAdapter.getCheckedItems()
                 if(checked.size() > 0) {
                     val copiedList = Array<IntervalData?>(checked.size()) {
                         val intervalToCopy = mRecyclerAdapter.getItemAtPosition(checked.keyAt(it))
                         IntervalData(intervalToCopy)
                     }
                     mProvider.insertIntervalIntoGroup(copiedList, copiedList[0]!!.group)
-                    mRecyclerAdapter.mChecked.clear()
+                    mRecyclerAdapter.clearCheckedItems()
                 }else{
                     Toast.makeText(this, "Please select items", Toast.LENGTH_SHORT).show()
                     return false
@@ -338,9 +343,9 @@ class IntervalListActivity : AppCompatActivity() {
 
         if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
             //val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
-            //mAdapter?.notifyDataSetChanged()
+            //mRecyclerAdapter.notifyDataSetChanged()
         }else if(requestCode == INTENT_ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-           // mAdapter?.notifyDataSetChanged()
+           // mRecyclerAdapter.notifyDataSetChanged()
         }
     }
 
