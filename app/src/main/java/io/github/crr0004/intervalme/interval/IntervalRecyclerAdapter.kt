@@ -228,8 +228,14 @@ open class IntervalViewHolder(v: View, val mHost: IntervalRecyclerViewHolderActi
 
         if(!IntervalControllerFacade.instance.isGroupSetUp(group = intervalData.group))
             IntervalControllerFacade.instance.setUpGroupOrder(intervalData.groupPosition.toInt(), itemView.context)
+        val properties = mHost.getPropertiesFor(intervalData)
+        if(properties == null){
+            itemView.intervalGroupLoops.visibility = View.GONE
+            itemView.intervalGroupLoopsLbl.visibility = View.GONE
+        }
 
-        itemView.intervalGroupLoops.text = (mHost.getPropertiesFor(intervalData)?.loops ?: "").toString()
+        itemView.intervalGroupLoops.text = (properties?.loops ?: "").toString()
+
         if(mHost.isInEditMode()){
             editButton.visibility = View.VISIBLE
             deleteButton.visibility = View.VISIBLE
@@ -237,44 +243,48 @@ open class IntervalViewHolder(v: View, val mHost: IntervalRecyclerViewHolderActi
             editButton.visibility = View.INVISIBLE
             deleteButton.visibility = View.INVISIBLE
         }
+
         editButton.setOnClickListener {
             mHost.launchAddInEditMode(intervalData)
         }
         deleteButton.setOnClickListener{
             mHost.deleteGroup(intervalData)
         }
+
         if(mHost.groupExpanded(adapterPosition)) {
             itemView.clockGroupMoreButton.rotation = 180f
         }else{
             itemView.clockGroupMoreButton.rotation = 0f
         }
-        itemView.clockGroupMoreButton.setOnSystemUiVisibilityChangeListener {
-            Log.d("IRA", "Clock more button at $adapterPosition changed visibility")
-        }
+
         itemView.clockGroupMoreButton.setOnClickListener {view ->
             mHost.toggleGroupExpanded(this)
-            if(mHost.groupExpanded(adapterPosition)) {
-                ObjectAnimator.ofFloat(view, "rotation", 0f, 180f).apply {
-                    duration = 150
-                    start()
-                }
-                /*
-                AnimationUtils.loadAnimation(view.context, R.anim.rotate_180_degrees).also {
-                    view.startAnimation(it)
-                }
-                */
-            }else{
-                ObjectAnimator.ofFloat(view, "rotation", 180f, 0f).apply {
-                    duration = 150
-                    start()
-                }
-            }
-
+            toggleMoreButton(view)
             mHost.groupChangedAt(adapterPosition)
         }
         itemView.setOnClickListener {
-            //mHost.toggleGroupExpanded(this)
-            //mHost.groupChangedAt(adapterPosition)
+            mHost.toggleGroupExpanded(this)
+            toggleMoreButton(itemView.clockGroupMoreButton)
+            mHost.groupChangedAt(adapterPosition)
+        }
+    }
+
+    private fun toggleMoreButton(view: View){
+        if(mHost.groupExpanded(adapterPosition)) {
+            ObjectAnimator.ofFloat(view, "rotation", 0f, 180f).apply {
+                duration = 150
+                start()
+            }
+            /*
+            AnimationUtils.loadAnimation(view.context, R.anim.rotate_180_degrees).also {
+                view.startAnimation(it)
+            }
+            */
+        }else{
+            ObjectAnimator.ofFloat(view, "rotation", 180f, 0f).apply {
+                duration = 150
+                start()
+            }
         }
     }
 
