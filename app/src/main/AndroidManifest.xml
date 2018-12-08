@@ -18,7 +18,11 @@
             android:name=".interval.IntervalListActivity"
             android:launchMode="singleTop"
             android:noHistory="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".interval.IntervalPropertiesEditActivity"
@@ -32,11 +36,7 @@
         <activity
             android:name=".routine.RoutineListActivity"
             android:windowSoftInputMode="stateHidden">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
         </activity>
         <activity
             android:name=".routine.RoutineManageActivity"
