@@ -25,6 +25,7 @@ class IntervalSimpleGroupAdapter : RecyclerView.Adapter<IntervalSimpleGroupAdapt
             itemView.intervalGroupPos.visibility = View.GONE
             itemView.intervalGroupLoopsLbl.visibility = View.GONE
             itemView.intervalGroupLoops.visibility = View.GONE
+            itemView.clockGroupMoreButton.visibility = View.GONE
         }
 
     }
