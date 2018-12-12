@@ -98,7 +98,9 @@ class IntervalAddSharedModel(mApplication: Application): AndroidViewModel(mAppli
             }
         }else{
             if(!isInEditMode){
-                mRepo.insertIntervalIntoGroup(mIntervalToEdit.value!!, mIntervalToEditGroup!!.group)
+                // Only add a interval if one of the fields has been set
+                if(mIntervalToEdit.value != null)
+                    mRepo.insertIntervalIntoGroup(mIntervalToEdit.value!!, mIntervalToEditGroup!!.group)
             }else{
                 if(mIntervalToEdit.value!!.group != mIntervalToEditGroup!!.group){
                     mRepo.moveIntervalToGroup(mIntervalToEdit.value!!, mIntervalToEditGroup!!.group)
