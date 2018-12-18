@@ -17,11 +17,6 @@
             app:showAsAction="withText"
             />
         <item
-            android:id="@+id/action_swap_intervals"
-            android:title="@string/swap_selected_intervals"
-            app:showAsAction="withText"
-            />
-        <item
             android:id="@+id/action_clear_db"
             android:title="@string/clear_database"
             app:showAsAction="withText"
