@@ -41,13 +41,13 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     private var positionMap: HashMap<Int, RoutinePositionMap> = HashMap(1)
     var totalCount: Int = 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, pos: Int): RoutineSetViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoutineSetViewHolder {
 
         val viewHolder: RoutineSetViewHolder
-        viewHolder = if(getItemViewType(pos) == 0){
+        viewHolder = if(viewType == 0){
 
             if(mHost.isOverrideRoutineSetViewHolder())
-                mHost.getRoutineSetViewHolder(parent, pos)!!
+                mHost.getRoutineSetViewHolder(parent, viewType)!!
             else {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single, parent, false)
                 val menu = PopupMenu(parent.context, view, (Gravity.END or Gravity.TOP))
