@@ -1,16 +1,22 @@
 package io.github.crr0004.intervalme.interval
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
+import android.os.Build
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.AppCompatImageButton
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.util.SparseBooleanArray
+import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.widget.CheckBox
 import android.widget.TextView
+import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
@@ -27,15 +33,131 @@ class IntervalRecyclerAdapter(val mHost: IntervalListActivity) : RecyclerView.Ad
     private var mIntervalProperties: HashMap<Long, IntervalRunProperties> = HashMap()
     private val mCheckedItems: SparseBooleanArray = SparseBooleanArray()
     private val mExpandedGroups: SparseBooleanArray = SparseBooleanArray()
+    private val intervalViewHolderOnDragListener = View.OnDragListener { v, event ->
+        val eventType = event.action
+        val intervalBeingDragged = event.localState as IntervalData
+        Log.d("IRA", "Event type: $eventType")
+        v.pivotX = 0f
+        v.pivotY = v.height.toFloat()
+
+        when (eventType) {
+            DragEvent.ACTION_DRAG_STARTED -> {
+                true
+            }
+            DragEvent.ACTION_DRAG_ENTERED -> {
+                val set = AnimatorSet()
+                set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                        1f, 0.8f))
+                set.duration = v.resources.getInteger(
+                        android.R.integer.config_mediumAnimTime).toLong()
+                set.interpolator = DecelerateInterpolator()
+                set.start()
+
+                // Invalidate the view to force a redraw in the new tint
+                v.invalidate()
+                true
+
+            }
+            DragEvent.ACTION_DRAG_EXITED -> {
+                val set = AnimatorSet()
+                set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                        0.8f, 1f))
+                set.duration = v.resources.getInteger(
+                        android.R.integer.config_mediumAnimTime).toLong()
+                set.interpolator = DecelerateInterpolator()
+                set.start()
+                true
+            }
+            DragEvent.ACTION_DROP -> {
+                val set = AnimatorSet()
+                set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                        0.8f, 1f))
+                set.duration = v.resources.getInteger(
+                        android.R.integer.config_mediumAnimTime).toLong()
+                set.interpolator = DecelerateInterpolator()
+                set.start()
+                val adapterPosition = mRecyclerView!!.getChildAdapterPosition(v)
+                val intervalDroppedOn = mGroups!![adapterPosition]!!
+                if(intervalDroppedOn.ownerOfGroup){
+                    mHost.moveIntervalToGroup(intervalBeingDragged, intervalDroppedOn.group)
+                }else{
+                    mHost.moveChildIntervalAboveChild(intervalBeingDragged, intervalDroppedOn)
+                }
+                /*
+            val packedPos = mHost.getExpandableListPosition(mHost.getPositionForView(v))
+            val intervalDroppedOn = if (v.id == R.id.interval_group) {
+                val groupPos = ExpandableListView.getPackedPositionGroup(packedPos)
+                getGroup(groupPos)
+            } else {
+                val childPos = ExpandableListView.getPackedPositionChild(packedPos)
+                val groupPos = ExpandableListView.getPackedPositionGroup(packedPos)
+                getChild(groupPos, childPos)
+            }
+
+
+            /**
+             * If the interval being dropped on is a group then we need
+             * to change the behaviour if the interval being dragged is itself a group
+             */
+            if (intervalDroppedOn.ownerOfGroup) {
+                val groupUUID = intervalDroppedOn.group
+                if (intervalBeingDragged.group != groupUUID && !intervalBeingDragged.ownerOfGroup) {
+                    mHostActivity.moveIntervalToGroup(intervalBeingDragged, groupUUID)
+                    mHost.expandGroup(intervalDroppedOn.groupPosition.toInt())
+                } else if (intervalBeingDragged.ownerOfGroup && intervalDroppedOn.ownerOfGroup) {
+                    // We've dropped one group on top of another
+                    mIntervalsList?.clear()
+                    mHostActivity.moveIntervalGroupAboveGroup(intervalBeingDragged, intervalDroppedOn)
+                }
+
+                // We don't want to be able to move a group onto a child
+            } else if (!intervalBeingDragged.ownerOfGroup) {
+
+                mHostActivity.moveChildIntervalAboveChild(intervalBeingDragged, intervalDroppedOn)
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Toast.makeText(mHostActivity, "Undefined behaviour", Toast.LENGTH_SHORT).show()
+                }
+            }
+            */
+                // this.notifyDataSetChanged()
+                //swapItems(interval, intervalData)
+                true
+            }
+            DragEvent.ACTION_DRAG_ENDED -> {
+                if (v.scaleY < 1f) {
+                    val set = AnimatorSet()
+                    set.play(ObjectAnimator.ofFloat(v, View.SCALE_Y,
+                            0.8f, 1f))
+                    set.duration = v.resources.getInteger(
+                            android.R.integer.config_mediumAnimTime).toLong()
+                    set.interpolator = DecelerateInterpolator()
+                    set.start()
+                }
+                v.invalidate()
+                true
+            }
+            else -> {
+                false
+            }
+        }
+    }
     var mGroups: ArrayList<IntervalData>? = null
     set(value) {
         field = value
+        IntervalControllerFacade.instance.reset()
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(p0: ViewGroup, pos: Int): IntervalViewHolder {
-        val interval = mGroups!![pos]
-        return if(interval.ownerOfGroup){
+
+    override fun onFailedToRecycleView(holder: IntervalViewHolder): Boolean {
+        Log.e("IRA", "Failed to recycle " + holder.data)
+        return super.onFailedToRecycleView(holder)
+    }
+
+    override fun onCreateViewHolder(p0: ViewGroup, viewType: Int): IntervalViewHolder {
+        Log.i("IRA", "Creating view holder for view type $viewType")
+        return if(viewType == 0){
             val view = LayoutInflater.from(p0.context).inflate(R.layout.interval_group, p0, false)
             IntervalViewHolder(view, this)
         }else{
@@ -53,6 +175,10 @@ class IntervalRecyclerAdapter(val mHost: IntervalListActivity) : RecyclerView.Ad
         }
     }
 
+    override fun setHasStableIds(hasStableIds: Boolean) {
+        super.setHasStableIds(true)
+    }
+
     override fun getItemCount(): Int {
         return mGroups?.size ?: 0
     }
@@ -67,16 +193,13 @@ class IntervalRecyclerAdapter(val mHost: IntervalListActivity) : RecyclerView.Ad
         mRecyclerView = null
     }
 
-    private fun getGroupFromInterval(pos: Int, intervalData: IntervalData) : IntervalData{
-        return mGroups!![(pos-intervalData.groupPosition).toInt()]
+    override fun getGroupFromInterval(intervalData: IntervalData, adapterPosition: Int): IntervalData {
+        return mGroups!![(adapterPosition-intervalData.groupPosition).toInt()]
     }
 
     override fun onBindViewHolder(p0: IntervalViewHolder, pos: Int) {
         val data = mGroups!![pos]
-        if(getItemViewType(pos) == 1)
-            (p0 as IntervalClockViewHolder).bind(data, getGroupFromInterval(pos, data))
-        else
-            p0.bind(data)
+        p0.bind(data)
     }
 
     fun setProperty(intervalId: Long, intervalRunProperties: IntervalRunProperties) {
@@ -84,7 +207,7 @@ class IntervalRecyclerAdapter(val mHost: IntervalListActivity) : RecyclerView.Ad
     }
 
     fun isGroupExpanded(i: Int): Boolean {
-        return false
+        return mExpandedGroups[i, false]
     }
 
     fun getItemAtPosition(keyAt: Int): IntervalData {
@@ -115,10 +238,15 @@ class IntervalRecyclerAdapter(val mHost: IntervalListActivity) : RecyclerView.Ad
     }
 
     override fun facadeGetChild(groupPosition: Int, index: Int): IntervalData {
-        val group = getGroup(groupPosition)!!
-        return mGroups!!.find {
-            !it.ownerOfGroup && it.group == group.group && it.groupPosition.toInt() == index
-        }!!
+        val group = getGroup(groupPosition)!!.group
+        var child = mGroups!!.find {
+            !it.ownerOfGroup && it.group == group && it.groupPosition.toInt() == index
+        }
+        if(child == null && BuildConfig.DEBUG){
+            Log.d("IRA", "A facade has tried to get a child in group $group at pos $index but it wasn't found")
+            child = mGroups!![1]
+        }
+        return child!!
     }
 
     override fun facadeGetIDFromPosition(groupPosition: Int): UUID {
@@ -169,7 +297,7 @@ class IntervalRecyclerAdapter(val mHost: IntervalListActivity) : RecyclerView.Ad
         return mExpandedGroups[(intervalClockViewHolder.adapterPosition-data.groupPosition-1).toInt(), false]
     }
 
-    private fun getGroupPos(group: UUID): Int {
+    fun getGroupPos(group: UUID): Int {
         var i = -1
         mGroups!!.filterIndexed { index, it ->
             i = index
@@ -178,22 +306,31 @@ class IntervalRecyclerAdapter(val mHost: IntervalListActivity) : RecyclerView.Ad
         return i
     }
 
-    override fun groupChangedAt(adapterPosition: Int){
+    override fun groupChildrenChangedAt(adapterPosition: Int){
         if(getItemViewType(adapterPosition) == 0)
             notifyItemRangeChanged(adapterPosition+1, facadeGetGroupSize(mGroups!![adapterPosition].groupPosition.toInt()))
+    }
+    fun groupChangedAt(adapterPosition: Int){
+        IntervalControllerFacade.instance.forceGroupRefresh(mGroups!![adapterPosition])
+        if(getItemViewType(adapterPosition) == 0)
+            notifyItemRangeChanged(adapterPosition, facadeGetGroupSize(mGroups!![adapterPosition].groupPosition.toInt()))
     }
 
     override fun groupExpanded(adapterPosition: Int): Boolean{
         return mExpandedGroups[adapterPosition, false]
     }
 
-    override fun onViewRecycled(holder: IntervalViewHolder) {
-        Log.d("IRA", "Recycled " + holder.data?.label)
-        super.onViewRecycled(holder)
-    }
-
     override fun getItemId(position: Int): Long {
         return mGroups!![position].id
+    }
+
+    override fun getDragListener(): View.OnDragListener {
+        return intervalViewHolderOnDragListener
+    }
+
+    override fun onViewRecycled(holder: IntervalViewHolder) {
+        holder.unbind()
+        super.onViewRecycled(holder)
     }
 }
 
@@ -207,21 +344,27 @@ interface IntervalRecyclerViewHolderActionsI{
     fun getPropertiesFor(intervalData: IntervalData): IntervalRunProperties?
     fun toggleGroupExpanded(intervalViewHolder: IntervalViewHolder)
     fun shouldShow(intervalClockViewHolder: IntervalClockViewHolder): Boolean
-    fun groupChangedAt(adapterPosition: Int)
+    fun groupChildrenChangedAt(adapterPosition: Int)
     fun groupExpanded(adapterPosition: Int): Boolean
+    fun getDragListener(): View.OnDragListener
+    fun getGroupFromInterval(intervalData: IntervalData, adapterPosition: Int): IntervalData
 }
+
+
 
 open class IntervalViewHolder(v: View, val mHost: IntervalRecyclerViewHolderActionsI) : RecyclerView.ViewHolder(v) {
     protected var mData: IntervalData? = null
     val data: IntervalData?
     get() {return mData}
+    @SuppressLint("InlinedApi")
     open fun bind(intervalData: IntervalData, expanded: Boolean = false){
         //Log.d("IRA", "Binding $adapterPosition")
         this.mData = intervalData
-
-        itemView.findViewById<TextView>(R.id.intervalGroupNameTxt).text = intervalData.label
-        itemView.findViewById<TextView>(R.id.intervalGroupPos).text = intervalData.groupPosition.toString()
-        itemView.setTag(R.id.id_interval_view_interval, intervalData)
+        if(!intervalData.ownerOfGroup)
+            Log.e("IRA", "Binding a interval as a group when it is not a group owner $intervalData")
+        itemView.intervalGroupNameTxt.text = intervalData.label
+        itemView.intervalGroupPos.text = intervalData.groupPosition.toString()
+        //itemView.setTag(R.id.id_interval_view_interval, intervalData)
 
         val editButton = itemView.findViewById<AppCompatImageButton>(R.id.clockGroupEditButton)
         val deleteButton = itemView.findViewById<AppCompatImageButton>(R.id.clockGroupDeleteButton)
@@ -260,12 +403,20 @@ open class IntervalViewHolder(v: View, val mHost: IntervalRecyclerViewHolderActi
         itemView.clockGroupMoreButton.setOnClickListener {view ->
             mHost.toggleGroupExpanded(this)
             toggleMoreButton(view)
-            mHost.groupChangedAt(adapterPosition)
+            mHost.groupChildrenChangedAt(adapterPosition)
         }
         itemView.setOnClickListener {
             mHost.toggleGroupExpanded(this)
             toggleMoreButton(itemView.clockGroupMoreButton)
-            mHost.groupChangedAt(adapterPosition)
+            mHost.groupChildrenChangedAt(adapterPosition)
+        }
+        itemView.setOnDragListener(mHost.getDragListener())
+        itemView.setOnLongClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                it.startDragAndDrop(null, View.DragShadowBuilder(it), intervalData, View.DRAG_FLAG_GLOBAL)
+            } else {
+                it.startDrag(null, View.DragShadowBuilder(it), intervalData, View.DRAG_FLAG_GLOBAL)
+            }
         }
     }
 
@@ -288,18 +439,23 @@ open class IntervalViewHolder(v: View, val mHost: IntervalRecyclerViewHolderActi
         }
     }
 
-    open fun unbind(data: IntervalData){
+    open fun unbind(){
         itemView.clockGroupDeleteButton.setOnClickListener(null)
         itemView.clockGroupEditButton.setOnClickListener(null)
         itemView.clockGroupMoreButton.setOnClickListener(null)
         itemView.setOnClickListener(null)
+        itemView.setOnLongClickListener(null)
+        itemView.setOnDragListener(null)
         mData = null
     }
 }
 
 open class IntervalClockViewHolder(v: View, host: IntervalRecyclerViewHolderActionsI) : IntervalViewHolder(v, host) {
-    fun bind(intervalData: IntervalData, groupFromInterval: IntervalData) {
+    override fun bind(intervalData: IntervalData, expanded: Boolean) {
+        val groupFromInterval = mHost.getGroupFromInterval(intervalData, adapterPosition)
         mData = intervalData
+        if(itemView.id == R.id.interval_single_clock)
+            Log.e("IRA", "Binding a clock view holder with the wrong layout")
         val clockView = itemView.findViewById<IntervalClockView>(R.id.intervalClockView)
         val editButton = itemView.findViewById<AppCompatImageButton>(R.id.clockSingleEditButton)
         val deleteButton = itemView.findViewById<AppCompatImageButton>(R.id.clockSingleDeleteButton)
@@ -333,12 +489,22 @@ open class IntervalClockViewHolder(v: View, host: IntervalRecyclerViewHolderActi
             itemView.layoutParams.height = 0
             itemView.visibility = View.GONE
         }
+        itemView.setOnDragListener(mHost.getDragListener())
+        itemView.setOnLongClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                it.startDragAndDrop(null, View.DragShadowBuilder(it), intervalData, View.DRAG_FLAG_GLOBAL)
+            } else {
+                it.startDrag(null, View.DragShadowBuilder(it), intervalData, View.DRAG_FLAG_GLOBAL)
+            }
+        }
     }
 
-    override fun unbind(data: IntervalData) {
+    override fun unbind() {
         itemView.clockSingleEditButton.setOnClickListener(null)
         itemView.clockSingleDeleteButton.setOnClickListener(null)
         itemView.clockEditCheckbox.setOnCheckedChangeListener(null)
+        itemView.setOnLongClickListener(null)
+        itemView.setOnDragListener(null)
         mData = null
     }
 }

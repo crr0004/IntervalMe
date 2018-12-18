@@ -2,6 +2,7 @@ package io.github.crr0004.intervalme.interval
 
 import android.content.Context
 import android.util.Log
+import android.util.SparseBooleanArray
 import android.view.View
 import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.database.IntervalData
@@ -25,6 +26,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     private val mControllers: HashMap<UUID, Array<IntervalController>> = HashMap(1)
     private val mRunningProperties: HashMap<UUID, IntervalRunProperties> = HashMap(1)
+    private val mGroupSetupStatus: SparseBooleanArray = SparseBooleanArray()
     private lateinit var mDataSource: IntervalControllerDataSourceI
     private lateinit var mAnalyticsDataSource: IntervalAnalyticsDataSourceI
 
@@ -38,12 +40,20 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
                 connectNewClockView(toReturn)
     }
 
-    fun isGroupSetUp(groupPosition: Int): Boolean {
-        return mControllers[mDataSource.facadeGetIDFromPosition(groupPosition)] != null
+    fun isGroupSetUp(adapterPos: Int): Boolean {
+        return mControllers[mDataSource.facadeGetIDFromPosition(adapterPos)] != null
+    }
+
+    fun forceGroupRefresh(interval: IntervalData){
+        mGroupSetupStatus.put(interval.groupPosition.toInt(), false)
     }
 
     fun isGroupSetUp(group: UUID): Boolean{
-        return mControllers[group] != null
+        val groupList = mControllers[group]
+        return if(groupList != null)
+            mGroupSetupStatus[groupList[0].mChildOfInterval.groupPosition.toInt()]
+        else
+            false
     }
 
 
@@ -60,6 +70,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
                 IntervalController(mChildOfInterval = mDataSource.facadeGetChild(groupPosition, index - 1), callBackHost = this, applicationContext = context)
             }
         }
+        mGroupSetupStatus.put(groupPosition, true)
     }
 
     fun connectClockView(clockView: IntervalClockView, groupPosition: Int, childOfInterval: IntervalData) {
@@ -67,6 +78,9 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
         // then connects a new view to the controller
         if(BuildConfig.DEBUG && childOfInterval.groupPosition + 1 >= mControllers[childOfInterval.group]?.size ?: 0){
             val childPos = childOfInterval.groupPosition + 1
+            // This ideally shouldn't happen as the group should be setup before any views are connected
+            // however calling a setup here invalidates all the other clock views
+            //setUpGroupOrder(groupPosition, clockView.context)
             Log.d("ICF", "Trying to get a child at $childPos of group $groupPosition that doesn't have a controller")
         }
         mControllers[childOfInterval.group]!![childOfInterval.groupPosition.toInt()+1].connectNewClockView(clockView)
@@ -206,6 +220,11 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     fun groupExpanded(pos: Int) {
         updateProperties(mDataSource.facadeGetIDFromPosition(pos))
+    }
+
+    fun reset() {
+        mGroupSetupStatus.clear()
+
     }
 
 

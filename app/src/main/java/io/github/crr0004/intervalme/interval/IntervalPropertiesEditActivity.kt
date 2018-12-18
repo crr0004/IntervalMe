@@ -92,10 +92,12 @@ class IntervalPropertiesEditActivity : AppCompatActivity(),
         (intervalPropertiesFAB).setOnClickListener {
             mModel.commit()
             val intent = Intent()
+            setResult(Activity.RESULT_CANCELED, intent)
             if(mIntervalToEdit?.value != null) {
-                intent.putExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL_ID, mIntervalToEdit!!.value!!.id)
+                setResult(Activity.RESULT_OK, intent)
+                intent.putExtra(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL, IntervalDataParcelable(mIntervalToEdit!!.value!!))
             }
-            setResult(Activity.RESULT_OK, intent)
+
             finish()
         }
 

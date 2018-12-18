@@ -42,8 +42,8 @@ class IntervalViewModel(mApplication: Application): AndroidViewModel(mApplicatio
         return mRepo.getGroupOwner(group)
     }
 
-    fun moveChildIntervalAboveChild(interval: IntervalData, intervalData: IntervalData) {
-        mRepo.moveChildIntervalAboveChild(interval, intervalData)
+    fun moveChildIntervalAboveChild(interval: IntervalData, moveIntervalAbove: IntervalData) {
+        mRepo.moveChildIntervalAboveChild(interval, moveIntervalAbove)
     }
 
     fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {
@@ -84,5 +84,9 @@ class IntervalViewModel(mApplication: Application): AndroidViewModel(mApplicatio
 
     fun getAllGroups(): LiveData<ArrayList<IntervalData>> {
         return mRepo.getAllGroupsAsHashMap()
+    }
+
+    fun fixGroupPositions() {
+        mRepo.fixGroupPositions()
     }
 }

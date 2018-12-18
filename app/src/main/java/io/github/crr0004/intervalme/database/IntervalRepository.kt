@@ -161,17 +161,17 @@ class IntervalRepository(mContext: Context) {
         }
     }
 
-    fun moveChildIntervalAboveChild(interval: IntervalData, intervalData: IntervalData) {
+    fun moveChildIntervalAboveChild(interval: IntervalData, moveIntervalAbove: IntervalData) {
         executor.execute {
             mIntervalDao!!.shuffleChildrenInGroupUpFrom(interval.groupPosition, interval.group)
 
             // Make room in the group for the incoming interval
             // -1 from groupPosition so it gets moved as well
-            mIntervalDao!!.shuffleChildrenDownFrom(intervalData.groupPosition - 1, intervalData.group)
+            mIntervalDao!!.shuffleChildrenDownFrom(moveIntervalAbove.groupPosition - 1, moveIntervalAbove.group)
 
-            interval.group = intervalData.group
+            interval.group = moveIntervalAbove.group
             // Put the interval into the spot above the dropped onto item
-            interval.groupPosition = intervalData.groupPosition
+            interval.groupPosition = moveIntervalAbove.groupPosition
             mIntervalDao!!.update(interval)
         }
     }
@@ -206,13 +206,15 @@ class IntervalRepository(mContext: Context) {
             val groupPosStart = mIntervalDao!!.getChildSizeOfGroup(group)
             children.forEachIndexed { index, intervalData ->
                 // Fixes the group positions in the old group
-                // This will have a net affect of nothing if it's the same group or they're new
-                mIntervalDao!!.shuffleChildrenInGroupUpFrom(intervalData!!.groupPosition, intervalData.group)
-                intervalData.ownerOfGroup = false
-                intervalData.groupPosition = groupPosStart+index
-                intervalData.group = group
-                mIntervalDao!!.insert(intervalData)
+                if(intervalData != null) {
+                    if(intervalData.group != group)
+                        mIntervalDao!!.shuffleChildrenInGroupUpFrom(intervalData.groupPosition, intervalData.group)
+                    intervalData.ownerOfGroup = false
+                    intervalData.groupPosition = groupPosStart + index
+                    intervalData.group = group
+                }
             }
+            mIntervalDao!!.insert(children)
         }
     }
 
@@ -408,6 +410,21 @@ class IntervalRepository(mContext: Context) {
             }
             groupsStatement.release()
             return
+        }
+    }
+
+    fun fixGroupPositions() {
+        mExecutor.execute{
+            val groups = intervalDao.getGroupOwners()
+            groups.forEachIndexed { i, it ->
+                val groupMembers = intervalDao.getAllOfGroupWithoutOwner(it.group)
+                groupMembers.forEachIndexed { index, intervalData ->
+                    intervalData.groupPosition = (index).toLong()
+                    intervalDao.update(intervalData)
+                }
+                it.groupPosition = i.toLong()
+                intervalDao.update(it)
+            }
         }
     }
 

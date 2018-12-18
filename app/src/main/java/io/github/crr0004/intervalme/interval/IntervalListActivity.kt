@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatDelegate
 import android.support.v7.view.menu.MenuBuilder
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -208,6 +209,7 @@ class IntervalListActivity : AppCompatActivity() {
                 mRecyclerAdapter.startAllIntervals()
                 true
             }
+            /*
             R.id.action_swap_intervals ->{
                 val itemPositions = mRecyclerAdapter.getCheckedItems()
                 if(itemPositions.size() != 2){
@@ -225,19 +227,10 @@ class IntervalListActivity : AppCompatActivity() {
 
                 true
             }
+            */
             R.id.action_fix_group_positions -> {
-                val intervalDao = IntervalMeDatabase.getInstance(this)!!.intervalDataDao()
-                val groups = intervalDao.getGroupOwners()
-                groups.forEachIndexed { i, it ->
-                    val groupMembers = intervalDao.getAllOfGroupWithoutOwner(it.group)
-                    groupMembers.forEachIndexed { index, intervalData ->
-                        intervalData.groupPosition = (index).toLong()
-                        intervalDao.update(intervalData)
-                    }
-                    it.groupPosition = i.toLong()
-                    intervalDao.update(it)
-                }
-                mRecyclerAdapter.notifyDataSetChanged()
+                mProvider.fixGroupPositions()
+
                 true
             }
             R.id.action_edit_items -> {
@@ -295,7 +288,10 @@ class IntervalListActivity : AppCompatActivity() {
                 return true
             }
             R.id.action_clear_db -> {
-                IntervalMeDatabase.getInstance(this)?.clearAllTables()
+                Thread{
+                    IntervalMeDatabase.getInstance(this)?.clearAllTables()
+                }.start()
+
                 return true
             }
             R.id.action_interval_to_settings -> {
@@ -341,9 +337,19 @@ class IntervalListActivity : AppCompatActivity() {
 
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(requestCode == INTENT_EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null){
+        if(resultCode == Activity.RESULT_OK){
             //val id = data.getLongExtra(EDIT_MODE_FLAG_INTERVAL_ID, -1)
-            //mRecyclerAdapter.notifyDataSetChanged()
+            if(data == null) {
+                Log.e("ILA", "Adding an activity should return what happened")
+                // Invalidate all views
+                mRecyclerAdapter.notifyItemRangeChanged(0, mRecyclerAdapter.itemCount)
+            }else{
+                val intervalParcelable: IntervalDataParcelable? = data.extras!!.getParcelable(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL)
+                val interval = intervalParcelable!!.interval
+                mRecyclerAdapter.groupChangedAt(mRecyclerAdapter.getGroupPos(interval.group))
+
+            }
+            mRecyclerAdapter.notifyDataSetChanged()
         }else if(requestCode == INTENT_ADD_REQUEST_CODE && resultCode == Activity.RESULT_OK){
            // mRecyclerAdapter.notifyDataSetChanged()
         }
@@ -411,8 +417,8 @@ class IntervalListActivity : AppCompatActivity() {
     fun deleteGroupMoveChildrenToETC(intervalData: IntervalData) {
         mProvider.deleteGroupAndMoveChildrenToGroup(intervalData, ETC_GROUP_UUID)
     }
-    fun moveChildIntervalAboveChild(interval: IntervalData, intervalData: IntervalData) {
-        mProvider.moveChildIntervalAboveChild(interval, intervalData)
+    fun moveChildIntervalAboveChild(interval: IntervalData, moveIntervalAbove: IntervalData) {
+        mProvider.moveChildIntervalAboveChild(interval, moveIntervalAbove)
     }
 
     fun moveIntervalToGroup(interval: IntervalData, groupUUID: UUID) {

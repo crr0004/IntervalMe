@@ -41,6 +41,7 @@ class IntervalAddFragment : Fragment(), IntervalSimpleGroupListFragment.OnFragme
     companion object {
         const val EDIT_MODE_FLAG_ID = "edit_mode"
         const val EDIT_MODE_FLAG_INTERVAL_ID = "edit_mode_interval_id"
+        const val EDIT_MODE_FLAG_INTERVAL = "edit_mode_interval"
     }
 
     interface IntervalAddFragmentInteractionI{
