@@ -77,8 +77,13 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
         mRoutineToEdit.value!!.exercises.removeAt(pos)
     }
 
-    fun getAllRoutines() : LiveData<ArrayList<RoutineSetData>> {
-        return mRepo.getAllRoutines("select * from Routine where isTemplate = 0 and isDone = 0")
+    fun getAllRoutines(getDoneRoutines: Boolean = false): LiveData<ArrayList<RoutineSetData>> {
+        return if(getDoneRoutines){
+            mRepo.getAllRoutines("select * from Routine where isTemplate = 0 or isDone = 1")
+        }else{
+            mRepo.getAllRoutines("select * from Routine where isTemplate = 0 and isDone = 0")
+        }
+
     }
 
     fun deleteRoutine(routineData: RoutineSetData) {

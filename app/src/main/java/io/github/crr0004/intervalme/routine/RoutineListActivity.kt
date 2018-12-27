@@ -1,6 +1,7 @@
 package io.github.crr0004.intervalme.routine
 
 import android.app.ActivityOptions
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -31,13 +32,16 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
     private var editStrikeOutIcon: AnimatedVectorDrawableCompat? = null
     private var editStrikeOutIconReversed: AnimatedVectorDrawableCompat? = null
 
+    private lateinit var mAdapterLiveData: LiveData<ArrayList<RoutineSetData>>
+    private var isShowingDoneRoutines = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_routine)
 
         setSupportActionBar(findViewById(R.id.routine_actionbar))
         supportActionBar?.title = getString(R.string.app_name)
-        mRecyclerView = findViewById<RecyclerView>(R.id.routineRecyclerView)
+        mRecyclerView = findViewById(R.id.routineRecyclerView)
         with(mRecyclerView){
             setHasFixedSize(false)
             adapter = mRoutineAdapter
@@ -45,14 +49,19 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
         }
         mModel = ViewModelProviders.of(this).get(RoutineViewModel::class.java)
 
-        mModel.getAllRoutines().observe(this, Observer{
-            mRoutineAdapter.values = it
-        })
+        mAdapterLiveData = mModel.getAllRoutines(false)
+        setupAdapterDataObserver()
 
         editStrikeOutIcon = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_animated_24dp)
         editStrikeOutIconReversed = AnimatedVectorDrawableCompat.create(this, R.drawable.ic_mode_edit_strike_out_reverse_animation)
 
         setupNavigation()
+    }
+
+    private fun setupAdapterDataObserver(){
+        mAdapterLiveData.observe(this, Observer{
+            mRoutineAdapter.values = it
+        })
     }
 
     override fun deleteRoutine(routineData: RoutineSetData) {
@@ -89,6 +98,22 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
                 }
                 mShowEditButtons = !mShowEditButtons
                 mRoutineAdapter.updateRoutineViews()
+
+                true
+            }
+            R.id.routine_list_toggle_show_done -> {
+                isShowingDoneRoutines = !isShowingDoneRoutines
+                if(isShowingDoneRoutines){
+                    mAdapterLiveData.removeObservers(this)
+                    mAdapterLiveData = mModel.getAllRoutines(getDoneRoutines = true)
+                    item.title = getString(R.string.hide_done_routines)
+                    setupAdapterDataObserver()
+                }else{
+                    mAdapterLiveData.removeObservers(this)
+                    mAdapterLiveData = mModel.getAllRoutines(getDoneRoutines = false)
+                    setupAdapterDataObserver()
+                    item.title = getString(R.string.show_done_routines)
+                }
 
                 true
             }

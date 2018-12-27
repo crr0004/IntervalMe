@@ -11,5 +11,9 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_mode_edit_strike_out_animated_24dp"
         />
+    <item android:id="@+id/routine_list_toggle_show_done"
+        app:showAsAction="withText"
+        android:title="@string/show_done_routines"
+        />
 
 </menu>
