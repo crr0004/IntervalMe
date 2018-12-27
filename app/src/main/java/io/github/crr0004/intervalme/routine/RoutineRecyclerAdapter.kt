@@ -202,10 +202,13 @@ open class RoutineSetViewHolder(view: View, private val mHost: RoutineRecyclerVi
         }else{
             itemView.routineGroupMoreButton.rotation = 0f
         }
+        if(routineData.isDone){
+            menu?.menu?.findItem(R.id.routine_group_menu_mark_done)?.title = itemView.context.getString(R.string.unmark_done)
+        }
         menu?.setOnMenuItemClickListener {
             when(it.itemId){
                 R.id.routine_group_menu_mark_done -> {
-                    routineData.isDone = true
+                    routineData.isDone = !routineData.isDone
                     mHost.update(routineData)
                     true
                 }
