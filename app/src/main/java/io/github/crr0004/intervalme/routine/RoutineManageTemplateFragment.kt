@@ -17,7 +17,7 @@ import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import kotlinx.android.synthetic.main.routine_single_template.view.*
 
-class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapter.RoutineRecyclerAdapterActionsI {
+class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapterActionsI, RoutineRecyclerViewHolderActionsI {
 
 
     private lateinit var mModel: RoutineViewModel
@@ -63,7 +63,15 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapter.Routine
 
     }
 
-    override fun getRoutineSetViewHolder(parent: ViewGroup, pos: Int): RoutineRecyclerAdapter.RoutineSetViewHolder? {
+    override fun isGroupExpanded(adapterPosition: Int): Boolean {
+        return true
+    }
+
+    override fun toggleGroupExpanded(adapterPosition: Int) {
+
+    }
+
+    override fun getRoutineSetViewHolder(parent: ViewGroup, pos: Int): RoutineSetViewHolder? {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single_template, parent, false)
         return RoutineSetViewHolder1(view, this)
     }
@@ -79,7 +87,7 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapter.Routine
     }
 }
 
-class RoutineSetViewHolder1(view: View, val mHost: RoutineManageTemplateFragment) : RoutineRecyclerAdapter.RoutineSetViewHolder(view, mHost){
+class RoutineSetViewHolder1(view: View, val mHost: RoutineManageTemplateFragment) : RoutineSetViewHolder(view, mHost){
     override fun bind(routineData: RoutineSetData, index: Int) {
         itemView.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
         if(!mHost.isShowEditButtons()){

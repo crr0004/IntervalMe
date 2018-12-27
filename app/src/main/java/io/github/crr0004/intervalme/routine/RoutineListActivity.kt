@@ -20,7 +20,7 @@ import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.interval.IntervalListActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
 
-class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapter.RoutineRecyclerAdapterActionsI {
+class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI {
 
     private var mRoutineAdapter: RoutineRecyclerAdapter = RoutineRecyclerAdapter(this)
     private val mLayoutManager: RecyclerView.LayoutManager? = LinearLayoutManager(this)
