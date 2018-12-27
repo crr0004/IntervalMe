@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="16dp"
-    android:paddingEnd="16dp"
+    android:paddingEnd="0dp"
     android:background="@android:color/white"
     android:theme="@style/AppTheme"
     tools:context=".interval.IntervalClockSampleActivity">
