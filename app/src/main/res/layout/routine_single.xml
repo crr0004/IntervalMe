@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/routineGroupMoreButton"
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:tint="@color/gray_active"
+        app:layout_constraintBottom_toBottomOf="@+id/routineSingleName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/routineSingleName"
+        app:srcCompat="@drawable/ic_expand_more_24dp" />
 
     <TextView
         android:id="@+id/routineSingleName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:text="Routine"
+        android:text="@string/routine"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/routineListGroupDeleteBtn"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/routineGroupMoreButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.AppCompatImageButton
@@ -24,8 +38,9 @@
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/edit_interval_button"
         android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/routineListGroupDeleteBtn"
         app:layout_constraintEnd_toStartOf="@+id/routineGroupMenuView"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/routineListGroupDeleteBtn"
         app:srcCompat="@drawable/ic_mode_edit_white_12dp" />
 
     <android.support.v7.widget.AppCompatImageButton
@@ -35,8 +50,9 @@
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/edit_interval_button"
         android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/routineSingleName"
         app:layout_constraintEnd_toStartOf="@+id/routineListGroupEditBtn"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/routineSingleName"
         app:srcCompat="@drawable/ic_remove_white_12dp" />
 
     <TextView
