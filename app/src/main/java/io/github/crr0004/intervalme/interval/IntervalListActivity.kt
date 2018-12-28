@@ -18,6 +18,7 @@ import android.support.v7.view.menu.MenuBuilder
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.util.Pair
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -104,7 +105,8 @@ class IntervalListActivity : AppCompatActivity() {
                     val intent = Intent(this, RoutineListActivity::class.java)
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         val options = ActivityOptions.makeSceneTransitionAnimation(this,
-                                findViewById<View>(R.id.navigation), "navigation")
+                                Pair.create(findViewById<View>(R.id.navigation), "navigation"),
+                                Pair.create(findViewById(R.id.interval_list_actionbar), "toolbar"))
 
                         startActivity(intent, options.toBundle())
 

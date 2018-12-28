@@ -12,6 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
+        android:transitionName="toolbar"
         android:theme="@style/AppTheme.Toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -33,6 +34,7 @@
         android:layout_gravity="start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:transitionName="navigation"
         app:menu="@menu/my_navigation_items" />
 
 </android.support.constraint.ConstraintLayout>

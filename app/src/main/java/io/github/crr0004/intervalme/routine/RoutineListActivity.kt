@@ -11,6 +11,7 @@ import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Pair
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -135,7 +136,8 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
                     val intent = Intent(this, IntervalListActivity::class.java)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         val options = ActivityOptions.makeSceneTransitionAnimation(this,
-                                findViewById<View>(R.id.navigation), "navigation")
+                                Pair.create(findViewById<View>(R.id.navigation), "navigation"),
+                                Pair.create(findViewById(R.id.routine_actionbar), "toolbar"))
 
                         startActivity(intent, options.toBundle())
 

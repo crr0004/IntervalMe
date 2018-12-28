@@ -15,6 +15,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/AppTheme.Toolbar"
+        android:transitionName="toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -36,6 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="start"
+        android:transitionName="navigation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/my_navigation_items" />
