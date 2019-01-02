@@ -23,7 +23,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/loops"
+        android:textAppearance="@style/Label.Small"
+        app:layout_constraintBottom_toBottomOf="@+id/intervalGroupNameTxt"
         app:layout_constraintStart_toEndOf="@+id/intervalGroupNameTxt"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,8 +37,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="999"
+        android:textAppearance="@style/Label.Small"
+        app:layout_constraintBottom_toBottomOf="@+id/intervalGroupLoopsLbl"
         app:layout_constraintStart_toEndOf="@+id/intervalGroupLoopsLbl"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         tools:text="999" />
 
     <TextView
@@ -45,13 +51,11 @@
         android:layout_marginStart="32dp"
         android:maxWidth="305dp"
         android:singleLine="true"
-        android:text="@string/app_name"
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/Input.Large"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Group" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/clockGroupEditButton"

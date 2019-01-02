@@ -38,7 +38,7 @@
         android:inputType="number"
         android:selectAllOnFocus="true"
         android:text="@string/duration_placeholder"
-        android:textAppearance="@style/MediumInput"
+        android:textAppearance="@style/Input.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView1" />
@@ -88,7 +88,7 @@
         android:imeOptions="actionNext"
         android:inputType="textPersonName"
         android:nextFocusRight="@id/intervalDurationTxt"
-        android:textAppearance="@style/LargeInput"
+        android:textAppearance="@style/Input.Large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="LabelFor"

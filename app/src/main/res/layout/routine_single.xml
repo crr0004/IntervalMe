@@ -25,7 +25,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:text="@string/routine"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/Input.Large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/routineListGroupDeleteBtn"
         app:layout_constraintStart_toEndOf="@+id/routineGroupMoreButton"

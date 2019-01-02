@@ -16,7 +16,7 @@
         android:hint="@string/routine_name"
         android:importantForAutofill="no"
         android:inputType="text"
-        android:textAppearance="@style/LargeInput"
+        android:textAppearance="@style/Input.Large"
         app:layout_constraintEnd_toStartOf="@+id/routineManageTemplateChxBox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +46,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/add_routine"
-        android:textAppearance="@style/SmallInput"
+        android:textAppearance="@style/Input.Small"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -58,7 +58,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/add_item"
-        android:textAppearance="@style/SmallInput"
+        android:textAppearance="@style/Input.Small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/routineEditDeleteExerciseBtn" />
 
@@ -69,7 +69,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/delete_selected"
-        android:textAppearance="@style/SmallInput"
+        android:textAppearance="@style/Input.Small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -79,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Template"
-        android:textAppearance="@style/SmallInput"
+        android:textAppearance="@style/Input.Small"
         app:layout_constraintBottom_toBottomOf="@+id/routineManageBasicDescriptionTxt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/routineManageBasicDescriptionTxt" />
