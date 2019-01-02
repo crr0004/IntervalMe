@@ -47,9 +47,9 @@ class RoutineManageBasicFragment : Fragment(){
                 view.routineManageBasicDescriptionTxt.setText(it.description)
                 view.routineManageTemplateChxBox.isChecked = it.isTemplate
                 if(it.routineId > 0){
-                    view.routineEditCommitBtn.setText(R.string.update)
+                    //view.routineEditCommitBtn.setText(R.string.update)
                 }else{
-                    view.routineEditCommitBtn.setText(R.string.add)
+                    //view.routineEditCommitBtn.setText(R.string.add)
                 }
                 //it.exercises.clear()
                 //it.exercises.addAll(it.exercises)

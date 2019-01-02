@@ -61,4 +61,6 @@
     <string name="show_done_routines">Show Done Routines</string>
     <string name="hide_done_routines">Hide Done Routines</string>
     <string name="unmark_done">Unmark Done</string>
+    <string name="template">Template</string>
+    <string name="add_exercise_item">Add Exercise Item</string>
 </resources>

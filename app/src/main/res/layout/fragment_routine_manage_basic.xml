@@ -39,46 +39,49 @@
         tools:ignore="UnusedAttribute"
         tools:listitem="@android:layout/list_content" />
 
-    <Button
+    <ImageButton
         android:id="@+id/routineEditCommitBtn"
-        android:layout_width="89dp"
+        style="@style/ImageButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="32dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/add_routine"
-        android:textAppearance="@style/Input.Small"
+        android:contentDescription="@string/add_routine"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_done_white_24dp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/routineEditAddExerciseBtn"
+        style="@style/ImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/add_item"
-        android:textAppearance="@style/Input.Small"
+        android:contentDescription="@string/add_exercise_item"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/routineEditDeleteExerciseBtn" />
+        app:layout_constraintEnd_toStartOf="@+id/routineEditDeleteExerciseBtn"
+        app:srcCompat="@drawable/ic_add_white_24dp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/routineEditDeleteExerciseBtn"
+        style="@style/ImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/delete_selected"
-        android:textAppearance="@style/Input.Small"
+        android:contentDescription="@string/delete_selected"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_delete" />
 
     <CheckBox
         android:id="@+id/routineManageTemplateChxBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Template"
+        android:text="@string/template"
         android:textAppearance="@style/Input.Small"
         app:layout_constraintBottom_toBottomOf="@+id/routineManageBasicDescriptionTxt"
         app:layout_constraintEnd_toEndOf="parent"
