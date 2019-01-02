@@ -5,6 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/routineSingleName" />
+
     <ImageButton
         android:id="@+id/routineGroupMoreButton"
         android:layout_width="wrap_content"
@@ -26,13 +36,13 @@
         android:layout_marginEnd="8dp"
         android:text="@string/routine"
         android:textAppearance="@style/Input.Large"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/routineListGroupDeleteBtn"
         app:layout_constraintStart_toEndOf="@+id/routineGroupMoreButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/routineListGroupEditBtn"
+        style="@style/ImageButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
@@ -41,10 +51,11 @@
         app:layout_constraintBottom_toBottomOf="@+id/routineListGroupDeleteBtn"
         app:layout_constraintEnd_toStartOf="@+id/routineGroupMenuView"
         app:layout_constraintTop_toTopOf="@+id/routineListGroupDeleteBtn"
-        app:srcCompat="@drawable/ic_mode_edit_white_12dp" />
+        app:srcCompat="@drawable/ic_mode_edit_white" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/routineListGroupDeleteBtn"
+        style="@style/ImageButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
@@ -53,7 +64,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/routineSingleName"
         app:layout_constraintEnd_toStartOf="@+id/routineListGroupEditBtn"
         app:layout_constraintTop_toTopOf="@+id/routineSingleName"
-        app:srcCompat="@drawable/ic_remove_white_12dp" />
+        app:srcCompat="@drawable/ic_remove_white" />
 
     <TextView
         android:visibility="gone"
@@ -90,12 +101,13 @@
 
     <ImageButton
         android:id="@+id/routineGroupMenuView"
+        style="@style/ImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/routineListGroupEditBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/routineListGroupEditBtn"
-        app:srcCompat="@drawable/ic_more_vert_black_12dp" />
+        app:srcCompat="@drawable/ic_more_vert_black" />
 
 </android.support.constraint.ConstraintLayout>

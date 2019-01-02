@@ -24,7 +24,7 @@
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_mode_edit_white_12dp" />
+        app:srcCompat="@drawable/ic_mode_edit_white" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/routineListGroupDeleteBtn"
@@ -35,7 +35,7 @@
         android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/routineListGroupEditBtn"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_remove_white_12dp" />
+        app:srcCompat="@drawable/ic_remove_white" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/routineListGroupCopyBtn"

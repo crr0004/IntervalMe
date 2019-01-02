@@ -45,6 +45,9 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
+    <style name="ImageButton" parent="Base.Widget.AppCompat.ImageButton">
+        <item name="android:tint">@color/gray_active</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
 
 </resources>

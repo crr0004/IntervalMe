@@ -22,26 +22,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/loops"
         android:textAppearance="@style/Label.Small"
         app:layout_constraintBottom_toBottomOf="@+id/intervalGroupNameTxt"
         app:layout_constraintStart_toEndOf="@+id/intervalGroupNameTxt"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/intervalGroupNameTxt" />
 
     <TextView
         android:id="@+id/intervalGroupLoops"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="999"
         android:textAppearance="@style/Label.Small"
         app:layout_constraintBottom_toBottomOf="@+id/intervalGroupLoopsLbl"
         app:layout_constraintStart_toEndOf="@+id/intervalGroupLoopsLbl"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintTop_toTopOf="@+id/intervalGroupLoopsLbl"
         tools:text="999" />
 
     <TextView
@@ -49,6 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
         android:maxWidth="305dp"
         android:singleLine="true"
         android:textAppearance="@style/Input.Large"
@@ -59,6 +55,7 @@
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/clockGroupEditButton"
+        style="@style/ImageButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
@@ -67,10 +64,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_mode_edit_white_12dp" />
+        app:srcCompat="@drawable/ic_mode_edit_white" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/clockGroupDeleteButton"
+        style="@style/ImageButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
@@ -79,7 +77,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/clockGroupEditButton"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_remove_white_12dp" />
+        app:srcCompat="@drawable/ic_remove_white" />
 
     <View
         android:id="@+id/divider"
