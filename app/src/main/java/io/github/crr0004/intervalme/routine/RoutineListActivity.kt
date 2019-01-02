@@ -20,6 +20,7 @@ import io.github.crr0004.intervalme.analytics.AnalyticsActivity
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.interval.IntervalListActivity
+import io.github.crr0004.intervalme.interval.IntervalPropertiesEditActivity
 import kotlinx.android.synthetic.main.activity_interval_list.*
 
 class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI {
@@ -84,7 +85,13 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when(item?.itemId){
             R.id.routine_list_menu_add -> {
-                startActivity(Intent(this, RoutineManageActivity::class.java))
+                //startActivity(Intent(this, RoutineManageActivity::class.java))
+                val intent = Intent(this, RoutineManageActivity::class.java)
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }else{
+                    startActivity(intent)
+                }
                 true
             }
             R.id.routine_list_toggle_edit_buttons -> {

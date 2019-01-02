@@ -348,7 +348,9 @@ class IntervalListActivity : AppCompatActivity() {
             }else{
                 val intervalParcelable: IntervalDataParcelable? = data.extras!!.getParcelable(IntervalAddFragment.EDIT_MODE_FLAG_INTERVAL)
                 val interval = intervalParcelable!!.interval
-                mRecyclerAdapter.groupChangedAt(mRecyclerAdapter.getGroupPos(interval.group))
+                val pos = mRecyclerAdapter.getGroupPos(interval.group)
+                if(pos >= 0)
+                    mRecyclerAdapter.groupChangedAt(pos)
 
             }
             mRecyclerAdapter.notifyDataSetChanged()
