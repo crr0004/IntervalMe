@@ -16,6 +16,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import io.github.crr0004.intervalme.R
+import io.github.crr0004.intervalme.SettingsActivity
 import io.github.crr0004.intervalme.analytics.AnalyticsActivity
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
@@ -123,6 +124,16 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
                     item.title = getString(R.string.show_done_routines)
                 }
 
+                true
+            }
+            R.id.action_routine_to_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }else{
+                    startActivity(intent)
+                }
                 true
             }
             else ->{

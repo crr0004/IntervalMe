@@ -15,5 +15,11 @@
         app:showAsAction="withText"
         android:title="@string/show_done_routines"
         />
+    <item
+        android:id="@+id/action_routine_to_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="withText"
+
+        />
 
 </menu>
