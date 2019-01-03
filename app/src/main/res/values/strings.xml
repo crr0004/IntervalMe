@@ -63,4 +63,6 @@
     <string name="unmark_done">Unmark Done</string>
     <string name="template">Template</string>
     <string name="add_exercise_item">Add Exercise Item</string>
+    <string name="pref_description_ui_show_incomplete_routine_menu_items">Always show incomplete routines when viewing completed routines in lists</string>
+    <string name="pref_title_ui_show_incomplete_routine_menu_items">Always show incomplete routines</string>
 </resources>

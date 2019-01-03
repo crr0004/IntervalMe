@@ -11,5 +11,10 @@
         android:key="ui_debug_menu_items"
         android:summary="@string/pref_description_ui_debug_menu_items"
         android:title="@string/pref_title_ui_debug_menu_items" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="ui_show_incomplete_routine_menu_items"
+        android:summary="@string/pref_description_ui_show_incomplete_routine_menu_items"
+        android:title="@string/pref_title_ui_show_incomplete_routine_menu_items" />
 
 </PreferenceScreen>

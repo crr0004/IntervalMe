@@ -4,17 +4,18 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.preference.PreferenceManager
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineRepo
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 
-class RoutineViewModel(application: Application) : AndroidViewModel(application) {
+class RoutineViewModel(private val mApplication: Application) : AndroidViewModel(mApplication) {
 
     companion object {
         var repoOverride: RoutineRepo? = null
     }
 
-    private var mRepo = RoutineRepo(application)
+    private var mRepo = RoutineRepo(mApplication)
     private var mRoutineToEdit: MutableLiveData<RoutineSetData> = MutableLiveData()
     private val mExercisesToBeDeleted: ArrayList<ExerciseData> = ArrayList(1)
     private var mInEditMode: Boolean = false
@@ -79,7 +80,12 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
 
     fun getAllRoutines(getDoneRoutines: Boolean = false): LiveData<ArrayList<RoutineSetData>> {
         return if(getDoneRoutines){
-            mRepo.getAllRoutines("select * from Routine where isTemplate = 0 or isDone = 1")
+            // Should we show the incomplete routine sets when showing the done routines
+            val showInCompleteRoutines = PreferenceManager.getDefaultSharedPreferences(this.mApplication).getBoolean("ui_show_incomplete_routine_menu_items", false)
+            if(showInCompleteRoutines)
+                mRepo.getAllRoutines("select * from Routine where isTemplate = 0 or isDone = 1")
+            else
+                mRepo.getAllRoutines("select * from Routine where isTemplate = 0 and isDone = 1")
         }else{
             mRepo.getAllRoutines("select * from Routine where isTemplate = 0 and isDone = 0")
         }

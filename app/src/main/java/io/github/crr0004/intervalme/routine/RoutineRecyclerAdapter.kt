@@ -204,6 +204,8 @@ open class RoutineSetViewHolder(view: View, private val mHost: RoutineRecyclerVi
         }
         if(routineData.isDone){
             menu?.menu?.findItem(R.id.routine_group_menu_mark_done)?.title = itemView.context.getString(R.string.unmark_done)
+        }else{
+            menu?.menu?.findItem(R.id.routine_group_menu_mark_done)?.title = itemView.context.getString(R.string.mark_done)
         }
         menu?.setOnMenuItemClickListener {
             when(it.itemId){
