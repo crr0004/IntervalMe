@@ -13,8 +13,7 @@ data class ExerciseAnalyticData(@PrimaryKey(autoGenerate = true) var id: Long=0,
                                 var value0: String = "",
                                 var value1: String = "",
                                 var value2: String = "",
-                                var isDone: Boolean = true,
-                                var type: Int = -1
+                                var isDone: Boolean = true
                                ){
     constructor(exercise: ExerciseData): this(){
         this.routineId = exercise.routineId
@@ -22,6 +21,5 @@ data class ExerciseAnalyticData(@PrimaryKey(autoGenerate = true) var id: Long=0,
         this.value0 = exercise.value0
         this.value1 = exercise.value1
         this.value2 = exercise.value2
-        this.type = 0
     }
 }

@@ -34,7 +34,7 @@ class AnalyticsActivity : AppCompatActivity() {
         provider = ViewModelProviders.of(this).get(AnalyticsViewModel::class.java)
         provider.getAll().observe(this, Observer {
             if(it != null){
-                mAnalyticsRecyclerAdapter.items = it
+                mAnalyticsRecyclerAdapter.intervalItems = it
                 mAnalyticsRecyclerAdapter.notifyDataSetChanged()
             }
         })

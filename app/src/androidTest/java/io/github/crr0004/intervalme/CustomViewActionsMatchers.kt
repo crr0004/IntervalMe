@@ -54,7 +54,7 @@ class CustomViewActionsMatchers{
                 }
 
                 override fun getDescription(): String {
-                    return "swap items in intervallistadapter"
+                    return "swap intervalItems in intervallistadapter"
                 }
             }
         }
@@ -110,7 +110,7 @@ class CustomViewActionsMatchers{
         fun setRoutineManageBasicRecyclerItems(data: ArrayList<ExerciseData>) : ViewAction{
             return object: ViewAction{
                 override fun getDescription(): String {
-                    return "sets the items in R.id.routineManageBasicRecycler"
+                    return "sets the intervalItems in R.id.routineManageBasicRecycler"
                 }
 
                 override fun getConstraints(): Matcher<View> {
