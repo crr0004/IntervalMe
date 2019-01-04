@@ -18,6 +18,8 @@ import android.view.View
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.SettingsActivity
 import io.github.crr0004.intervalme.analytics.AnalyticsActivity
+import io.github.crr0004.intervalme.analytics.AnalyticsViewModel
+import io.github.crr0004.intervalme.database.analytics.AnalyticsRepository
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.interval.IntervalListActivity
@@ -30,6 +32,7 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
     private val mLayoutManager: RecyclerView.LayoutManager? = LinearLayoutManager(this)
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mModel: RoutineViewModel
+    private lateinit var mAnalyticsProvider: AnalyticsRepository
     private var mShowEditButtons: Boolean = false
 
     private var editStrikeOutIcon: AnimatedVectorDrawableCompat? = null
@@ -37,6 +40,8 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
 
     private lateinit var mAdapterLiveData: LiveData<ArrayList<RoutineSetData>>
     private var isShowingDoneRoutines = false
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +56,8 @@ class RoutineListActivity : AppCompatActivity(), RoutineRecyclerAdapterActionsI 
             layoutManager = mLayoutManager
         }
         mModel = ViewModelProviders.of(this).get(RoutineViewModel::class.java)
+        mAnalyticsProvider = mModel.mAnalyticsRepository
+        mRoutineAdapter.setAnalyticsSource(mAnalyticsProvider)
 
         mAdapterLiveData = mModel.getAllRoutines(false)
         setupAdapterDataObserver()

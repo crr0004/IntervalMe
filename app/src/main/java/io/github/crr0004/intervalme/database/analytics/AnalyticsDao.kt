@@ -7,7 +7,7 @@ import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 
 @Dao
-interface IntervalAnalyticsDao {
+interface AnalyticsDao {
 
     @Insert(onConflict = OnConflictStrategy.FAIL)
     fun insert(intervalAnalyticsData: IntervalAnalyticsData): Long

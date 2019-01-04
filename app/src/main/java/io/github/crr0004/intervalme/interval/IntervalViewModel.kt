@@ -6,13 +6,13 @@ import android.arch.lifecycle.LiveData
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRepository
 import io.github.crr0004.intervalme.database.IntervalRunProperties
-import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsRepository
+import io.github.crr0004.intervalme.database.analytics.AnalyticsRepository
 import java.util.*
 
 class IntervalViewModel(mApplication: Application): AndroidViewModel(mApplication){
 
     private val mRepo: IntervalRepository = IntervalRepository(mApplication.applicationContext)
-    val mAnalyticsRepository: IntervalAnalyticsRepository = IntervalAnalyticsRepository(mApplication.applicationContext)
+    val mAnalyticsRepository: AnalyticsRepository = AnalyticsRepository(mApplication.applicationContext)
 
     fun getGroups(): LiveData<Array<IntervalData>> {
         return mRepo.getGroups()

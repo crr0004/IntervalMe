@@ -12,9 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.github.crr0004.intervalme.R
+import io.github.crr0004.intervalme.database.analytics.AnalyticsDataSourceI
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
-import kotlinx.android.synthetic.main.interval_group.view.*
 import kotlinx.android.synthetic.main.routine_list_single_exercise.view.*
 import kotlinx.android.synthetic.main.routine_single.view.*
 
@@ -43,11 +43,11 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     var values: ArrayList<RoutineSetData>? = null
     set(value) {
         var index = 0
-        totalCount = 0
-        totalCount += value?.size ?: 0
+        mTotalCount = 0
+        mTotalCount += value?.size ?: 0
         value?.forEach { routineSetData ->
             positionMap[index] = RoutinePositionMap(index, routineSetData)
-            totalCount += routineSetData.exercises.size
+            mTotalCount += routineSetData.exercises.size
             index += routineSetData.exercises.size+1
         }
         field = value
@@ -55,7 +55,8 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
     }
     private var positionMap: HashMap<Int, RoutinePositionMap> = HashMap(1)
     private val mExpandedGroups: SparseBooleanArray = SparseBooleanArray()
-    var totalCount: Int = 0
+    private lateinit var mAnalyticsProvider: AnalyticsDataSourceI
+    private var mTotalCount: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoutineSetViewHolder {
 
@@ -115,7 +116,7 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
 
     override fun getItemCount(): Int {
         return if(values != null)
-            totalCount
+            mTotalCount
         else
             0
     }
@@ -160,6 +161,12 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
         // however it doesn't, it will come back as false so it will be inverted to true
         mExpandedGroups.put(adapterPosition, !mExpandedGroups[adapterPosition, false])
         notifyItemRangeChanged(adapterPosition+1, (positionMap[adapterPosition]?.routineData?.exercises?.size ?: 0))
+    }
+
+
+
+    fun setAnalyticsSource(analyticsProvider: AnalyticsDataSourceI) {
+        this.mAnalyticsProvider = analyticsProvider
     }
 }
 

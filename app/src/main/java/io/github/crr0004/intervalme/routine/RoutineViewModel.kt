@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.preference.PreferenceManager
+import io.github.crr0004.intervalme.database.analytics.AnalyticsRepository
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineRepo
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
@@ -16,6 +17,7 @@ class RoutineViewModel(private val mApplication: Application) : AndroidViewModel
     }
 
     private var mRepo = RoutineRepo(mApplication)
+    val mAnalyticsRepository: AnalyticsRepository = AnalyticsRepository(mApplication.applicationContext)
     private var mRoutineToEdit: MutableLiveData<RoutineSetData> = MutableLiveData()
     private val mExercisesToBeDeleted: ArrayList<ExerciseData> = ArrayList(1)
     private var mInEditMode: Boolean = false

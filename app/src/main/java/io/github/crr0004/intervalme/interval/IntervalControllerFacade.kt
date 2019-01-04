@@ -7,8 +7,8 @@ import android.view.View
 import io.github.crr0004.intervalme.BuildConfig
 import io.github.crr0004.intervalme.database.IntervalData
 import io.github.crr0004.intervalme.database.IntervalRunProperties
-import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDataSourceI
-import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsRepository
+import io.github.crr0004.intervalme.database.analytics.AnalyticsDataSourceI
+import io.github.crr0004.intervalme.database.analytics.AnalyticsRepository
 import io.github.crr0004.intervalme.views.IntervalClockView
 import java.util.*
 import kotlin.collections.HashMap
@@ -28,7 +28,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     private val mRunningProperties: HashMap<UUID, IntervalRunProperties> = HashMap(1)
     private val mGroupSetupStatus: SparseBooleanArray = SparseBooleanArray()
     private lateinit var mDataSource: IntervalControllerDataSourceI
-    private lateinit var mAnalyticsDataSource: IntervalAnalyticsDataSourceI
+    private lateinit var mAnalyticsDataSource: AnalyticsDataSourceI
 
     fun intervalsSwapped(id: Long, id1: Long) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -162,7 +162,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
 
     override fun clockFinished(intervalController: IntervalController, mSoundController: IntervalSoundController?) {
         val interval = intervalController.mChildOfInterval
-        mAnalyticsDataSource.intevalFinish(interval)
+        mAnalyticsDataSource.intervalFinish(interval)
         if(isIntervalLast(interval)) {
             mSoundController?.playLoop(2)
             val properties = getRunningProperties(interval.group)
@@ -174,7 +174,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
                     mControllers[interval.group]!![1].startClockAsNew()
                 }else{
                     // Register the group has done a full run
-                    mAnalyticsDataSource.intevalFinishWithProperties(mControllers[interval.group]!![0].mChildOfInterval,
+                    mAnalyticsDataSource.intervalFinishWithProperties(mControllers[interval.group]!![0].mChildOfInterval,
                             mDataSource.getGroupProperties(mControllers[interval.group]!![0].mChildOfInterval.id)!!)
                     clearRunningProperties(interval.group)
                 }
@@ -214,7 +214,7 @@ class IntervalControllerFacade : IntervalController.IntervalControllerCallBackI 
     /**
      * This needs to be set before you can use this facade
      */
-    fun setAnalyticsDataSource(analyticsRepository: IntervalAnalyticsRepository) {
+    fun setAnalyticsDataSource(analyticsRepository: AnalyticsRepository) {
         this.mAnalyticsDataSource = analyticsRepository
     }
 

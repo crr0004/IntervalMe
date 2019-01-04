@@ -7,7 +7,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.arch.persistence.room.migration.Migration
 import android.content.Context
-import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsDao
+import io.github.crr0004.intervalme.database.analytics.AnalyticsDao
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineDao
@@ -27,7 +27,7 @@ abstract class IntervalMeDatabase : RoomDatabase() {
 
     abstract fun intervalDataDao(): IntervalDataDAO
     abstract fun propertiesDao(): IntervalRunPropertiesDOA
-    abstract fun intervalAnalyticsDao(): IntervalAnalyticsDao
+    abstract fun intervalAnalyticsDao(): AnalyticsDao
     abstract fun routineDao(): RoutineDao
 
     companion object {
