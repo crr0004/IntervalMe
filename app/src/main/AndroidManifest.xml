@@ -17,7 +17,8 @@
         <activity
             android:name=".interval.IntervalListActivity"
             android:launchMode="singleTop"
-            android:noHistory="false">
+            android:noHistory="false"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,11 +32,15 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".analytics.AnalyticsActivity" />
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme.SubActivity"/>
+        <activity android:name=".analytics.AnalyticsActivity"
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".routine.RoutineListActivity"
             android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme"
             android:launchMode="singleTop">
 
         </activity>

@@ -12,7 +12,7 @@
         <item name="android:windowContentTransitions">true</item>
 
         <!-- specify enter and exit transitions -->
-        <item name="android:windowEnterTransition">@transition/slide_right</item>
+        <item name="android:windowEnterTransition">@transition/fade</item>
         <item name="android:windowExitTransition">@transition/slide_left</item>
 
         <!-- specify shared element transitions -->
