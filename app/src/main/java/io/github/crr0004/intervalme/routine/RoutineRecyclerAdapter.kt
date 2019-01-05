@@ -34,6 +34,8 @@ interface RoutineRecyclerViewHolderActionsI{
     fun deleteRoutine(routineData: RoutineSetData)
     fun update(exerciseData: RoutineSetData)
     fun toggleGroupExpanded(adapterPosition: Int)
+    fun routineUpdateDone(routineData: RoutineSetData)
+    fun exerciseUpdateDone(exerciseData: ExerciseData)
 
 }
 
@@ -163,7 +165,19 @@ class RoutineRecyclerAdapter(private val mHost: RoutineRecyclerAdapterActionsI) 
         notifyItemRangeChanged(adapterPosition+1, (positionMap[adapterPosition]?.routineData?.exercises?.size ?: 0))
     }
 
+    override fun routineUpdateDone(routineData: RoutineSetData) {
+        if(routineData.isDone)
+            mAnalyticsProvider.routineFinished(routineData)
+        else
+            mAnalyticsProvider.removeLastFinishedRoutine(routineData)
+    }
 
+    override fun exerciseUpdateDone(exerciseData: ExerciseData) {
+        if(exerciseData.isDone)
+            mAnalyticsProvider.exerciseFinished(exerciseData)
+        else
+            mAnalyticsProvider.removeLastFinishedExercise(exerciseData)
+    }
 
     fun setAnalyticsSource(analyticsProvider: AnalyticsDataSourceI) {
         this.mAnalyticsProvider = analyticsProvider
@@ -218,6 +232,7 @@ open class RoutineSetViewHolder(view: View, private val mHost: RoutineRecyclerVi
             when(it.itemId){
                 R.id.routine_group_menu_mark_done -> {
                     routineData.isDone = !routineData.isDone
+                    mHost.routineUpdateDone(routineData)
                     mHost.update(routineData)
                     true
                 }
@@ -279,6 +294,7 @@ class ExerciseViewHolder(view: View, val mHost: RoutineRecyclerViewHolderActions
         itemView.rLSEICheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             exerciseData.isDone = isChecked
             // We do this so the animation has time to complete
+            mHost.exerciseUpdateDone(exerciseData)
             buttonView.postDelayed({
                 mHost.update(exerciseData)
             }, buttonView.resources.getInteger(android.R.integer.config_shortAnimTime).toLong())

@@ -71,6 +71,14 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapterActionsI
 
     }
 
+    override fun routineUpdateDone(routineData: RoutineSetData) {
+
+    }
+
+    override fun exerciseUpdateDone(exerciseData: ExerciseData) {
+
+    }
+
     override fun getRoutineSetViewHolder(parent: ViewGroup, pos: Int): RoutineSetViewHolder? {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single_template, parent, false)
         return RoutineSetViewHolder1(view, this)

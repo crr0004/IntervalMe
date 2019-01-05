@@ -8,7 +8,9 @@ import android.arch.persistence.room.TypeConverters
 import android.arch.persistence.room.migration.Migration
 import android.content.Context
 import io.github.crr0004.intervalme.database.analytics.AnalyticsDao
+import io.github.crr0004.intervalme.database.analytics.ExerciseAnalyticData
 import io.github.crr0004.intervalme.database.analytics.IntervalAnalyticsData
+import io.github.crr0004.intervalme.database.analytics.RoutineAnalyticData
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineDao
 import io.github.crr0004.intervalme.database.routine.RoutineTableData
@@ -21,7 +23,9 @@ import io.github.crr0004.intervalme.database.routine.RoutineTableData
     IntervalRunProperties::class,
     IntervalAnalyticsData::class,
     RoutineTableData::class,
-    ExerciseData::class], version = 19)
+    ExerciseData::class,
+    ExerciseAnalyticData::class,
+    RoutineAnalyticData::class], version = 20)
 @TypeConverters(IntervalTypeConverters::class)
 abstract class IntervalMeDatabase : RoomDatabase() {
 
@@ -55,7 +59,8 @@ abstract class IntervalMeDatabase : RoomDatabase() {
                                     MIGRATION_14_17,
                                     MIGRATION_15_17,
                                     MIGRATION_17_18,
-                                    MIGRATION_18_19)
+                                    MIGRATION_18_19,
+                                    MIGRATION_19_20)
                             .build()
                 }
             }
@@ -115,6 +120,12 @@ abstract class IntervalMeDatabase : RoomDatabase() {
         private val MIGRATION_18_19 = object : Migration(18,19){
             override fun migrate(sb: SupportSQLiteDatabase) {
                 sb.execSQL("ALTER TABLE `Routine` ADD COLUMN isDone INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        private val MIGRATION_19_20 = object : Migration(19, 20){
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS `ExerciseAnalytic` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `routineId` INTEGER NOT NULL, `description` TEXT NOT NULL, `lastModified` INTEGER NOT NULL, `value0` TEXT NOT NULL, `value1` TEXT NOT NULL, `value2` TEXT NOT NULL, `isDone` INTEGER NOT NULL)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `RoutineAnalytic` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `description` TEXT NOT NULL, `lastModified` INTEGER NOT NULL)")
             }
         }
     }

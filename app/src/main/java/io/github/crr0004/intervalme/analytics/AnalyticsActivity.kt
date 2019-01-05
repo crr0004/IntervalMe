@@ -32,12 +32,19 @@ class AnalyticsActivity : AppCompatActivity() {
         }
 
         provider = ViewModelProviders.of(this).get(AnalyticsViewModel::class.java)
-        provider.getAll().observe(this, Observer {
+        provider.getAllIntervals().observe(this, Observer {
             if(it != null){
                 mAnalyticsRecyclerAdapter.intervalItems = it
                 mAnalyticsRecyclerAdapter.notifyDataSetChanged()
             }
         })
+        provider.getAllRoutines().observe(this, Observer {
+            mAnalyticsRecyclerAdapter.routineItems = it
+        })
+        provider.getAllExercise().observe(this, Observer {
+            mAnalyticsRecyclerAdapter.exerciseItems = it
+        })
+
 
 
         setUpNavigation()

@@ -16,9 +16,9 @@ import java.util.*
 
 class AnalyticsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var intervalItems = arrayOf(IntervalAnalyticsData(label = "Hello world", duration = 60L),IntervalAnalyticsData(label = "Hello world2"))
-    var routineItems = arrayOf<RoutineAnalyticData>(RoutineAnalyticData(0, "RoutineAnalytics"))
-    var exerciseItems = arrayOf<ExerciseAnalyticData>(
+    var intervalItems: Array<IntervalAnalyticsData>? = arrayOf(IntervalAnalyticsData(label = "Hello world", duration = 60L),IntervalAnalyticsData(label = "Hello world2"))
+    var routineItems: Array<RoutineAnalyticData>? = arrayOf<RoutineAnalyticData>(RoutineAnalyticData(0, "RoutineAnalytics"))
+    var exerciseItems: Array<ExerciseAnalyticData>? = arrayOf<ExerciseAnalyticData>(
             ExerciseAnalyticData(0, 0, "ExerciseItem", Date(), "v0", "v1", "v2", true)
     )
 
@@ -43,32 +43,30 @@ class AnalyticsRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
     }
 
     override fun getItemCount(): Int {
-        return intervalItems.size + routineItems.size + exerciseItems.size
+        return (intervalItems?.size ?: 0) + (routineItems?.size ?: 0) + (exerciseItems?.size ?: 0)
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, pos: Int) {
         when(getItemViewType(pos)) {
             0 -> {
-                (viewHolder as IntervalViewHolder).bind(intervalItems[pos])
+                (viewHolder as IntervalViewHolder).bind(intervalItems!![pos])
             }
             1 -> {
-                (viewHolder as RoutineViewHolder).bind(routineItems[pos-intervalItems.size])
+                (viewHolder as RoutineViewHolder).bind(routineItems!![pos-(intervalItems?.size ?: 0)])
             }
             2 -> {
-                (viewHolder as ExerciseViewHolder).bind(exerciseItems[pos-(intervalItems.size+routineItems.size)])
+                (viewHolder as ExerciseViewHolder).bind(exerciseItems!![pos-((intervalItems?.size ?: 0)+(routineItems?.size ?: 0))])
             }
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(position < intervalItems.size)
-            return 0
-        else if(position < intervalItems.size + routineItems.size)
-            return 1
-        else if(position < exerciseItems.size + intervalItems.size + routineItems.size)
-            return 2
-        else
-            throw RuntimeException("A view type hasn't been accounted for in analytics")
+        return when {
+            position < (intervalItems?.size ?: 0) -> 0
+            position < (intervalItems?.size ?: 0) + (routineItems?.size ?: 0) -> 1
+            position < (exerciseItems?.size ?: 0) + (intervalItems?.size ?: 0) + (routineItems?.size ?: 0) -> 2
+            else -> throw RuntimeException("A view type hasn't been accounted for in analytics")
+        }
         //return super.getItemViewType(position)
     }
 
