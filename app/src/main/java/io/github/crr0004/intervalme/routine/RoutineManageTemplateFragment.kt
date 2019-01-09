@@ -23,6 +23,8 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapterActionsI
     private lateinit var mModel: RoutineViewModel
     private lateinit var mAdapter: RoutineRecyclerAdapter
     private val mSelectedItems = SparseBooleanArray()
+    val isInEditMode: Boolean
+    get() = mModel.isInEditMode
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_routine_manage_templates, container, false)
@@ -44,7 +46,7 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapterActionsI
     }
 
     override fun deleteRoutine(routineData: RoutineSetData) {
-
+        mModel.deleteRoutine(routineData)
     }
 
     override fun isShowEditButtons(): Boolean {
@@ -106,6 +108,10 @@ class RoutineSetViewHolder1(view: View, val mHost: RoutineManageTemplateFragment
             itemView.routineListGroupEditBtn.visibility = View.VISIBLE
             itemView.routineListGroupDeleteBtn.visibility = View.VISIBLE
             itemView.routineListGroupCopyBtn.visibility = View.VISIBLE
+        }
+        if(mHost.isInEditMode){
+            itemView.routineListGroupEditBtn.visibility = View.GONE
+            itemView.routineListGroupCopyBtn.visibility = View.GONE
         }
         itemView.routineListGroupEditBtn.setOnClickListener {
             mHost.editTemplate(routineData)

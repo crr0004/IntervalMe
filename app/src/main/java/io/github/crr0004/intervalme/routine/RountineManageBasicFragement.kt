@@ -69,10 +69,11 @@ class RoutineManageBasicFragment : Fragment(){
             mSelectedItems.clear()
 
         }
-        view.routineManageTemplateChxBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(mModel.isInEditMode){
-                // In edit mode, the routine should be copied rather than updating
-                buttonView.isChecked = false
+        view.routineManageTemplateChxBox.setOnClickListener {buttonView ->
+            // In edit mode, the routine should be copied rather than updating
+
+            if(mModel.isInEditMode) {
+                view.routineManageTemplateChxBox.isChecked = false
                 val builder: AlertDialog.Builder? = activity?.let { activity ->
                     AlertDialog.Builder(activity)
                 }
@@ -83,12 +84,14 @@ class RoutineManageBasicFragment : Fragment(){
                     Toast.makeText(buttonView.context, R.string.copied_routine_to_template, Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
-                builder?.setNegativeButton(R.string.cancel){dialog: DialogInterface, _: Int ->
+                builder?.setNegativeButton(R.string.cancel) { dialog: DialogInterface, _: Int ->
                     dialog.dismiss()
-                    buttonView.isChecked = false
                 }
                 builder?.show()
-            }else {
+            }
+        }
+        view.routineManageTemplateChxBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(!mModel.isInEditMode){
                 mModel.routineToEdit.isTemplate = isChecked
             }
         }
