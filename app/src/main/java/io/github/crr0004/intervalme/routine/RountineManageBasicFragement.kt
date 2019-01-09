@@ -46,13 +46,6 @@ class RoutineManageBasicFragment : Fragment(){
             if(it != null){
                 view.routineManageBasicDescriptionTxt.setText(it.description)
                 view.routineManageTemplateChxBox.isChecked = it.isTemplate
-                if(it.routineId > 0){
-                    //view.routineEditCommitBtn.setText(R.string.update)
-                }else{
-                    //view.routineEditCommitBtn.setText(R.string.add)
-                }
-                //it.exercises.clear()
-                //it.exercises.addAll(it.exercises)
                 mAdapter.routine = it
                 mAdapter.notifyDataSetChanged()
             }
@@ -74,6 +67,7 @@ class RoutineManageBasicFragment : Fragment(){
 
         }
         view.routineManageTemplateChxBox.setOnCheckedChangeListener { buttonView, isChecked ->
+
             mModel.routineToEdit.isTemplate = isChecked
         }
 
