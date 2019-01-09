@@ -21,6 +21,8 @@ class RoutineViewModel(private val mApplication: Application) : AndroidViewModel
     private var mRoutineToEdit: MutableLiveData<RoutineSetData> = MutableLiveData()
     private val mExercisesToBeDeleted: ArrayList<ExerciseData> = ArrayList(1)
     private var mInEditMode: Boolean = false
+    val isInEditMode: Boolean
+    get() = mInEditMode
 
     private lateinit var mRoutineAddedListener: (RoutineSetData) -> Unit
 
@@ -112,5 +114,12 @@ class RoutineViewModel(private val mApplication: Application) : AndroidViewModel
 
     fun update(routine: RoutineSetData) {
         mRepo.update(routine)
+    }
+
+    fun copyRoutineToTemplate(routineToEdit: RoutineSetData) {
+        val routineTemplate = RoutineSetData(routineToEdit)
+        routineTemplate.isTemplate = true
+        routineTemplate.isDone = false
+        mRepo.insert(routineTemplate)
     }
 }

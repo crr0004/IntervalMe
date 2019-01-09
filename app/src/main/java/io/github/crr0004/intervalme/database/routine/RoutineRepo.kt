@@ -33,6 +33,8 @@ open class RoutineRepo(mContext: Context) {
             routineToEdit.routineId = 0
             val id = mDao.insert(RoutineTableData(routineToEdit))
             routineToEdit.exercises.forEach {
+                // Force id to 0 so it inserts correctly
+                it.id = 0
                 it.routineId = id
             }
             mDao.insert(routineToEdit.exercises)

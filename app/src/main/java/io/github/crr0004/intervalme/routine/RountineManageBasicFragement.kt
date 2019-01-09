@@ -1,8 +1,10 @@
 package io.github.crr0004.intervalme.routine
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -11,6 +13,7 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import io.github.crr0004.intervalme.R
 import io.github.crr0004.intervalme.database.routine.ExerciseData
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
@@ -67,8 +70,27 @@ class RoutineManageBasicFragment : Fragment(){
 
         }
         view.routineManageTemplateChxBox.setOnCheckedChangeListener { buttonView, isChecked ->
-
-            mModel.routineToEdit.isTemplate = isChecked
+            if(mModel.isInEditMode){
+                // In edit mode, the routine should be copied rather than updating
+                buttonView.isChecked = false
+                val builder: AlertDialog.Builder? = activity?.let { activity ->
+                    AlertDialog.Builder(activity)
+                }
+                builder?.setMessage(R.string.dialog_message_copy_routine_to_template)
+                        ?.setTitle(R.string.dialog_title_copy_routine_to_template)
+                builder?.setPositiveButton(R.string.okay) { dialog: DialogInterface, _: Int ->
+                    mModel.copyRoutineToTemplate(mModel.routineToEdit)
+                    Toast.makeText(buttonView.context, R.string.copied_routine_to_template, Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+                builder?.setNegativeButton(R.string.cancel){dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    buttonView.isChecked = false
+                }
+                builder?.show()
+            }else {
+                mModel.routineToEdit.isTemplate = isChecked
+            }
         }
 
         view.routineEditAddExerciseBtn.setOnClickListener {
