@@ -1,0 +1,112 @@
+Index: app/src/main/java/io/github/crr0004/intervalme/views/IntervalClockView.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package io.github.crr0004.intervalme.views\n\nimport android.content.Context\nimport android.graphics.*\nimport android.os.Build\nimport android.os.Handler\nimport android.util.AttributeSet\nimport android.util.DisplayMetrics\nimport android.view.View\nimport android.view.WindowManager\nimport io.github.crr0004.intervalme.R\nimport java.lang.UnsupportedOperationException\nimport java.util.concurrent.TimeUnit\n\n\nclass IntervalClockView(context: Context?, attrs: AttributeSet?) : android.support.v7.widget.AppCompatImageView(context, attrs) {\n\n\n    private var mCirclePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)\n    private var mOverlayPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)\n    private var mTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)\n\n    private val mDisplayMetrics = DisplayMetrics()\n    //The base radius of our circle for the clock\n    private var mCircleSize = 50.0f\n    private var mCenter = PointF(0.0f,0.0f)\n    private var mBounds = RectF()\n    private val mIntervalPaddingDP = 8.0\n    private val mHandler: Handler = Handler()\n\n    var mPercentageComplete = 0.0f\n        set(value) {\n            field = value\n            this.invalidate()\n        }\n\n    private var mClockText: StringBuilder = StringBuilder(8)\n\n    init {\n        (context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(mDisplayMetrics)\n\n        mCirclePaint.color = Color.BLACK\n        mCirclePaint.strokeWidth = 8.0f\n        mCirclePaint.style = Paint.Style.STROKE\n\n        mOverlayPaint.color = Color.BLUE\n        mOverlayPaint.strokeWidth = 16.0f\n        mOverlayPaint.style = Paint.Style.FILL\n\n        mTextPaint.textAlign = Paint.Align.CENTER\n        mTextPaint.textSize = mDisplayMetrics.scaledDensity * 14f\n\n        val a = context.theme.obtainStyledAttributes(\n                attrs,\n                R.styleable.IntervalClock,\n                0, 0)\n\n        try {\n            mCirclePaint.color = a.getColor(R.styleable.IntervalClock_background_clock_colour, Color.BLACK)\n            mCirclePaint.strokeWidth = a.getFloat(R.styleable.IntervalClock_background_clock_stroke_width, 8.0f)\n            mOverlayPaint.color = a.getColor(R.styleable.IntervalClock_overlay_clock_colour, Color.BLUE)\n            mOverlayPaint.strokeWidth = a.getFloat(R.styleable.IntervalClock_overlay_clock_stroke_width, 16.0f)\n\n            mTextPaint.color = a.getColor(R.styleable.IntervalClock_clock_text_colour, Color.BLACK)\n            mTextPaint.textSize = a.getDimension(R.styleable.IntervalClock_clock_text_size, 8.0f)\n            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {\n                mTextPaint.typeface = a.getFont(R.styleable.IntervalClock_clock_text_typeface)\n            }\n            mClockText.append(a.getText(R.styleable.IntervalClock_clock_text))\n\n        }catch (e: UnsupportedOperationException){\n\n        }finally {\n            a.recycle()\n        }\n\n    }\n\n    /**\n     * @param time Time in milliseconds\n     */\n    fun setClockTime(time: Long){\n        mClockText.replace(0,mClockText.length,String.format(\"%02d:%02d\",\n                TimeUnit.MILLISECONDS.toMinutes(time),\n                TimeUnit.MILLISECONDS.toSeconds(time) -\n                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))//,\n                //time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))\n        ))\n        this.invalidate()\n    }\n\n\n    /**\n     * This is called during layout when the size of this view has changed. If\n     * you were just added to the view hierarchy, you're called with the old\n     * value of 0.\n     *\n     * @param w Current width of this view.\n     * @param h Current height of this view.\n     * @param oldw Old width of this view.\n     * @param oldh Old height of this view.\n     */\n    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {\n        super.onSizeChanged(w, h, oldw, oldh)\n\n        (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(mDisplayMetrics)\n        val logicalDensity = mDisplayMetrics.density\n        val intervalPaddingPx = Math.ceil((mIntervalPaddingDP * logicalDensity))\n\n        //min so when we are in landscape it uses the smaller value\n        mCircleSize = ((Math.min(w,h)/2) - intervalPaddingPx).toFloat()\n        //Center is in the center of the view\n        mCenter.set((w/2).toFloat(), (h/2).toFloat())\n        mBounds.set(mCenter.x-mCircleSize,mCenter.y-mCircleSize,mCenter.x+mCircleSize,mCenter.y+mCircleSize)\n    }\n\n    override fun onDraw(canvas: Canvas?) {\n        super.onDraw(canvas)\n        //canvas!!.drawCircle((width/2).toFloat(), (height/2).toFloat(), (Math.min(width,height)/2).toFloat(), mCirclePaint)\n        canvas!!.drawArc(mBounds,0.0f, 360f, false, mCirclePaint)\n        //270 so it starts at the top\n        canvas.drawArc(mBounds,270f, 360f * mPercentageComplete, true, mOverlayPaint)\n\n        canvas.drawText(mClockText.toString(),mCenter.x,mCenter.y,mTextPaint)\n\n    }\n\n    /**\n     * @return A handler associated with the thread running the View. This\n     * handler can be used to pump events in the UI events queue.\n     */\n    override fun getHandler(): Handler {\n        return mHandler\n    }\n\n    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {\n        super.onMeasure(widthMeasureSpec, heightMeasureSpec)\n\n        // Try for a width based on our minimum\n        val minw = paddingLeft + paddingRight + suggestedMinimumWidth\n        val w = View.resolveSizeAndState(minw, widthMeasureSpec, 1)\n\n        // Whatever the width ends up being, ask for a height that would let the pie\n        // get as big as it can\n       // val minh = View.MeasureSpec.getSize(w) + paddingBottom + paddingTop\n        val h = View.resolveSizeAndState(View.MeasureSpec.getSize(w), heightMeasureSpec, 0)\n\n        setMeasuredDimension(w, h)\n\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/io/github/crr0004/intervalme/views/IntervalClockView.kt	(revision 3d2f0bc3e66efa2bd6fa383d20119da70595c31c)
++++ app/src/main/java/io/github/crr0004/intervalme/views/IntervalClockView.kt	(date 1543640463984)
+@@ -6,14 +6,15 @@
+ import android.os.Handler
+ import android.util.AttributeSet
+ import android.util.DisplayMetrics
++import android.util.Log
+ import android.view.View
+ import android.view.WindowManager
++import android.widget.ImageView
+ import io.github.crr0004.intervalme.R
+-import java.lang.UnsupportedOperationException
+ import java.util.concurrent.TimeUnit
+ 
+ 
+-class IntervalClockView(context: Context?, attrs: AttributeSet?) : android.support.v7.widget.AppCompatImageView(context, attrs) {
++class IntervalClockView(context: Context?, attrs: AttributeSet?) : ImageView(context, attrs) {
+ 
+ 
+     private var mCirclePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+@@ -31,7 +32,6 @@
+     var mPercentageComplete = 0.0f
+         set(value) {
+             field = value
+-            this.invalidate()
+         }
+ 
+     private var mClockText: StringBuilder = StringBuilder(8)
+@@ -86,9 +86,13 @@
+                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))//,
+                 //time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
+         ))
++        Log.d("ICV", "in setClockTime $time")
+         this.invalidate()
+     }
+ 
++    override fun isOpaque(): Boolean {
++        return true
++    }
+ 
+     /**
+      * This is called during layout when the size of this view has changed. If
+@@ -112,17 +116,17 @@
+         //Center is in the center of the view
+         mCenter.set((w/2).toFloat(), (h/2).toFloat())
+         mBounds.set(mCenter.x-mCircleSize,mCenter.y-mCircleSize,mCenter.x+mCircleSize,mCenter.y+mCircleSize)
++
+     }
+ 
+     override fun onDraw(canvas: Canvas?) {
+-        super.onDraw(canvas)
++
+         //canvas!!.drawCircle((width/2).toFloat(), (height/2).toFloat(), (Math.min(width,height)/2).toFloat(), mCirclePaint)
+         canvas!!.drawArc(mBounds,0.0f, 360f, false, mCirclePaint)
+         //270 so it starts at the top
+         canvas.drawArc(mBounds,270f, 360f * mPercentageComplete, true, mOverlayPaint)
+ 
+         canvas.drawText(mClockText.toString(),mCenter.x,mCenter.y,mTextPaint)
+-
+     }
+ 
+     /**
+@@ -134,7 +138,7 @@
+     }
+ 
+     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
++        //super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+ 
+         // Try for a width based on our minimum
+         val minw = paddingLeft + paddingRight + suggestedMinimumWidth
+Index: app/src/main/java/io/github/crr0004/intervalme/interval/IntervalController.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package io.github.crr0004.intervalme.interval\n\nimport android.annotation.SuppressLint\nimport android.content.Context\nimport android.os.Handler\nimport android.os.SystemClock\nimport android.support.v4.view.GestureDetectorCompat\nimport android.util.Log\nimport android.view.GestureDetector\nimport android.view.MotionEvent\nimport android.view.View\nimport io.github.crr0004.intervalme.R\nimport io.github.crr0004.intervalme.database.IntervalData\nimport io.github.crr0004.intervalme.database.IntervalRunProperties\nimport io.github.crr0004.intervalme.views.IntervalClockView\nimport java.util.concurrent.TimeUnit\n\n\n/**\n * A mController for dealing with the logic between the IntervalClockView and a data source\n */\n// We can suppress this because we ensure click logic is in onClickListener\n@SuppressLint(\"ClickableViewAccessibility\")\nopen class IntervalController\n/**\n * @param mClockView the view that this mController uses\n * @param mChildOfInterval the interval data from the db\n */(mClockView: IntervalClockView? = null, mChildOfInterval: IntervalData, runProperties: IntervalRunProperties? = null, applicationContext: Context? = null, callBackHost: IntervalControllerCallBackI) : GestureDetector.SimpleOnGestureListener() {\n\n    private var mClockRunning = false\n    companion object {\n        const val DEBUG_TAG = \"ICGestures\"\n    }\n    private lateinit var mDetector: GestureDetectorCompat\n    private lateinit var mClockTickRunnable: TickClockRunnable\n    private var mCallBackHost: IntervalControllerCallBackI = callBackHost\n\n    interface IntervalControllerCallBackI {\n        fun clockStartedAsNew(intervalController: IntervalController)\n        fun clockResumedFromPause(intervalController: IntervalController)\n        fun clockPaused(intervalController: IntervalController)\n        fun clockFinished(intervalController: IntervalController, mSoundController: IntervalSoundController?)\n        fun clockStopped(intervalController: IntervalController)\n        fun clockTimeUpdatedTo(intervalController: IntervalController, mTimeToRun: Long)\n\n    }\n\n    private var mClockView: IntervalClockView? = null\n    lateinit var mChildOfInterval: IntervalData\n    private var mIntervalProperties: IntervalRunProperties? = null\n    //private var mNextInterval: IntervalController? = null\n    private var mSoundController: IntervalSoundController? = null\n    private var mThread: Thread? = null\n\n    init {\n        init(mClockView, mChildOfInterval, runProperties = runProperties, applicationContext = applicationContext)\n    }\n\n    private fun init(\n            clockView: IntervalClockView?,\n            childOfInterval: IntervalData,\n            applicationContext: Context? = null,\n            runProperties: IntervalRunProperties? = null) {\n        mClockView = clockView\n        mChildOfInterval = childOfInterval\n        mDetector = GestureDetectorCompat(applicationContext, this)\n        mIntervalProperties = runProperties\n\n\n\n        mClockView?.setOnTouchListener { _, event ->\n            mDetector.onTouchEvent(event)\n        }\n\n        // We do this so accessibility has correct logic\n        mClockView?.setOnClickListener {\n            clickOnClock()\n        }\n        mClockView?.setClockTime(TimeUnit.SECONDS.toMillis(childOfInterval.duration))\n            mClockTickRunnable = TickClockRunnable(mClockView, TimeUnit.SECONDS.toMillis(childOfInterval.duration), this)\n        if (childOfInterval.runningDuration > 0) {\n            mClockTickRunnable.mTimeToRun = childOfInterval.runningDuration\n            mClockView?.setClockTime(mClockTickRunnable.mTimeToRun)\n        }\n        //Only create new sound mController if it's been previously released\n        if(mSoundController == null && applicationContext != null)\n            mSoundController = IntervalSoundController.instanceWith(applicationContext.applicationContext, R.raw.digital_watch_alarm_1)\n    }\n\n    private fun clickOnClock(){\n        if(!mClockRunning) {\n            startClockAsNew()\n        }else{\n            // The clock has already been started so now we just invert the runnable\n            mClockTickRunnable.mRunning = !mClockTickRunnable.mRunning\n            if(mClockTickRunnable.mRunning){\n                // The clock was paused so we need to start it again\n                // We also move the clock ahead to the current time minus however much time has passed\n                mClockTickRunnable.mStartingTime = SystemClock.elapsedRealtime() - mClockTickRunnable.mElapsedTime\n                // mClockView!!.post(mClockTickRunnable)\n                mCallBackHost.clockResumedFromPause(this)\n            }else{\n                mThread?.interrupt()\n                mCallBackHost.clockPaused(this)\n            }\n            startClockThread()\n        }\n    }\n\n    /* This may still be needed in the future\n    open fun disconnectFromViews(){\n        mClockView?.setOnTouchListener(null)\n        mClockTickRunnable.releaseClockView()\n    }\n    */\n\n    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {\n        // We've started the clock for the first time\n        mClockView?.performClick()\n        return true\n    }\n\n    @Synchronized\n    private fun startClockThread(){\n        mThread = Thread(mClockTickRunnable, mChildOfInterval.label)\n        try {\n            mThread?.start()\n        }catch (e: IllegalThreadStateException){\n            Log.d(DEBUG_TAG, \"Tried to start a bad thread\")\n        }\n    }\n\n    fun startClockAsNew() {\n        stopAndRefreshClock()\n        mClockTickRunnable.mRunning = true\n        startClockThread()\n        mClockRunning = true\n        mCallBackHost.clockStartedAsNew(this)\n    }\n\n    override fun onDoubleTap(e: MotionEvent?): Boolean {\n        // We stop the clock\n        stopAndRefreshClock()\n        mClockView?.mPercentageComplete = 0f\n        mClockView?.setClockTime(mClockTickRunnable.mTimeToRun)\n\n        return true\n    }\n\n    open fun stopAndRefreshClock() {\n        mClockRunning = false\n        mClockTickRunnable.mRunning = false\n        mClockTickRunnable.reset()\n        mThread?.interrupt()\n\n        mClockTickRunnable.mTimeToRun = TimeUnit.SECONDS.toMillis(mChildOfInterval.duration)\n        mCallBackHost.clockStopped(this)\n\n        //mClockView?.setClockTime(mClockTickRunnable.mTimeToRun)\n    }\n\n    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {\n        /*\n        mClockTickRunnable.mTimeToRun -= distanceX.toLong() * 100\n        mClockView!!.setClockTime(mClockTickRunnable.mTimeToRun)\n        if(mClockRunning) {\n            mClockTickRunnable.updatePercentComplete()\n        }\n        mCallBackHost.clockTimeUpdatedTo(this, mClockTickRunnable.mTimeToRun)\n        */\n        return false\n    }\n\n    override fun onDown(e: MotionEvent?): Boolean {\n        return true\n    }\n\n    /**\n     * Called when the timer has finished and the next one is to begin\n     */\n    private fun finishedTimer() {\n        mClockRunning = false\n\n        //Log.d(DEBUG_TAG, \"IntervalController $mChildOfInterval done\")\n\n        mCallBackHost.clockFinished(this, mSoundController)\n    }\n\n    open fun connectNewClockView(view: View) {\n        if(view.id == R.id.intervalClockView) {\n            mClockView = view as IntervalClockView\n\n            mClockTickRunnable.connectNewClock(view)\n            mClockView!!.setOnTouchListener { _, event ->\n                mDetector.onTouchEvent(event)\n            }\n            mClockView!!.setOnClickListener {\n                clickOnClock()\n            }\n        }\n\n\n    }\n\n    open fun updateViewToProperties(properties: IntervalRunProperties) {\n        // this currently doesn't do anything for child view\n    }\n\n    private class TickClockRunnable(\n            @get:Synchronized @set:Synchronized\n            var mClockView: IntervalClockView?,\n            @get:Synchronized @set:Synchronized\n            var mTimeToRun: Long,\n            private val mIntervalController: IntervalController) : Runnable{\n\n        @get:Synchronized @set:Synchronized\n        var mStartingTime = SystemClock.elapsedRealtime()\n\n        @get:Synchronized @set:Synchronized\n        var mElapsedTime = 0L\n\n        @get:Synchronized @set:Synchronized\n        var mRunning: Boolean = true\n\n        private var mUpdateClockHandler: Handler? = null\n\n        private val updateClock = Runnable{\n            updatePercentComplete()\n            if(mTimeToRun - mElapsedTime > 100f) {\n                mClockView?.setClockTime(mTimeToRun - mElapsedTime)\n            }else{\n                mClockView?.setClockTime(0)\n            }\n        }\n\n        fun connectNewClock(clockView: IntervalClockView){\n            mClockView = clockView\n            mClockView?.setClockTime(mTimeToRun - mElapsedTime)\n            updatePercentComplete()\n            mUpdateClockHandler = mClockView?.handler\n\n        }\n\n        override fun run() {\n            while(mRunning) {\n                mElapsedTime = SystemClock.elapsedRealtime() - mStartingTime\n                if (mTimeToRun - mElapsedTime >= 100f && mRunning) {\n                    mUpdateClockHandler?.post(updateClock)\n                    try {\n                        Thread.sleep(33)\n                    }catch(e: InterruptedException){\n\n                    }\n                } else if (mRunning) {\n                    mUpdateClockHandler?.post(updateClock)\n                    mIntervalController.finishedTimer()\n                    mRunning = false\n                }\n            }\n\n        }\n        fun reset(){\n            mStartingTime = SystemClock.elapsedRealtime()\n            mElapsedTime = 0\n        }\n        @Synchronized\n        fun updatePercentComplete(){\n            if(mTimeToRun - mElapsedTime >= 100f) {\n                mClockView?.mPercentageComplete = mElapsedTime.toFloat() / mTimeToRun\n            }else{\n                mClockView?.mPercentageComplete = 1f\n            }\n        }\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/io/github/crr0004/intervalme/interval/IntervalController.kt	(revision 3d2f0bc3e66efa2bd6fa383d20119da70595c31c)
++++ app/src/main/java/io/github/crr0004/intervalme/interval/IntervalController.kt	(date 1543639672604)
+@@ -230,6 +230,7 @@
+                 mClockView?.setClockTime(mTimeToRun - mElapsedTime)
+             }else{
+                 mClockView?.setClockTime(0)
++                //mUpdateClockHandler?.removeCallbacks(this)
+             }
+         }
+ 
+@@ -252,6 +253,7 @@
+ 
+                     }
+                 } else if (mRunning) {
++                    //mUpdateClockHandler?.removeCallbacks(updateClock)
+                     mUpdateClockHandler?.post(updateClock)
+                     mIntervalController.finishedTimer()
+                     mRunning = false
+@@ -263,7 +265,7 @@
+             mStartingTime = SystemClock.elapsedRealtime()
+             mElapsedTime = 0
+         }
+-        @Synchronized
++
+         fun updatePercentComplete(){
+             if(mTimeToRun - mElapsedTime >= 100f) {
+                 mClockView?.mPercentageComplete = mElapsedTime.toFloat() / mTimeToRun
