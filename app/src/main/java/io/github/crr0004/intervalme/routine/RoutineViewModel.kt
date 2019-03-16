@@ -54,9 +54,11 @@ class RoutineViewModel(private val mApplication: Application) : AndroidViewModel
         val routine = RoutineSetData(routineData)
         routine.isTemplate = false
         routine.routineId = 0
+        routine.isDone = false
         routine.exercises.forEach {
             it.id = 0
             it.routineId = 0
+            it.isDone = false
         }
         mRoutineToEdit.postValue(routine)
     }
