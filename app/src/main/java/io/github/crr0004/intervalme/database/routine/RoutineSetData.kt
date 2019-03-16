@@ -7,7 +7,7 @@ data class RoutineSetData (var routineId: Long,
                            var description: String,
                            var exercises: ArrayList<ExerciseData> = ArrayList(),
                            var isTemplate: Boolean,
-                           var isDone: Boolean) {
+                           var isDone: Boolean = false) {
 
 
     constructor(routine: RoutineSetData) : this(
