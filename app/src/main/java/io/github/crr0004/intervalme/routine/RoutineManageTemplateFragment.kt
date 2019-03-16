@@ -83,7 +83,7 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapterActionsI
 
     override fun getRoutineSetViewHolder(parent: ViewGroup, pos: Int): RoutineSetViewHolder? {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.routine_single_template, parent, false)
-        return RoutineSetViewHolder1(view, this)
+        return RoutineTemplateHolder(view, this)
     }
 
     fun editTemplate(routineData: RoutineSetData) {
@@ -97,7 +97,7 @@ class RoutineManageTemplateFragment : Fragment(), RoutineRecyclerAdapterActionsI
     }
 }
 
-class RoutineSetViewHolder1(view: View, val mHost: RoutineManageTemplateFragment) : RoutineSetViewHolder(view, mHost){
+class RoutineTemplateHolder(view: View, val mHost: RoutineManageTemplateFragment) : RoutineSetViewHolder(view, mHost){
     override fun bind(routineData: RoutineSetData, index: Int) {
         itemView.findViewById<TextView>(R.id.routineSingleName).text = routineData.description
         if(!mHost.isShowEditButtons()){

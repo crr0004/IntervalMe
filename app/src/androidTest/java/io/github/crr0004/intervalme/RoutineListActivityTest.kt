@@ -15,10 +15,13 @@ import io.github.crr0004.intervalme.database.routine.RoutineRepo
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.routine.RoutineListActivity
 import io.github.crr0004.intervalme.routine.RoutineRecyclerAdapter
+import io.github.crr0004.intervalme.routine.RoutineSetViewHolder
 import io.github.crr0004.intervalme.routine.RoutineViewModel
 import org.hamcrest.Matchers.allOf
 import org.junit.*
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
@@ -99,7 +102,7 @@ class RoutineListActivityTest : ActivityTestRule<RoutineListActivity>(RoutineLis
         list.add(routine2)
         val liveData = TestLiveData<ArrayList<RoutineSetData>>()
         liveData.postValue(list)
-        `when`(mMockRepo.getAllRoutines()).thenReturn(liveData)
+        `when`(mMockRepo.getAllRoutines(anyString(), any())).thenReturn(liveData)
         val liveDataCount = TestLiveData<Int>()
         liveDataCount.postValue(6)
         `when`(mMockRepo.getAllRoutineAndExerciseCount()).thenReturn(liveDataCount)
@@ -108,7 +111,7 @@ class RoutineListActivityTest : ActivityTestRule<RoutineListActivity>(RoutineLis
             onView(withText(it)).check(matches(isDisplayed()))
         }
         onView(withId(R.id.routineRecyclerView)).perform(
-                RecyclerViewActions.scrollToPosition<RoutineRecyclerAdapter.RoutineSetViewHolder>(1)
+                RecyclerViewActions.scrollToPosition<RoutineSetViewHolder>(1)
         )
         getAllStringValuesFromRoutine(routine2).forEach {
             onView(withText(it)).check(matches(isDisplayed()))
