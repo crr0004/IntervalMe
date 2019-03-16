@@ -15,6 +15,7 @@ import io.github.crr0004.intervalme.database.routine.RoutineRepo
 import io.github.crr0004.intervalme.database.routine.RoutineSetData
 import io.github.crr0004.intervalme.routine.RoutineListActivity
 import io.github.crr0004.intervalme.routine.RoutineRecyclerAdapter
+import io.github.crr0004.intervalme.routine.RoutineSetViewHolder
 import io.github.crr0004.intervalme.routine.RoutineViewModel
 import org.hamcrest.Matchers.allOf
 import org.junit.*
@@ -108,7 +109,7 @@ class RoutineListActivityTest : ActivityTestRule<RoutineListActivity>(RoutineLis
             onView(withText(it)).check(matches(isDisplayed()))
         }
         onView(withId(R.id.routineRecyclerView)).perform(
-                RecyclerViewActions.scrollToPosition<RoutineRecyclerAdapter.RoutineSetViewHolder>(1)
+                RecyclerViewActions.scrollToPosition<RoutineSetViewHolder>(1)
         )
         getAllStringValuesFromRoutine(routine2).forEach {
             onView(withText(it)).check(matches(isDisplayed()))
